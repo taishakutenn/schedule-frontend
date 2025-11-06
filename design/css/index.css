@@ -1,0 +1,77 @@
+/* Для заднего фона (основного контента): `#2d2d2d`
+Для заднего фона шапки и подвала: `#252526`
+Для заднего фона карточек/панелей: `#2d2d2d`
+Для основного текста: `#ffffff`
+Для второстепенного текста: `#cccccc`
+Для плейсхолдера/доп. информации: `#888888`
+Для границ: `#454545`
+Для акцента (кнопки, ссылки): `#0078d4` */
+
+/* Add css files */
+@import url("reset.css");
+
+:root {
+    --main-background-color: #2d2d2d;
+    --main-font-color: #ffffff;
+    --main-second-font-color: #cccccc;
+    --main-font-weight: 418;
+    --main-font-size: 20px;
+    --main-font-family: "Comfortaa";
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+    background-color: var(--main-background-color);
+    color: var(--main-font-color);
+    font-family: var(--main-font-family);
+    font-weight: var(--main-font-weight);
+    font-size: var(--main-font-size);
+}
+
+main {
+    flex: 1;
+    margin: 0 10%;
+}
+
+.container {
+    border: 3px solid red;
+    margin: 0 auto;
+    height: 100%;
+}
+
+/* Header */
+.header-box {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 10px;
+}
+
+.header__logo {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.header__logo a:hover {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.header__nav ul {
+    display: flex;
+    gap: 35px;
+}
+
+.header__nav ul li {
+    display: inline;
+}
+
+.header__nav ul li:hover {
+    color: var(--main-second-font-color);
+    cursor: pointer;
+    text-decoration: underline;
+}
