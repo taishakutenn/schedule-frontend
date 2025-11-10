@@ -7,9 +7,6 @@
 Для границ: `#454545`
 Для акцента (кнопки, ссылки): `#0078d4` */
 
-/* Add css files */
-@import url("reset.css");
-
 :root {
     --main-background-color: #2d2d2d;
     --main-header-footer-background-color: #252526;
@@ -20,8 +17,19 @@
     --main-font-family: "Comfortaa";
 }
 
-html, body {
-    height: 100%;
+/* Styles for root container in react */
+#root {
+  height: 100%;
+}
+
+header, footer {
+    background-color: var(--main-header-footer-background-color);
+}
+
+main {
+    flex: 1;
+    margin: 0 10%;
+    border-radius: 10px;
 }
 
 .global-box {
@@ -34,16 +42,6 @@ html, body {
     font-family: var(--main-font-family);
     font-weight: var(--main-font-weight);
     font-size: var(--main-font-size);
-}
-
-header, footer {
-    background-color: var(--main-header-footer-background-color);
-}
-
-main {
-    flex: 1;
-    margin: 0 10%;
-    border-radius: 10px;
 }
 
 .container {
