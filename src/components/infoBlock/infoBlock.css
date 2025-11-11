@@ -1,10 +1,11 @@
 @import '../../css/variables.css';
 
 .InfoBlock {
-    padding: 5px;
+    padding: 1%;
+    margin: 1%;
 
     border: 2px solid;
-    border-radius: 5px;
+    border-radius: 8px;
     border-color: var(--main-border-color);
 }
 

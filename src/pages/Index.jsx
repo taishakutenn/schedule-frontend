@@ -1,4 +1,4 @@
-import InfoBlock from "./infoBlock/InfoBlock";
+import InfoBlock from "../components/infoBlock/InfoBlock";
 
 const infoItems = [
   {
@@ -9,7 +9,7 @@ const infoItems = [
   },
 ];
 
-export default function Main() {
+export default function Index() {
   return (
     <main>
       <InfoBlock items={infoItems} />

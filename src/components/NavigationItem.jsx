@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
+
 export function NavigationItem({ title, link }) {
   return (
     <li>
-      <a href={link}>{title}</a>
+      <Link to={link}>{title}</Link>
     </li>
   );
 }

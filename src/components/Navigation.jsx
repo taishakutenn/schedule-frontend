@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { NavigationItem } from "./NavigationItem";
 
 export default function Navigation({ items }) {
@@ -5,11 +6,7 @@ export default function Navigation({ items }) {
     <nav className="header__nav">
       <ul>
         {items.map((item, index) => (
-          <NavigationItem
-            key={index}
-            title={item.title}
-            link={item.link}
-          />
+          <NavigationItem key={index} title={item.title} link={item.link} />
         ))}
       </ul>
     </nav>

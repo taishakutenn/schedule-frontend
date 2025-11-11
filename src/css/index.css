@@ -68,6 +68,5 @@ main {
     border: 3px solid;
     border-radius: 10px;
     border-color: var(--main-border-color);
-    padding: 0.8%;
 }
 
