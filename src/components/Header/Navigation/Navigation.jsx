@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
 import { NavigationItem } from "./NavigationItem";
+
+import "./navigation.css";
 
 export default function Navigation({ items }) {
   return (

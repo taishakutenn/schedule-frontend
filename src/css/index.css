@@ -5,7 +5,7 @@
   height: 100%;
 }
 
-header, footer {
+footer {
     background-color: var(--main-header-footer-background-color);
 }
 
@@ -24,42 +24,6 @@ header, footer {
 .container {
     margin: 0 auto;
     height: 100%;
-}
-
-/* Header */
-.header-box {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 20px;
-}
-
-.header__logo {
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.header__logo a:hover {
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-.header__nav ul {
-    display: flex;
-    gap: 35px;
-}
-
-.header__nav ul li {
-    display: inline;
-}
-
-.header__nav ul li:hover {
-    color: var(--main-second-font-color);
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.header__account-container {
-    display: flex;
-    gap: 10px;
 }
 
 main {

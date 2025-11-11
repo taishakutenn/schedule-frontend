@@ -1,0 +1,16 @@
+@import '../../../css/variables.css';
+
+.header__nav ul {
+    display: flex;
+    gap: 35px;
+}
+
+.header__nav ul li {
+    display: inline;
+}
+
+.header__nav ul li:hover {
+    color: var(--main-second-font-color);
+    cursor: pointer;
+    text-decoration: underline;
+}

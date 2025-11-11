@@ -1,0 +1,25 @@
+@import '../../css/variables.css';
+
+header {
+    background-color: var(--main-header-footer-background-color);
+}
+
+.header-box {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 20px;
+}
+
+.header__logo {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.header__logo a:hover {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.header__account-container {
+    display: flex;
+    gap: 10px;
+}
