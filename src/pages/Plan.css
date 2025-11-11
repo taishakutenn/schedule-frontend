@@ -1,8 +1,16 @@
 @import "../css/variables.css";
 
 .btn--box {
-    display: flex;
-    justify-content: center;
-    gap: 5%;
-    margin: 1%;
+  display: flex;
+  justify-content: center;
+  gap: 5%;
+  margin: 1%;
+}
+
+.dynamic-content {
+  padding: 1%;
+  margin: 1%;
+  border: 2px solid;
+  border-radius: 8px;
+  border-color: var(--main-border-color);
 }
