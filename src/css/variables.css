@@ -5,7 +5,7 @@
 Для второстепенного текста: `#cccccc`
 Для плейсхолдера/доп. информации: `#888888`
 Для границ: `#454545`
-Для акцента (кнопки, ссылки): `#0078d4` */
+Для акцента (кнопки, ссылки): `#2b5278` */
 
 :root {
     --main-background-color: #2d2d2d;
@@ -13,6 +13,7 @@
     --main-font-color: #ffffff;
     --main-second-font-color: #cccccc;
     --main-border-color: #454545;
+    --main-accent-color: #2b5278;
     --main-font-weight: 418;
     --main-font-size: 20px;
     --main-font-family: "Comfortaa";

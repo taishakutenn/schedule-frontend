@@ -1,0 +1,8 @@
+@import "../css/variables.css";
+
+.btn--box {
+    display: flex;
+    justify-content: center;
+    gap: 5%;
+    margin: 1%;
+}
