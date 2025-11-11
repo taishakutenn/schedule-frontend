@@ -1,21 +1,4 @@
-/* Для заднего фона (основного контента): `#2d2d2d`
-Для заднего фона шапки и подвала: `#252526`
-Для заднего фона карточек/панелей: `#2d2d2d`
-Для основного текста: `#ffffff`
-Для второстепенного текста: `#cccccc`
-Для плейсхолдера/доп. информации: `#888888`
-Для границ: `#454545`
-Для акцента (кнопки, ссылки): `#0078d4` */
-
-:root {
-    --main-background-color: #2d2d2d;
-    --main-header-footer-background-color: #252526;
-    --main-font-color: #ffffff;
-    --main-second-font-color: #cccccc;
-    --main-font-weight: 418;
-    --main-font-size: 20px;
-    --main-font-family: "Comfortaa";
-}
+@import './variables.css';
 
 /* Styles for root container in react */
 #root {
@@ -24,12 +7,6 @@
 
 header, footer {
     background-color: var(--main-header-footer-background-color);
-}
-
-main {
-    flex: 1;
-    margin: 0 10%;
-    border-radius: 10px;
 }
 
 .global-box {
@@ -79,3 +56,18 @@ main {
     cursor: pointer;
     text-decoration: underline;
 }
+
+.header__account-container {
+    display: flex;
+    gap: 10px;
+}
+
+main {
+    flex: 1;
+    margin: 0 10%;
+    border: 3px solid;
+    border-radius: 10px;
+    border-color: var(--main-border-color);
+    padding: 0.8%;
+}
+

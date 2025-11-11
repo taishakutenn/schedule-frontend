@@ -1,0 +1,19 @@
+/* Для заднего фона (основного контента): `#2d2d2d`
+Для заднего фона шапки и подвала: `#252526`
+Для заднего фона карточек/панелей: `#2d2d2d`
+Для основного текста: `#ffffff`
+Для второстепенного текста: `#cccccc`
+Для плейсхолдера/доп. информации: `#888888`
+Для границ: `#454545`
+Для акцента (кнопки, ссылки): `#0078d4` */
+
+:root {
+    --main-background-color: #2d2d2d;
+    --main-header-footer-background-color: #252526;
+    --main-font-color: #ffffff;
+    --main-second-font-color: #cccccc;
+    --main-border-color: #454545;
+    --main-font-weight: 418;
+    --main-font-size: 20px;
+    --main-font-family: "Comfortaa";
+}

@@ -1,23 +1,25 @@
 {
 	"nodes":[
-		{"id":"53ba95acf541f9cb","x":40,"y":-120,"width":250,"height":80,"type":"text","text":"# plans"},
-		{"id":"ea6c5358fa1f3742","x":-410,"y":-120,"width":250,"height":80,"type":"text","text":"# schedule"},
-		{"id":"700a07b11d7adb61","x":-1040,"y":-560,"width":535,"height":180,"type":"text","text":"# заголовки первой степени - отдельные страницы\n\n## второй степени - содержимое страницы\n"},
-		{"id":"053a7b70c2c34ab9","x":-785,"y":-115,"width":280,"height":70,"type":"text","text":"## create|edit schedule"},
-		{"id":"93d4ec79ab70203d","x":-130,"y":-380,"width":140,"height":80,"type":"text","text":"# index"},
-		{"id":"657c2f5519a3c3d4","x":-185,"y":80,"width":250,"height":60,"type":"text","text":"# handbooks"},
-		{"id":"3b8f910160e3ba99","x":-1040,"y":-360,"width":205,"height":120,"type":"text","text":"Схема НЕ описывает навигацию между страницами сайта,"},
-		{"id":"010646d23a5551d6","x":-205,"y":-620,"width":290,"height":60,"type":"text","text":"## links to other pages"},
-		{"id":"5543f09427cd19ea","x":120,"y":-590,"width":250,"height":60,"type":"text","text":"## site description"},
-		{"id":"8de88251e7be0c96","x":-785,"y":0,"width":280,"height":110,"type":"text","text":"## print schedule and ether reports"},
-		{"id":"135c7bf503fc9576","x":440,"y":-175,"width":250,"height":60,"type":"text","text":"## plan load"},
-		{"id":"a39eea312045ac8d","x":440,"y":80,"width":250,"height":60,"type":"text","text":"## print reports"},
-		{"id":"668bcf98feafb9e9","x":440,"y":-80,"width":250,"height":135,"type":"text","text":"## appoint teacher, group and subjects"},
-		{"id":"5bf3cc4b84f6c6ef","x":-212,"y":290,"width":305,"height":60,"type":"text","text":"## building and cabinets"},
-		{"id":"a0d8a2624fca7aa2","x":10,"y":380,"width":250,"height":60,"type":"text","text":"## streams"},
-		{"id":"09817041d5359caa","x":-380,"y":380,"width":250,"height":60,"type":"text","text":"## groups"},
-		{"id":"ed6f32e080a6d663","x":-505,"y":290,"width":250,"height":60,"type":"text","text":"## teachers"},
-		{"id":"134ef6eec56da936","x":135,"y":290,"width":250,"height":60,"type":"text","text":"## specialities"}
+		{"id":"53ba95acf541f9cb","type":"text","text":"# plans","x":40,"y":-120,"width":250,"height":80},
+		{"id":"ea6c5358fa1f3742","type":"text","text":"# schedule","x":-410,"y":-120,"width":250,"height":80},
+		{"id":"700a07b11d7adb61","type":"text","text":"# заголовки первой степени - отдельные страницы\n\n## второй степени - содержимое страницы\n","x":-1040,"y":-560,"width":535,"height":180},
+		{"id":"053a7b70c2c34ab9","type":"text","text":"## create|edit schedule","x":-785,"y":-115,"width":280,"height":70},
+		{"id":"93d4ec79ab70203d","type":"text","text":"# index","x":-130,"y":-380,"width":140,"height":80},
+		{"id":"3b8f910160e3ba99","type":"text","text":"Схема НЕ описывает навигацию между страницами сайта,","x":-1040,"y":-360,"width":205,"height":120},
+		{"id":"010646d23a5551d6","type":"text","text":"## links to other pages","x":-205,"y":-620,"width":290,"height":100},
+		{"id":"8de88251e7be0c96","type":"text","text":"## print schedule and ether reports","x":-785,"y":0,"width":280,"height":110},
+		{"id":"135c7bf503fc9576","type":"text","text":"## plan load","x":440,"y":-175,"width":250,"height":60},
+		{"id":"a39eea312045ac8d","type":"text","text":"## print reports","x":440,"y":80,"width":250,"height":60},
+		{"id":"668bcf98feafb9e9","type":"text","text":"## appoint teacher, group and subjects","x":440,"y":-80,"width":250,"height":135},
+		{"id":"5bf3cc4b84f6c6ef","type":"text","text":"## building and cabinets","x":-212,"y":290,"width":305,"height":90},
+		{"id":"a0d8a2624fca7aa2","type":"text","text":"## streams","x":10,"y":380,"width":250,"height":60},
+		{"id":"09817041d5359caa","type":"text","text":"## groups","x":-380,"y":380,"width":250,"height":60},
+		{"id":"ed6f32e080a6d663","type":"text","text":"## teachers","x":-505,"y":290,"width":250,"height":60},
+		{"id":"134ef6eec56da936","type":"text","text":"## specialities","x":135,"y":290,"width":250,"height":60},
+		{"id":"5543f09427cd19ea","type":"text","text":"## site description","x":93,"y":-620,"width":250,"height":100},
+		{"id":"657c2f5519a3c3d4","type":"text","text":"# handbooks","x":-184,"y":80,"width":250,"height":60},
+		{"id":"e5382b581205c451","x":-772,"y":140,"width":250,"height":60,"type":"text","text":"# Gallery"},
+		{"id":"79b5356d7ac79195","x":-1062,"y":230,"width":342,"height":105,"type":"text","text":"## mini-preview of all schedules"}
 	],
 	"edges":[
 		{"id":"20eaad60771144c5","fromNode":"93d4ec79ab70203d","fromSide":"bottom","toNode":"ea6c5358fa1f3742","toSide":"top"},
@@ -34,6 +36,8 @@
 		{"id":"d77f2e0545b4aba4","fromNode":"93d4ec79ab70203d","fromSide":"top","toNode":"5543f09427cd19ea","toSide":"bottom"},
 		{"id":"7070deb8b7c69a39","fromNode":"93d4ec79ab70203d","fromSide":"top","toNode":"010646d23a5551d6","toSide":"bottom"},
 		{"id":"0511e75a05056849","fromNode":"ea6c5358fa1f3742","fromSide":"left","toNode":"8de88251e7be0c96","toSide":"right"},
-		{"id":"73423b44f5171c20","fromNode":"53ba95acf541f9cb","fromSide":"right","toNode":"a39eea312045ac8d","toSide":"left"}
+		{"id":"73423b44f5171c20","fromNode":"53ba95acf541f9cb","fromSide":"right","toNode":"a39eea312045ac8d","toSide":"left"},
+		{"id":"49016b2dbd0c34c9","fromNode":"ea6c5358fa1f3742","fromSide":"bottom","toNode":"e5382b581205c451","toSide":"right"},
+		{"id":"f07e92c132ed4f77","fromNode":"e5382b581205c451","fromSide":"bottom","toNode":"79b5356d7ac79195","toSide":"right"}
 	]
 }

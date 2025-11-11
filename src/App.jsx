@@ -1,14 +1,11 @@
-import Header from "./components/Header"
+import Header from "./components/Header";
+import Main from "./components/Main";
 
 function App() {
   return (
     <div className="global-box">
       <Header />
-      <main>
-        <div className="container">
-          Что-то в мейне
-        </div>
-      </main>
+      <Main />
 
       <footer>
         <div className="container">
@@ -16,7 +13,7 @@ function App() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
