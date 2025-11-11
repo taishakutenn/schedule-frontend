@@ -1,7 +1,12 @@
-import InfoBlockTitle from "./infoBlockTitle";
-import InfoBlockText from "./InfoBlockText";
-
 import "./infoBlock.css";
+
+function InfoBlockText({ text }) {
+  return <p className="InfoBlockText">{text}</p>;
+}
+
+function InfoBlockTitle({ title }) {
+  return <h1 className="InfoBlockTitle">{title}</h1>;
+}
 
 export default function InfoBlock({ items }) {
   return (
