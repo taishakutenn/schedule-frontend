@@ -61,12 +61,18 @@
   border-color: var(--main-accent-color);
 }
 
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .teach-load-stats {
   display: flex;
   flex-direction: column;
   gap: 10px;
   background-color: var(--main-background-panel);
-  padding: 16px;
+  padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--main-border-color);
   flex: 0 0 auto;
