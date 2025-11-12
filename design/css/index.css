@@ -28,7 +28,7 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 2%;
-    height: 100%;
+    height: 100vh;
     background-color: var(--main-background-color);
     color: var(--main-font-color);
     font-family: var(--main-font-family);
@@ -38,6 +38,7 @@ html, body {
 
 header, footer {
     background-color: var(--main-header-footer-background-color);
+    flex-shrink: 0;
 }
 
 main {
@@ -77,6 +78,35 @@ main {
 }
 
 .header__nav ul li:hover {
+    color: var(--main-second-font-color);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Footer */
+.footer-box {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 20px;
+}
+
+.footer__autors-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer__autors-team {
+    font-size: 16px;
+}
+
+.footer__autors-list li {
+    display: inline;
+    font-size: 14px;
+}
+
+.footer__autors-list li:hover {
     color: var(--main-second-font-color);
     cursor: pointer;
     text-decoration: underline;

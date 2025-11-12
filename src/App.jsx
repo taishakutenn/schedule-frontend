@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header/Header";
 import Index from "./pages/Index";
+import Footer from "./components/Footer/Footer";
 
 import Plans from "./pages/Plans";
 import Schedule from "./pages/Schedule";
@@ -18,11 +19,7 @@ function App() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/handbooks" element={<Handbooks />} />
         </Routes>
-        <footer>
-          <div className="container">
-            <h1>Что то</h1>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </Router>
   );

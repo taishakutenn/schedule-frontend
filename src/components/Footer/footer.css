@@ -1,0 +1,31 @@
+@import "../../css/variables.css";
+
+/* Footer */
+.footer-box {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+}
+
+.footer__autors-container {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer__autors-team {
+    font-size: 16px;
+}
+
+.footer__autors-list li {
+    display: inline;
+    font-size: 14px;
+}
+
+.footer__autors-list li:hover {
+    color: var(--main-second-font-color);
+    cursor: pointer;
+    text-decoration: underline;
+}

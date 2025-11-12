@@ -28,7 +28,7 @@ footer {
 
 main {
   flex: 1;
-  margin: 0 10%;
+  margin: 15px 10%;
   border: 3px solid;
   border-radius: 10px;
   border-color: var(--main-border-color);
