@@ -4,6 +4,7 @@ export default function Button({
   children,
   variant = "primary",
   size = "medium",
+  action = "click",
   onClick,
   disabled = false,
   type = "button",
@@ -12,7 +13,7 @@ export default function Button({
   return (
     <button
       type={type}
-      className={`btn btn--${variant} btn--${size}`}
+      className={`btn btn--${variant} btn--${size} btn--${action}`}
       onClick={onClick}
       disabled={disabled}
       {...props}

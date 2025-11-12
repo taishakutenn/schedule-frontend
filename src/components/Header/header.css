@@ -1,25 +1,27 @@
-@import '../../css/variables.css';
+@import "../../css/variables.css";
 
 header {
-    background-color: var(--main-header-footer-background-color);
+  background-color: var(--main-header-footer-background-color);
 }
 
 .header-box {
-    display: flex;
-    justify-content: space-between;
-    margin: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 20px;
 }
 
 .header__logo {
-    font-size: 24px;
-    font-weight: 600;
+  font-size: 24px;
+  font-weight: 600;
+  align-content: center;
 }
 
 .header__logo a:hover {
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
 .header__account-container {
-    display: flex;
-    gap: 10px;
+  align-content: center;
+  display: flex;
+  gap: 5px;
 }

@@ -1,0 +1,35 @@
+@import "../../css/variables.css";
+
+.data {
+  border: 1px solid var(--main-border-color);
+  border-radius: 9px;
+  padding: 16px;
+  background: var(--main-background-panel);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  font-size: 18px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 4px;
+  background: var(--main-background-panel);
+  color: var(--main-text-primary);
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}

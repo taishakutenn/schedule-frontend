@@ -13,4 +13,15 @@
   border: 2px solid;
   border-radius: 8px;
   border-color: var(--main-border-color);
+  text-align: center;
+}
+
+.plan-structure-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5%;
+}
+
+.btn--load {
+  margin: 15px;
 }

@@ -9,9 +9,18 @@
 }
 
 .InfoBlockTitle {
-  font-size: 26px;
   text-align: center;
   margin-bottom: 0.8%;
+}
+
+.InfoBlockTitle[data-level="1"] {
+  font-size: 26px;
+}
+.InfoBlockTitle[data-level="2"] {
+  font-size: 22px;
+}
+.InfoBlockTitle[data-level="3"] {
+  font-size: 18px;
 }
 
 .InfoBlockText {

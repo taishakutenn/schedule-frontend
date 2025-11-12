@@ -1,4 +1,4 @@
-@import './variables.css';
+@import "./variables.css";
 
 /* Styles for root container in react */
 #root {
@@ -6,31 +6,30 @@
 }
 
 footer {
-    background-color: var(--main-header-footer-background-color);
+  background-color: var(--main-header-footer-background-color);
 }
 
 .global-box {
-    display: flex;
-    flex-direction: column;
-    gap: 2%;
-    height: 100%;
-    background-color: var(--main-background-color);
-    color: var(--main-font-color);
-    font-family: var(--main-font-family);
-    font-weight: var(--main-font-weight);
-    font-size: var(--main-font-size);
+  display: flex;
+  flex-direction: column;
+  /* gap: 2%; */
+  height: 100%;
+  background-color: var(--main-background-color);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-weight: var(--main-font-weight);
+  font-size: var(--main-font-size);
 }
 
 .container {
-    margin: 0 auto;
-    height: 100%;
+  margin: 0 auto;
+  height: 100%;
 }
 
 main {
-    flex: 1;
-    margin: 0 10%;
-    border: 3px solid;
-    border-radius: 10px;
-    border-color: var(--main-border-color);
+  flex: 1;
+  margin: 0 10%;
+  border: 3px solid;
+  border-radius: 10px;
+  border-color: var(--main-border-color);
 }
-

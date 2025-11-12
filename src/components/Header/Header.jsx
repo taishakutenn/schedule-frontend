@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Navigation from "./Navigation/Navigation";
+import Button from "../Button/Button";
 
 import "./header.css";
 
@@ -19,8 +20,8 @@ export default function Header() {
           </h1>
           <Navigation items={navItems} />
           <div className="header__account-container">
-            <button className="btn primary">Вход</button>
-            <button className="btn daungher">Регистрация</button>
+            <Button>Вход</Button>
+            <Button>Регистрация</Button>
           </div>
         </div>
       </div>
