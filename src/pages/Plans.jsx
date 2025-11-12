@@ -40,6 +40,11 @@ const teachLoadHeaderInfo = [
   },
 ];
 
+const loadTeach = {
+  general: 2,
+  current: 1.3,
+};
+
 export default function Plans() {
   const [activeView, setActiveView] = useState(null);
 
@@ -135,7 +140,6 @@ export default function Plans() {
           <Button action="load">Загрузить файл плана</Button>
           <div className="instruction">
             <InfoBlock items={planLoadInstructionHeaderInfo} />
-            {/* <InfoBlock /> */}
           </div>
         </div>
       );
@@ -179,6 +183,18 @@ export default function Plans() {
               placeholder="Выберите дисциплину"
               label="дисциплину"
             />
+            <div className="teach-load-stats">
+              <div className="stat-item">
+                <span className="stat-label">
+                  Количество ставок преподавателя:
+                </span>
+                <span className="stat-value">{loadTeach.general}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Текущее количество ставок:</span>
+                <span className="stat-value">{loadTeach.current}</span>
+              </div>
+            </div>
           </div>
         </div>
       );
