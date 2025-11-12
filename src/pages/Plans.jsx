@@ -1,7 +1,8 @@
 import { useState } from "react";
 import InfoBlock from "../components/infoBlock/InfoBlock";
 import Button from "../components/Button/Button";
-import DynamicList from "../components/DynamicList/DynamicList";
+import DynamicInputList from "../components/DynamicList/DynamicInputList";
+import DynamicSelectList from "../components/DynamicList/DynamicSelectList";
 
 import "./Plan.css";
 
@@ -25,9 +26,17 @@ const planLoadHeaderInfo = [
 const planLoadInstructionHeaderInfo = [
   {
     title: "Инструкция для загрузки учебного плана",
+    level: 2,
     text: [
       "Для успешной загрузки учебного плана выполните действия, описанные ниже",
     ],
+  },
+];
+
+const teachLoadHeaderInfo = [
+  {
+    title: "Учебная нагрузка преподавателей",
+    text: [],
   },
 ];
 
@@ -38,7 +47,7 @@ export default function Plans() {
   const [cycles, setCycles] = useState([]);
   const [modules, setModules] = useState([]);
 
-  // Функции для разделов
+  // Chapters function
   const addSection = () => setSections([...sections, { name: "" }]);
   const updateSection = (index, value) => {
     const newSections = [...sections];
@@ -47,8 +56,7 @@ export default function Plans() {
   };
   const removeSection = (index) =>
     setSections(sections.filter((_, i) => i !== index));
-
-  // Функции для циклов
+  // Cycles function
   const addCycle = () => setCycles([...cycles, { name: "" }]);
   const updateCycle = (index, value) => {
     const newCycles = [...cycles];
@@ -57,8 +65,7 @@ export default function Plans() {
   };
   const removeCycle = (index) =>
     setCycles(cycles.filter((_, i) => i !== index));
-
-  // Функции для модулей
+  // Modules function
   const addModule = () => setModules([...modules, { name: "" }]);
   const updateModule = (index, value) => {
     const newModules = [...modules];
@@ -71,13 +78,35 @@ export default function Plans() {
   const handleLoadPlan = () => setActiveView("loadPlan");
   const handleTeachLoad = () => setActiveView("teachLoad");
 
+  const [teacher, setTeacher] = useState("");
+  const [plan, setPlan] = useState("");
+
+  const [subjects, setSubjects] = useState([]);
+
+  const teachers = ["Антонов", "Марков", "Фильков"];
+  const plans = ["09.02.07 - 2023", "08.04.03 - 2024"];
+  const subjectsList = ["Математика", "Физика", "Химия", "Информатика"];
+
+  const addSubject = () => {
+    setSubjects([...subjects, { value: "" }]);
+  };
+
+  const updateSubject = (index, value) => {
+    const newSubjects = [...subjects];
+    newSubjects[index].value = value;
+    setSubjects(newSubjects);
+  };
+  const removeSubject = (index) => {
+    setSubjects(subjects.filter((_, i) => i !== index));
+  };
+
   const Content = () => {
     if (activeView === "loadPlan") {
       return (
         <div className="dynamic-content">
           <InfoBlock items={planLoadHeaderInfo} />
           <div className="plan-structure-data">
-            <DynamicList
+            <DynamicInputList
               title="Разделы"
               items={sections}
               onAdd={addSection}
@@ -85,7 +114,7 @@ export default function Plans() {
               onUpdate={updateSection}
               placeholder="Название раздела"
             />
-            <DynamicList
+            <DynamicInputList
               title="Циклы"
               items={cycles}
               onAdd={addCycle}
@@ -93,7 +122,7 @@ export default function Plans() {
               onUpdate={updateCycle}
               placeholder="Название цикла"
             />
-            <DynamicList
+            <DynamicInputList
               title="Модули"
               items={modules}
               onAdd={addModule}
@@ -113,7 +142,46 @@ export default function Plans() {
     }
 
     if (activeView === "teachLoad") {
-      return <p>TEACH LOAD</p>;
+      return (
+        <div className="dynamic-content">
+          <InfoBlock items={teachLoadHeaderInfo} />
+          <div className="teachLoad-data">
+            <div className="select-container">
+              <select
+                value={teacher}
+                onChange={(e) => setTeacher(e.target.value)}
+              >
+                <option value="">Выберите преподавателя</option>
+                {teachers.map((f, i) => (
+                  <option key={i} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+
+              <select value={plan} onChange={(e) => setPlan(e.target.value)}>
+                <option value="">Выберите учебный план</option>
+                {plans.map((c, i) => (
+                  <option key={i} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <DynamicSelectList
+              title="Дисциплины"
+              items={subjects}
+              onAdd={addSubject}
+              onRemove={removeSubject}
+              onUpdate={updateSubject}
+              options={subjectsList}
+              placeholder="Выберите дисциплину"
+              label="дисциплину"
+            />
+          </div>
+        </div>
+      );
     }
 
     return null;
