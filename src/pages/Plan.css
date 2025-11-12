@@ -18,7 +18,7 @@
 
 .plan-structure-data {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 5%;
 }
 
@@ -29,13 +29,16 @@
 .teachLoad-data {
   display: flex;
   justify-content: center;
-  gap: 25%;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .select-container {
   display: flex;
   flex-direction: column;
-  gap: 5%;
+  gap: 30px;
+  flex: 0 0 auto;
 }
 
 .select-container select {
@@ -56,4 +59,39 @@
 
 .select-container select:hover {
   border-color: var(--main-accent-color);
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.teach-load-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--main-background-panel);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--main-border-color);
+  flex: 0 0 auto;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.stat-label {
+  color: var(--main-second-font-color);
+  font-weight: 500;
+}
+
+.stat-value {
+  color: var(--main-font-color);
+  font-weight: 600;
+  margin-left: 15px;
 }
