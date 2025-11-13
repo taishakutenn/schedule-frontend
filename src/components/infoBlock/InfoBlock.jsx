@@ -17,7 +17,7 @@ export default function InfoBlock({ items }) {
   return (
     <div className="InfoBlock">
       {items.map((item, index) => (
-        <>
+        <div key={index}>
           <InfoBlockTitle
             key={`title-${index}`}
             title={item.title}
@@ -26,7 +26,7 @@ export default function InfoBlock({ items }) {
           {item.text.map((text, i) => (
             <InfoBlockText key={`${index}-${i}`} text={text} />
           ))}
-        </>
+        </div>
       ))}
     </div>
   );

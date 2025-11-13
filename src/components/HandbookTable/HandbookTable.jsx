@@ -1,33 +1,41 @@
-export default function HandbookTable({apiResponse}) {
-  // Функция для определения заголовков таблицы из ответа api
+import "./HandbookTable.css";
+import { fieldLabels } from "../../utils/fieldsLabel";
+
+export default function HandbookTable({ apiResponse, tableName }) {
+  // Select fieldsLabel
+  const labels = fieldLabels[tableName] || {};
+
+  // Function to determine table headers from an API response
   function findHeaders() {
     const headers = new Set();
-    apiResponse.forEach(item => {
-      Object.keys(item).forEach(key => {
-        if (key !== "id") { headers.add(key); }
+    apiResponse.forEach((item) => {
+      Object.keys(item).forEach((key) => {
+        if (key !== "id") {
+          headers.add(key);
+        }
       });
     });
     return Array.from(headers);
   }
 
-  // Получаем заголовки
+  // Get handlers
   const headers = findHeaders();
 
   return (
-    <table className="teachers-table">
-      {/* Заполняем заголовки таблицы */}
+    <table className="data-table">
+      {/* Fill table headers */}
       <thead>
         <tr>
-          {headers.map(header => (
-            <th key={header}>{header}</th>
+          {headers.map((header) => (
+            <th key={header}>{labels[header] || header}</th>
           ))}
         </tr>
       </thead>
-      {/* Заполняем таблицу данными */}
+      {/* Fill table cells */}
       <tbody>
-        {apiResponse.map(item => (
+        {apiResponse.map((item) => (
           <tr key={item.id}>
-            {headers.map(header => (
+            {headers.map((header) => (
               <td key={header}>{item[header]}</td>
             ))}
           </tr>

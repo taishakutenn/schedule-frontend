@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import InfoBlock from "../components/infoBlock/InfoBlock";
+import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
 import DynamicInputList from "../components/DynamicList/DynamicInputList";
 import DynamicSelectList from "../components/DynamicList/DynamicSelectList";

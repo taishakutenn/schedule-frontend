@@ -1,8 +1,11 @@
-import InfoBlock from "../components/infoBlock/InfoBlock";
-import { getTeachers } from "../api/teachersAPI";
+import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import HandbookTable from "../components/HandbookTable/HandbookTable";
+import { useApiData } from "../hooks/useApiData";
+import { tableConfig } from "../utils/tableConfig";
+
+import "./Handbook.css";
 
 const headerInfo = [
   {
@@ -13,57 +16,78 @@ const headerInfo = [
 
 export default function Handbooks() {
   const [handbook, setHandbook] = useState(null);
-  const [teachers, setTeachers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
-  // ✅ useEffect на верхнем уровне
-  useEffect(() => {
-    if (handbook === "teachers") {
-      const fetchTeachers = async () => {
-        setLoading(true);
-        setError(null);
+  // get data from API with custom hook
+  const currentTableConfig = tableConfig[handbook];
+  const { data, loading, error } = useApiData(
+    currentTableConfig?.apiFunction || (() => []),
+    [handbook], // request when table changed
+    !!currentTableConfig
+  );
 
-        try {
-          const data = await getTeachers();
-          setTeachers(data);
-        } catch (err) {
-          setError(err.message);
-          console.error("Ошибка загрузки преподавателей:", err);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchTeachers();
-    }
-  }, [handbook]); // ✅ Зависит от handbook
-
+  // set handbook states
   const handleTeacher = () => setHandbook("teachers");
+  const handleTeacherCategory = () => setHandbook("teachers_category");
 
-  // ✅ Возвращаем разный контент в зависимости от состояния
+  // Function that filtered data
+  const getFilteredData = (data, search) => {
+    if (!search) return data;
+
+    const lowerSearch = search.toLowerCase();
+    return data.filter((item) => {
+      return Object.values(item).some((value) => {
+        return String(value).toLowerCase().includes(lowerSearch);
+      });
+    });
+  };
+
+  // return content depending on the state handbook
   const renderContent = () => {
-    if (handbook === "teachers") {
-      if (loading) return <div>Загрузка преподавателей...</div>;
-      if (error) return <div>Ошибка: {error}</div>;
-      return <HandbookTable apiResponse={teachers} />;
-    }
-    return null; // если handbook !== "teachers", ничего не показываем
+    if (!currentTableConfig) return null;
+
+    if (loading)
+      return (
+        <div className="request-loading">
+          {currentTableConfig.loadingMessage}
+        </div>
+      );
+    if (error)
+      return (
+        <div className="request-error">
+          {currentTableConfig.errorMessage}: {error}
+        </div>
+      );
+
+    // filter data before send it to table creator
+    const filteredData = getFilteredData(data, search);
+
+    // create table with filtered data
+    return <HandbookTable apiResponse={filteredData} tableName={handbook} />;
   };
 
   return (
     <main>
-      <InfoBlock items={headerInfo} /> {/* Убедитесь, что InfoBlock корректно обрабатывает items */}
+      <InfoBlock items={headerInfo} />{" "}
       <div className="handbooks__navigation">
         <Button onClick={handleTeacher}>Преподаватели</Button>
-        <Button>Категории преподавателей</Button>
+        <Button onClick={handleTeacherCategory}>
+          Категории преподавателей
+        </Button>
         <Button>Специальности</Button>
         <Button>Кабинеты</Button>
         <Button>Типы занятий</Button>
       </div>
-      <div>
-        {renderContent()}
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Поиск"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button onClick={() => setSearch("")}>Очистить</Button>
       </div>
+      <div className="rendered-table">{renderContent()}</div>
     </main>
   );
 }

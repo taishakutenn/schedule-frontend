@@ -22,7 +22,7 @@
   margin-bottom: 8px;
 }
 
-input {
+.item-row input {
   flex: 1;
   min-width: 0;
   padding: 8px;
@@ -33,12 +33,12 @@ input {
   color: var(--main-text-primary);
 }
 
-h3 {
+.data h3 {
   font-size: 24px;
   margin-bottom: 10px;
 }
 
-select {
+.item-row select {
   padding: 8px 12px;
   border: 1px solid var(--main-border-color);
   border-radius: 4px;
@@ -51,10 +51,10 @@ select {
   flex: auto;
 }
 
-select:focus {
+.item-row select:focus {
   border-color: var(--main-accent-color);
 }
 
-select:hover {
+.item-row select:hover {
   border-color: var(--main-accent-color);
 }

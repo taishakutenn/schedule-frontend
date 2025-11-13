@@ -1,4 +1,4 @@
-import InfoBlock from "../components/infoBlock/InfoBlock";
+import InfoBlock from "../components/InfoBlock/InfoBlock";
 
 const infoItems = [
   {

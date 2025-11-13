@@ -1,0 +1,51 @@
+@import "../../css/variables.css";
+
+.rendered-table {
+  display: flex;
+  justify-content: center;
+}
+
+.data-table {
+  width: 90%;
+  border-collapse: collapse;
+  background-color: var(--main-background-panel);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-size: var(--main-font-size);
+  border: 1px solid var(--main-border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--main-border-color);
+}
+
+.data-table th {
+  background-color: var(--main-header-footer-background-color);
+  color: var(--main-font-color);
+  font-weight: 600;
+  text-transform: initial;
+}
+
+.data-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background-color: var(--main-background-color);
+}
+
+@media (max-width: 768px) {
+  .data-table {
+    font-size: 14px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 12px;
+  }
+}
