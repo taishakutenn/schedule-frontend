@@ -1,0 +1,84 @@
+/* Search Box */
+.search-box {
+  margin-bottom: 15px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid var(--main-header-footer-background-color, #252526);
+  background-color: var(--main-header-footer-background-color, #252526);
+  color: var(--main-font-color, #ffffff);
+  font-size: 16px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--main-font-color, #ffffff);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* Teachers Table */
+.teachers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  color: var(--main-font-color, #ffffff);
+  background-color: var(--main-background-color, #2d2d2d);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.teachers-table th,
+.teachers-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--main-header-footer-background-color, #252526);
+}
+
+.teachers-table th {
+  background-color: var(--main-header-footer-background-color, #252526);
+  font-weight: 600;
+  color: var(--main-second-font-color, #cccccc);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.teachers-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.teachers-table tbody tr:hover {
+  background-color: #3a3a3a;
+}
+
+.teachers-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.teachers-table button {
+  background-color: var(--main-header-footer-background-color, #252526);
+  color: var(--main-font-color, #ffffff);
+  border: 1px solid var(--main-second-font-color, #cccccc);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.teachers-table button:hover {
+  background-color: var(--main-font-color, #ffffff);
+  color: var(--main-background-color, #2d2d2d);
+}
+
+/* Для случая, если данных нет */
+.teachers-table td[colSpan="4"] {
+  text-align: center;
+  padding: 20px;
+  color: var(--main-second-font-color, #cccccc);
+  font-style: italic;
+}
