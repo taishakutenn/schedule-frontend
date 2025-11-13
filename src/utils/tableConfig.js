@@ -11,7 +11,7 @@ export const tableConfig = {
   },
   teachers_category: {
     apiFunction: getTeachersCategory,
-    loadingMessage: "Загрузка категорий преподавателей",
+    loadingMessage: "Загрузка категорий преподавателей...",
     errorMessage: "Ошибка при загрузке категорий преподавателей",
   },
 };

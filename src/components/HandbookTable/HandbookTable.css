@@ -6,15 +6,16 @@
 }
 
 .data-table {
-  width: 90%;
-  border-collapse: collapse;
+  width: max-content;
+  max-width: 95%;
+  /* border-collapse: collapse; */
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
   font-family: var(--main-font-family);
   font-size: var(--main-font-size);
   border: 1px solid var(--main-border-color);
   border-radius: 8px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .data-table th,
@@ -28,6 +29,7 @@
   background-color: var(--main-header-footer-background-color);
   color: var(--main-font-color);
   font-weight: 600;
+  text-align: center;
   text-transform: initial;
 }
 
@@ -37,15 +39,4 @@
 
 .data-table tbody tr:hover {
   background-color: var(--main-background-color);
-}
-
-@media (max-width: 768px) {
-  .data-table {
-    font-size: 14px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 8px 12px;
-  }
 }
