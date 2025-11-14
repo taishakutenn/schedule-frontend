@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
 import DynamicInputList from "../components/DynamicList/DynamicInputList";
 import DynamicSelectList from "../components/DynamicList/DynamicSelectList";
 import { getTeachers } from "../api/teachersAPI";
 import { getPlans } from "../api/plansAPI";
+import { getAllSubjectsInPlan } from "../api/subjectAPI";
 import Modal from "../components/Modal/Modal";
 import { useApiData } from "../hooks/useApiData";
 
@@ -60,6 +61,7 @@ export default function Plans() {
 
   const [plan, setPlan] = useState("");
   const [subjects, setSubjects] = useState([]);
+  const [allSubjectsInPlan, setAllSubjectsInPlan] = useState([]);
   const [teacher, setTeacher] = useState("");
 
   const {
@@ -74,11 +76,24 @@ export default function Plans() {
     error: plansError,
   } = useApiData(getPlans, [], isModalOpen);
 
-  // const {
-  //   data: subjects,
-  //   loading: subjectsLoading,
-  //   error: subjectsError,
-  // } = useApiData(getSubjects, [], ...);
+  // get all subjects in selected plan
+  useEffect(() => {
+    if (plan) {
+      const fetchSubjects = async () => {
+        try {
+          const subjects = await getAllSubjectsInPlan(plan);
+          setAllSubjectsInPlan(subjects);
+        } catch (err) {
+          console.error("Ошибка загрузки предметов:", err);
+          setAllSubjectsInPlan([]);
+        }
+      };
+
+      fetchSubjects();
+    } else {
+      setAllSubjectsInPlan([]);
+    }
+  }, [plan]);
 
   // Chapters function
   const addSection = () => setSections([...sections, { name: "" }]);
@@ -110,8 +125,6 @@ export default function Plans() {
 
   const handleLoadPlan = () => setActiveView("loadPlan");
   const handleTeachLoad = () => setActiveView("teachLoad");
-
-  const subjectsList = ["Математика", "Физика", "Химия", "Информатика"];
 
   const addSubject = () => {
     setSubjects([...subjects, { value: "" }]);
@@ -220,7 +233,9 @@ export default function Plans() {
                 onAdd={addSubject}
                 onRemove={removeSubject}
                 onUpdate={updateSubject}
-                options={subjectsList}
+                options={allSubjectsInPlan.map(
+                  (s) => s.name || s.title || s.subject_name
+                )}
                 placeholder="Выберите дисциплину"
                 label="дисциплину"
               />

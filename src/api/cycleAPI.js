@@ -11,7 +11,7 @@ export const getCycles = async () => {
 };
 
 export const getCyclesById = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/chapters/search/by_id/${id}`);
+  const response = await fetch(`${API_BASE_URL}/cycles/search/by_id/${id}`);
 
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
