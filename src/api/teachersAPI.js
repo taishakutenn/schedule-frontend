@@ -2,7 +2,6 @@ import { API_BASE_URL } from "./apiURL";
 
 export const getTeachers = async () => {
   const response = await fetch(`${API_BASE_URL}/teachers/search`);
-  console.log("getTeachers вызван");
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
   }
