@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
 import DynamicInputList from "../components/DynamicList/DynamicInputList";
 import DynamicSelectList from "../components/DynamicList/DynamicSelectList";
 import { getTeachers } from "../api/teachersAPI";
+import { getPlans } from "../api/plansAPI";
+import Modal from "../components/Modal/Modal";
+import { useApiData } from "../hooks/useApiData";
 
 import "./Plan.css";
 
@@ -53,6 +56,30 @@ export default function Plans() {
   const [cycles, setCycles] = useState([]);
   const [modules, setModules] = useState([]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [plan, setPlan] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [teacher, setTeacher] = useState("");
+
+  const {
+    data: teachers,
+    loading: teachersLoading,
+    error: teachersError,
+  } = useApiData(getTeachers, [], isModalOpen);
+
+  const {
+    data: plans,
+    loading: plansLoading,
+    error: plansError,
+  } = useApiData(getPlans, [], isModalOpen);
+
+  // const {
+  //   data: subjects,
+  //   loading: subjectsLoading,
+  //   error: subjectsError,
+  // } = useApiData(getSubjects, [], ...);
+
   // Chapters function
   const addSection = () => setSections([...sections, { name: "" }]);
   const updateSection = (index, value) => {
@@ -84,37 +111,6 @@ export default function Plans() {
   const handleLoadPlan = () => setActiveView("loadPlan");
   const handleTeachLoad = () => setActiveView("teachLoad");
 
-  // Teach load state
-  const [teacher, setTeacher] = useState("");
-  const [teachers, setTeachers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // Load teachers
-  useEffect(() => {
-    const fetchTeachers = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await getTeachers();
-        setTeachers(data);
-      } catch (err) {
-        setError(err.message);
-        console.error("Ошибка загрузки преподавателей:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTeachers();
-  }, []);
-
-  const [plan, setPlan] = useState("");
-  const [subjects, setSubjects] = useState([]);
-
-  // const teachers = ["Антонов", "Марков", "Фильков"];
-  const plans = ["09.02.07 - 2023", "08.04.03 - 2024"];
   const subjectsList = ["Математика", "Физика", "Химия", "Информатика"];
 
   const addSubject = () => {
@@ -174,61 +170,79 @@ export default function Plans() {
       return (
         <div className="dynamic-content">
           <InfoBlock items={teachLoadHeaderInfo} />
+          <Button onClick={() => setIsModalOpen(true)}>
+            Назначить нагрузку
+          </Button>
 
-          {loading && <p>Загрузка преподавателей...</p>}
-          {error && <p className="error">Ошибка: {error}</p>}
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            title="Назначение нагрузки"
+            size="md"
+          >
+            {(teachersLoading || plansLoading) && (
+              <p className="loading">Загрузка...</p>
+            )}
+            {teachersError && <p className="error">{teachersError}</p>}
+            {plansError && <p className="error">{plansError}</p>}
+            <div className="teachLoad-data-modal">
+              <div className="select-container">
+                <select
+                  value={teacher}
+                  onChange={(e) => setTeacher(e.target.value)}
+                  disabled={teachersLoading}
+                >
+                  <option value="">Выберите преподавателя</option>
+                  {teachers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.surname} {t.name} {t.fathername}
+                    </option>
+                  ))}
+                </select>
 
-          <div className="teachLoad-data">
-            <div className="select-container">
-              <select
-                value={teacher}
-                onChange={(e) => setTeacher(e.target.value)}
-                disabled={loading}
-              >
-                <option value="">Выберите преподавателя</option>
-                {teachers.map((t, i) => (
-                  <option key={t.id} value={t.id}>
-                    {t.surname} {t.name} {t.fathername}
-                  </option>
-                ))}
-              </select>
-
-              <select value={plan} onChange={(e) => setPlan(e.target.value)}>
-                <option value="">Выберите учебный план</option>
-                {plans.map((c, i) => (
-                  <option key={i} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <DynamicSelectList
-              title="Дисциплины"
-              items={subjects}
-              onAdd={addSubject}
-              onRemove={removeSubject}
-              onUpdate={updateSubject}
-              options={subjectsList}
-              placeholder="Выберите дисциплину"
-              label="дисциплину"
-            />
-            <div className="right-column">
-              <div className="teach-load-stats">
-                <div className="stat-item">
-                  <span className="stat-label">
-                    Количество ставок преподавателя:
-                  </span>
-                  <span className="stat-value">{loadTeach.general}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Текущее количество ставок:</span>
-                  <span className="stat-value">{loadTeach.current}</span>
-                </div>
+                <select
+                  value={plan}
+                  onChange={(e) => setPlan(e.target.value)}
+                  disabled={plansLoading}
+                >
+                  <option value="">Выберите учебный план</option>
+                  {plans.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.year} - {p.speciality_code}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <Button>Синхронизировать</Button>
+
+              <DynamicSelectList
+                title="Дисциплины"
+                items={subjects}
+                onAdd={addSubject}
+                onRemove={removeSubject}
+                onUpdate={updateSubject}
+                options={subjectsList}
+                placeholder="Выберите дисциплину"
+                label="дисциплину"
+              />
+              <div className="right-column">
+                <div className="teach-load-stats">
+                  <div className="stat-item">
+                    <span className="stat-label">
+                      Количество ставок преподавателя:
+                    </span>
+                    <span className="stat-value">{loadTeach.general}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">
+                      Текущее количество ставок:
+                    </span>
+                    <span className="stat-value">{loadTeach.current}</span>
+                  </div>
+                </div>
+                <Button>Синхронизировать</Button>
+              </div>
             </div>
-          </div>
+          </Modal>
         </div>
       );
     }

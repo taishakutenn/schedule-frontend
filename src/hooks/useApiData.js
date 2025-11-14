@@ -26,7 +26,7 @@ export const useApiData = (apiFunction, dependencies = [], enabled = true) => {
     };
 
     fetchData();
-  }, dependencies); // for some dependencies (filter, id, ...)
+  }, [enabled, apiFunction, ...dependencies]);
 
   return { data, loading, error };
 };

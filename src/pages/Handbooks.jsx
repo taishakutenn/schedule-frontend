@@ -77,6 +77,7 @@ export default function Handbooks() {
         <Button>Специальности</Button>
         <Button>Кабинеты</Button>
         <Button>Типы занятий</Button>
+        <Button>Учебные планы</Button>
       </div>
       <div className="search-container">
         <input

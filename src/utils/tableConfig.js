@@ -2,6 +2,7 @@
 
 import { getTeachers } from "../api/teachersAPI";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
+import { getPlans } from "../api/plansAPI";
 
 export const tableConfig = {
   teachers: {
@@ -13,5 +14,10 @@ export const tableConfig = {
     apiFunction: getTeachersCategory,
     loadingMessage: "Загрузка категорий преподавателей...",
     errorMessage: "Ошибка при загрузке категорий преподавателей",
+  },
+  plans: {
+    apiFunction: getPlans,
+    loadingMessage: "Загрузка учебных планов...",
+    errorMessage: "Ошибка при загрузке учебных планов",
   },
 };
