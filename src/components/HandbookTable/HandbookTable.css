@@ -28,7 +28,7 @@
 .data-table th {
   background-color: var(--main-header-footer-background-color);
   color: var(--main-font-color);
-  font-weight: 600;
+  font-weight: 800;
   text-align: center;
   text-transform: initial;
 }

@@ -82,7 +82,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: var(--main-base-head-font-size);
 }
 
 .stat-label {

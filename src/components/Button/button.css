@@ -11,6 +11,7 @@
   padding: 8px 16px;
   font-size: 16px;
   line-height: 1.5;
+  margin-top: 5px;
 }
 
 .btn:disabled {
@@ -24,18 +25,18 @@
 }
 
 .btn--secondary {
-  background-color: var(--text-muted, #cccccc);
+  background-color: var(--main-accent-secondary-color);
   color: var(--main-font-color);
 }
 
 .btn--danger {
-  background-color: #e74c3c;
+  background-color: var(--main-accent-danger-color);
   color: var(--main-font-color);
 }
 
 .btn--small {
-  padding: 6px 12px;
-  font-size: 14px;
+  padding: 4px 10px;
+  font-size: var(--main-base-head-font-size);
 }
 
 .btn--medium {

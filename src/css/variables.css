@@ -15,7 +15,11 @@
   --main-second-font-color: #cccccc;
   --main-border-color: #454545;
   --main-accent-color: #2b5278;
+  --main-accent-danger-color: #a33226;
+  --main-accent-secondary-color: #4d82b8;
   --main-font-weight: 418;
   --main-font-size: 20px;
+  --main-base-head-font-size: 14px;
+  --main-base-font-size: 12px;
   --main-font-family: "Comfortaa";
 }
