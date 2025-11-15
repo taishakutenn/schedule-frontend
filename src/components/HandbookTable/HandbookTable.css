@@ -12,7 +12,7 @@
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
   font-family: var(--main-font-family);
-  font-size: var(--main-font-size);
+  font-size: 13px;
   border: 1px solid var(--main-border-color);
   border-radius: 8px;
   /* overflow: hidden; */

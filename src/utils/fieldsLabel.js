@@ -2,6 +2,7 @@
 
 // Teacher
 export const teacherFieldLabels = {
+  id: "Номер",
   name: "Имя",
   surname: "Фамилия",
   fathername: "Отчество",
@@ -16,8 +17,36 @@ export const teacherCategoryFieldLabel = {
   teacher_category: "Категория преподавателя",
 };
 
+// Building
+export const buildingFieldLabels = {
+  building_number: "Номер корпуса",
+  city: "Город",
+  building_address: "Адрес корпуса",
+};
+
+// Cabinet
+export const cabinetFieldLabels = {
+  cabinet_number: "Номер кабинета",
+  building_number: "Номер здания",
+  capacity: "Вместимость (кол-во)",
+  cabinet_state: "Тип кабинета",
+};
+
+// Specialities
+export const specialityFieldLabels = {
+  "speciality_code": "Код специальности",
+};
+
+// Session types
+export const sessionTypeFieldLabels = {
+  "name": "Название типа занятия",
+};
+
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
   teachers_category: teacherCategoryFieldLabel,
+  cabinets: cabinetFieldLabels,
+  buildings: buildingFieldLabels,
+  specialities: specialityFieldLabels,
 };

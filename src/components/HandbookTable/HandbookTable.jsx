@@ -10,9 +10,7 @@ export default function HandbookTable({ apiResponse, tableName }) {
     const headers = new Set();
     apiResponse.forEach((item) => {
       Object.keys(item).forEach((key) => {
-        if (key !== "id") {
-          headers.add(key);
-        }
+        headers.add(key);
       });
     });
     return Array.from(headers);

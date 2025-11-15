@@ -29,6 +29,10 @@ export default function Handbooks() {
   // set handbook states
   const handleTeacher = () => setHandbook("teachers");
   const handleTeacherCategory = () => setHandbook("teachers_category");
+  const handleCabinet = () => setHandbook("cabinets");
+  const handleBuilding = () => setHandbook("buildings");
+  const handleSpeciality = () => setHandbook("specialities");
+  const handleSessionType = () => setHandbook("sessionTypes");
 
   // Function that filtered data
   const getFilteredData = (data, search) => {
@@ -74,10 +78,10 @@ export default function Handbooks() {
         <Button onClick={handleTeacherCategory}>
           Категории преподавателей
         </Button>
-        <Button>Специальности</Button>
-        <Button>Кабинеты</Button>
-        <Button>Типы занятий</Button>
-        <Button>Учебные планы</Button>
+        <Button onClick={handleSpeciality}>Специальности</Button>
+        <Button onClick={handleBuilding}>Здания</Button>
+        <Button onClick={handleCabinet}>Кабинеты</Button>
+        <Button onClick={handleSessionType}>Типы занятий</Button>
       </div>
       <div className="search-container">
         <input
