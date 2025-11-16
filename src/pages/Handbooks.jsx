@@ -6,6 +6,7 @@ import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
 import Modal from "../components/Modal/Modal";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
+import { usePost } from "../hooks/usePost";
 
 import "./Handbook.css";
 
@@ -48,42 +49,115 @@ const ModalAdd = ({
   teachersCategoryData,
   teachersCategoryLoading,
   teachersCategoryError,
+  onAdd,
+  loading,
+  error,
 }) => {
-  if (!isOpen || handbook !== "teachers") return null;
+  const [formData, setFormData] = useState({});
+
+  if (!isOpen) return null;
+
+  // configs for some post forms
+  const formConfig = {
+    teachers: {
+      fields: [
+        { name: "name", placeholder: "Имя", type: "text" },
+        { name: "surname", placeholder: "Фамилия", type: "text" },
+        { name: "fathername", placeholder: "Отчество", type: "text" },
+        { name: "phone_number", placeholder: "Номер телефона", type: "tel" },
+        { name: "email", placeholder: "Почта", type: "email" },
+        { name: "salary_rate", placeholder: "Ставка", type: "text" },
+      ],
+      selectField: {
+        name: "teacher_category",
+        options: teachersCategoryData?.map((t) => ({
+          value: t.teacher_category,
+          label: t.teacher_category,
+        })),
+        placeholder: "Категория",
+      },
+    },
+    // another handbooks add here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+  };
+
+  const config = formConfig[handbook];
+  if (!config) return null;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onAdd(formData, () => {
+      setFormData({});
+      onClose();
+    });
+  };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Добавить преподавателя"
+      title={`Добавить ${handbook === "teachers" ? "преподавателя" : handbook}`}
       size="sm"
     >
-      <div className="teacher-add-container">
-        <input type="text" placeholder="Имя" />
-        <input type="text" placeholder="Фамилия" />
-        <input type="text" placeholder="Отчество" />
-        <input type="tel" placeholder="Номер телефона" />
-        <input type="email" placeholder="Почта" />
-        <input type="text" placeholder="Ставка" />
+      <form onSubmit={handleSubmit}>
+        <div className="teacher-add-container">
+          {config.fields.map((field) => (
+            <input
+              key={field.name}
+              type={field.type}
+              name={field.name}
+              placeholder={field.placeholder}
+              value={formData[field.name] || ""}
+              onChange={handleChange}
+            />
+          ))}
 
-        {teachersCategoryLoading && <div>Загрузка категорий...</div>}
-        {teachersCategoryError && <div>Ошибка загрузки категорий</div>}
+          {config.selectField && (
+            <>
+              {teachersCategoryLoading && <div>Загрузка категорий...</div>}
+              {teachersCategoryError && <div>Ошибка загрузки категорий</div>}
 
-        {!teachersCategoryLoading && !teachersCategoryError && (
-          <select>
-            <option value="" disabled>
-              Категория
-            </option>
-            {teachersCategoryData?.map((t) => (
-              <option key={t.teacher_category} value={t.teacher_category}>
-                {t.teacher_category}
-              </option>
-            ))}
-          </select>
-        )}
+              {!teachersCategoryLoading &&
+                !teachersCategoryError &&
+                config.selectField.options && (
+                  <select
+                    name={config.selectField.name}
+                    value={formData[config.selectField.name] || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      {config.selectField.placeholder}
+                    </option>
+                    {config.selectField.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
+            </>
+          )}
 
-        <Button size="small">Добавить</Button>
-      </div>
+          <Button type="submit" size="small" disabled={loading}>
+            {loading ? "Отправка..." : "Добавить"}
+          </Button>
+          {error && <div className="error-message">{error}</div>}
+        </div>
+      </form>
     </Modal>
   );
 };
@@ -92,11 +166,13 @@ export default function Handbooks() {
   const [handbook, setHandbook] = useState(null);
   const [search, setSearch] = useState("");
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // trigger for update
+
   // get data from API with custom hook
   const currentTableConfig = tableConfig[handbook];
   const { data, loading, error } = useApiData(
     currentTableConfig?.apiFunction || (() => []),
-    [handbook],
+    [handbook, refreshTrigger],
     !!currentTableConfig
   );
 
@@ -109,6 +185,9 @@ export default function Handbooks() {
     loading: teachersCategoryLoading,
     error: teachersCategoryError,
   } = useApiData(getTeachersCategory, [], isModalOpen);
+
+  // consts for post requests
+  const { post, loading: postLoading, error: postError } = usePost();
 
   // set handbook states
   const handleTeacher = () => setHandbook("teachers");
@@ -158,6 +237,18 @@ export default function Handbooks() {
     handbook,
   ]);
 
+  // Universal add function
+  const handleAdd = async (formData, onReset) => {
+    try {
+      const result = await post(`/${handbook}`, formData);
+      console.log("Успешно добавлено:", result);
+      setRefreshTrigger((prev) => prev + 1);
+      onReset();
+    } catch (err) {
+      console.error("Ошибка добавления:", err);
+    }
+  };
+
   return (
     <main>
       <InfoBlock items={headerInfo} />
@@ -195,6 +286,9 @@ export default function Handbooks() {
         teachersCategoryData={teachersCategoryData}
         teachersCategoryLoading={teachersCategoryLoading}
         teachersCategoryError={teachersCategoryError}
+        onAdd={handleAdd}
+        loading={postLoading}
+        error={postError}
       />
     </main>
   );
