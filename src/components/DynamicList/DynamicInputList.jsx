@@ -20,12 +20,16 @@ export default function DynamicList({
             onChange={(e) => onUpdate(index, e.target.value)}
             placeholder={placeholder}
           />
-          <Button onClick={() => onRemove(index)} action="remove-row">
+          <Button
+            size="small"
+            onClick={() => onRemove(index)}
+            action="remove-row"
+          >
             Удалить
           </Button>
         </div>
       ))}
-      <Button onClick={onAdd} action="add-row">
+      <Button size="small" onClick={onAdd} action="add-row">
         + Добавить {title.toLowerCase().slice(0, -1)}
       </Button>
     </div>

@@ -14,16 +14,16 @@
 }
 
 .InfoBlockTitle[data-level="1"] {
-  font-size: 26px;
+  font-size: var(--main-biggest-font-size);
 }
 .InfoBlockTitle[data-level="2"] {
-  font-size: 22px;
+  font-size: var(--main-font-size);
 }
 .InfoBlockTitle[data-level="3"] {
-  font-size: 18px;
+  font-size: var(--main-large-font-size);
 }
 
 .InfoBlockText {
   margin-bottom: 0.5%;
-  font-size: 18px;
+  font-size: var(--main-medium-font-size);
 }

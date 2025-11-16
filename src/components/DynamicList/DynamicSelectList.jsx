@@ -27,12 +27,16 @@ export default function DynamicSelectList({
               </option>
             ))}
           </select>
-          <Button onClick={() => onRemove(index)} action="remove-row">
+          <Button
+            size="small"
+            onClick={() => onRemove(index)}
+            action="remove-row"
+          >
             Удалить
           </Button>
         </div>
       ))}
-      <Button onClick={onAdd} action="add-row">
+      <Button size="small" onClick={onAdd} action="add-row">
         + Добавить {label.toLowerCase()}
       </Button>
     </div>

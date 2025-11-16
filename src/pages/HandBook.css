@@ -22,9 +22,8 @@
   border-radius: 4px;
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
-  font-family: var(--main-font-family);
   outline: none;
-  font-size: 14px;
+  font-size: var(--main-small-font-size);
   margin-left: auto;
 }
 
@@ -38,7 +37,7 @@
   flex-direction: column;
   justify-content: start;
   gap: 5px;
-  font-size: var(--main-base-font-size);
+  font-size: var(--main-small-font-size);
 }
 
 .teacher-add-container input {
@@ -47,7 +46,6 @@
   border-radius: 4px;
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
-  font-family: var(--main-font-family);
   outline: none;
 }
 

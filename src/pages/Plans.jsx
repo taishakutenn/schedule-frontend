@@ -170,8 +170,10 @@ export default function Plans() {
               placeholder="Название модуля"
             />
           </div>
-          <Button>Список загруженных планов</Button>
-          <Button action="load">Загрузить файл плана</Button>
+          <Button size="small">Список загруженных планов</Button>
+          <Button size="small" action="load">
+            Загрузить файл плана
+          </Button>
           <div className="instruction">
             <InfoBlock items={planLoadInstructionHeaderInfo} />
           </div>
@@ -183,7 +185,7 @@ export default function Plans() {
       return (
         <div className="dynamic-content">
           <InfoBlock items={teachLoadHeaderInfo} />
-          <Button onClick={() => setIsModalOpen(true)}>
+          <Button size="small" onClick={() => setIsModalOpen(true)}>
             Назначить нагрузку
           </Button>
 
@@ -254,7 +256,7 @@ export default function Plans() {
                     <span className="stat-value">{loadTeach.current}</span>
                   </div>
                 </div>
-                <Button>Синхронизировать</Button>
+                <Button>Сохранить</Button>
               </div>
             </div>
           </Modal>
