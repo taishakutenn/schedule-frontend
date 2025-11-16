@@ -17,7 +17,7 @@
 
 .item-row {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 8px;
   margin-bottom: 8px;
 }
@@ -26,7 +26,7 @@
   flex: 1;
   min-width: 0;
   padding: 8px;
-  font-size: 18px;
+  font-size: var(--main-small-font-size);
   border: 1px solid var(--main-border-color);
   border-radius: 4px;
   background: var(--main-background-panel);
@@ -34,7 +34,7 @@
 }
 
 .data h3 {
-  font-size: 24px;
+  font-size: var(--main-large-font-size);
   margin-bottom: 10px;
 }
 
@@ -46,7 +46,7 @@
   color: var(--main-font-color);
   outline: none;
   cursor: pointer;
-  min-width: 150px;
+  min-width: 100px;
   transition: var(--main-border-color) 0.2s ease;
   flex: auto;
 }
