@@ -45,6 +45,7 @@ export default function Handbooks() {
   const handleBuilding = () => setHandbook("buildings");
   const handleSpeciality = () => setHandbook("specialities");
   const handleSessionType = () => setHandbook("sessionTypes");
+  const handleGroup = () => setHandbook("groups");
 
   // Function that filtered data
   const getFilteredData = (data, search) => {
@@ -172,6 +173,9 @@ export default function Handbooks() {
         </Button>
         <Button onClick={handleSessionType} size="small">
           Типы занятий
+        </Button>
+        <Button onClick={handleGroup} size="small">
+          Группы
         </Button>
       </div>
       <ControlContainer />

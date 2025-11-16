@@ -7,6 +7,7 @@ import { getCabinets } from "../api/cabinetAPI";
 import { getBuildings } from "../api/buildingAPI";
 import { getSpecialities } from "../api/specialityAPI";
 import { getSessionTypes } from "../api/sessionTypeAPI";
+import { getGroups } from "../api/groupAPI";
 
 export const tableConfig = {
   teachers: {
@@ -44,4 +45,9 @@ export const tableConfig = {
     loadingMessage: "Загрузка типов занятий...",
     errorMessage: "Ошибка при загрузке типов занятий",
   },
+  groups: {
+    apiFunction: getGroups,
+    loadingMessage: "Загрузка групп...",
+    errorMessage: "Ошибка при загрузке групп",
+  }
 };

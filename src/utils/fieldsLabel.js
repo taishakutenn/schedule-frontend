@@ -42,6 +42,14 @@ export const sessionTypeFieldLabels = {
   "name": "Название типа занятия",
 };
 
+// Groups
+export const groupFieldLabels = {
+  "group_name": "Название группы",
+  "speciality_code": "Код специальности",
+  "quantity_students": "Кол-во студентов",
+  "group_advisor_id": "Номер класс-рука. группы",
+}
+
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
@@ -49,4 +57,5 @@ export const fieldLabels = {
   cabinets: cabinetFieldLabels,
   buildings: buildingFieldLabels,
   specialities: specialityFieldLabels,
+  groups: groupFieldLabels,
 };
