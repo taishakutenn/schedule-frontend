@@ -52,8 +52,9 @@ export default function DynamicTripleSelectList({
             >
               <option value="">{placeholder1}</option>
               {options1.map((option, i) => (
-                <option key={i} value={option}>
-                  {option}
+                <option key={i} value={option.value}>
+                  {" "}
+                  {option.label}
                 </option>
               ))}
             </select>
