@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
 import DynamicInputList from "../components/DynamicList/DynamicInputList";
-import DynamicSelectList from "../components/DynamicList/DynamicSelectList";
+import DynamicTripleSelectList from "../components/DynamicList/DynamicTripleSelectList";
 import { getTeachers } from "../api/teachersAPI";
 import { getPlans } from "../api/plansAPI";
 import { getAllSubjectsInPlan } from "../api/subjectAPI";
+import { getGroupsBySpeciality } from "../api/groupAPI";
+import { getSubjectHoursBySubject } from "../api/subjectHoursAPI";
 import Modal from "../components/Modal/Modal";
 import { useApiData } from "../hooks/useApiData";
 
@@ -59,11 +61,17 @@ export default function Plans() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [plan, setPlan] = useState("");
+  const [plan, setPlan] = useState(""); // ID плана
+  const [group, setGroup] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [allSubjectsInPlan, setAllSubjectsInPlan] = useState([]);
+  const [allGroupsInSpeciality, setAllGroupsInSpeciality] = useState([]);
   const [teacher, setTeacher] = useState("");
 
+  // Новое состояние для хранения данных о часах по предметам
+  const [subjectHoursData, setSubjectHoursData] = useState({});
+
+  // Используем useApiData с enabled = isModalOpen
   const {
     data: teachers,
     loading: teachersLoading,
@@ -76,24 +84,115 @@ export default function Plans() {
     error: plansError,
   } = useApiData(getPlans, [], isModalOpen);
 
-  // get all subjects in selected plan
+  const [groupsLoading, setGroupsLoading] = useState(false);
+  const [groupsError, setGroupsError] = useState(null);
+
+  // Функция получения семестров по предмету
+  const getSemestersBySubject = (subjectId) => {
+    if (!subjectId) return [];
+
+    const subject = allSubjectsInPlan.find((s) => s.id === subjectId);
+    if (!subject) return [];
+
+    const hours = subjectHoursData[subject.id] || [];
+    const semesters = hours.map((h) => h.semester);
+    // Уникальные и отсортированные по возрастанию номера семестров
+    return [...new Set(semesters)].sort((a, b) => a - b);
+  };
+
+  // Функция получения типов пар по предмету и семестру
+  const getClassTypesBySemester = (subjectId, semester) => {
+    if (!subjectId || !semester) return [];
+
+    const subject = allSubjectsInPlan.find((s) => s.id === subjectId);
+    if (!subject) return [];
+
+    const hours = subjectHoursData[subject.id] || [];
+    const semesterData = hours.find((h) => h.semester === parseInt(semester));
+    if (!semesterData) return [];
+
+    const types = [];
+    if (semesterData.lectures_hours > 0) types.push("Лекция");
+    if (semesterData.laboratory_hours > 0) types.push("Лабораторная");
+    if (semesterData.practical_hours > 0) types.push("Практика");
+    if (semesterData.course_project_hours > 0) types.push("Курсовой проект");
+
+    return types;
+  };
+
+  // Загрузка предметов
   useEffect(() => {
     if (plan) {
       const fetchSubjects = async () => {
         try {
           const subjects = await getAllSubjectsInPlan(plan);
           setAllSubjectsInPlan(subjects);
+
+          // После загрузки предметов, загружаем часы для каждого из них
+          const data = {};
+          for (const subject of subjects) {
+            try {
+              const hours = await getSubjectHoursBySubject(subject.id);
+              data[subject.id] = hours;
+            } catch (err) {
+              console.error(
+                `Ошибка загрузки часов для предмета ${subject.id}:`,
+                err
+              );
+              data[subject.id] = []; // Если ошибка, присваиваем пустой массив
+            }
+          }
+          setSubjectHoursData(data);
         } catch (err) {
           console.error("Ошибка загрузки предметов:", err);
           setAllSubjectsInPlan([]);
+          setSubjectHoursData({}); // Сбросить, если ошибка
         }
       };
 
       fetchSubjects();
     } else {
       setAllSubjectsInPlan([]);
+      setSubjectHoursData({});
     }
-  }, [plan]);
+  }, [plan]); // Зависимость: при смене плана - перезагружаем предметы и часы
+
+  // Загрузка групп
+  useEffect(() => {
+    if (plan) {
+      const selectedPlan = plans.find((p) => p.id === parseInt(plan));
+      if (selectedPlan) {
+        const fetchGroups = async () => {
+          setGroupsLoading(true);
+          setGroupsError(null);
+
+          try {
+            const groups = await getGroupsBySpeciality(
+              selectedPlan.speciality_code
+            );
+
+            const filteredGroups = groups.filter((group) => {
+              const groupPrefix = group.group_name.slice(0, 2);
+              const yearSuffix = selectedPlan.year.toString().slice(-2);
+              return groupPrefix === yearSuffix;
+            });
+
+            setAllGroupsInSpeciality(filteredGroups);
+          } catch (err) {
+            console.error("Ошибка загрузки групп:", err);
+            setGroupsError(err.message);
+            setAllGroupsInSpeciality([]);
+          } finally {
+            setGroupsLoading(false);
+          }
+        };
+
+        fetchGroups();
+      }
+    } else {
+      setAllGroupsInSpeciality([]);
+    }
+  }, [plan, plans]);
 
   // Chapters function
   const addSection = () => setSections([...sections, { name: "" }]);
@@ -127,14 +226,17 @@ export default function Plans() {
   const handleTeachLoad = () => setActiveView("teachLoad");
 
   const addSubject = () => {
-    setSubjects([...subjects, { value: "" }]);
+    // Обновленная структура элемента subjects
+    setSubjects([...subjects, { value1: "", value2: "", value3: "" }]);
   };
 
-  const updateSubject = (index, value) => {
+  // Обновленная функция updateSubject для работы с тремя полями
+  const updateSubject = (index, value1, value2, value3) => {
     const newSubjects = [...subjects];
-    newSubjects[index].value = value;
+    newSubjects[index] = { value1, value2, value3 };
     setSubjects(newSubjects);
   };
+
   const removeSubject = (index) => {
     setSubjects(subjects.filter((_, i) => i !== index));
   };
@@ -193,7 +295,7 @@ export default function Plans() {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             title="Назначение нагрузки"
-            size="md"
+            size="xxl"
           >
             {(teachersLoading || plansLoading) && (
               <p className="loading">Загрузка...</p>
@@ -208,11 +310,20 @@ export default function Plans() {
                   disabled={teachersLoading}
                 >
                   <option value="">Выберите преподавателя</option>
-                  {teachers.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.surname} {t.name} {t.fathername}
-                    </option>
-                  ))}
+                  {/* ✅ Правильная проверка и отображение данных */}
+                  {teachersLoading ? (
+                    <option disabled>Загрузка преподавателей...</option>
+                  ) : teachersError ? (
+                    <option disabled>Ошибка: {teachersError}</option>
+                  ) : teachers?.length > 0 ? (
+                    teachers.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.surname} {t.name} {t.fathername}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Нет данных</option>
+                  )}
                 </select>
 
                 <select
@@ -221,25 +332,56 @@ export default function Plans() {
                   disabled={plansLoading}
                 >
                   <option value="">Выберите учебный план</option>
-                  {plans.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.year} - {p.speciality_code}
+                  {/* ✅ Правильная проверка и отображение данных */}
+                  {plansLoading ? (
+                    <option disabled>Загрузка планов...</option>
+                  ) : plansError ? (
+                    <option disabled>Ошибка: {plansError}</option>
+                  ) : plans?.length > 0 ? (
+                    plans.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.year} - {p.speciality_code}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Нет данных</option>
+                  )}
+                </select>
+
+                <select
+                  value={group}
+                  onChange={(e) => setGroup(e.target.value)}
+                  disabled={groupsLoading}
+                >
+                  <option value="">Выберите группу</option>
+                  {allGroupsInSpeciality.map((g) => (
+                    <option key={g.group_name} value={g.group_name}>
+                      {g.group_name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <DynamicSelectList
+              {/* Обновлённый компонент с динамическими опциями для семестров и типов пар */}
+              <DynamicTripleSelectList
                 title="Дисциплины"
                 items={subjects}
                 onAdd={addSubject}
                 onRemove={removeSubject}
                 onUpdate={updateSubject}
-                options={allSubjectsInPlan.map(
-                  (s) => s.name || s.title || s.subject_name
-                )}
-                placeholder="Выберите дисциплину"
+                options1={allSubjectsInPlan.map((s) => ({
+                  label: s.name || s.title || s.subject_name,
+                  value: s.id,
+                }))}
+                // Передаём функции для получения опций
+                getOptions2={getSemestersBySubject}
+                getOptions3={getClassTypesBySemester}
+                placeholder1="Выберите дисциплину"
+                placeholder2="Выберите семестр"
+                placeholder3="Выберите тип пары"
                 label="дисциплину"
+                showSecondSelect={true}
+                showThirdSelect={true}
               />
               <div className="right-column">
                 <div className="teach-load-stats">

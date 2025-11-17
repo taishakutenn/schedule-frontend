@@ -17,7 +17,6 @@ const headerInfo = [
   },
 ];
 
-// Вынесенный компонент
 const ControlContainer = ({ handbook, onAdd, search, onSearchChange }) => {
   if (!handbook) return null;
 
@@ -210,7 +209,7 @@ export default function Handbooks() {
   }, []);
 
   // return content depending on the state handbook
-  const renderContent = useCallback(() => {
+  const renderContent = () => {
     if (!currentTableConfig) return null;
 
     if (loading)
@@ -228,15 +227,7 @@ export default function Handbooks() {
 
     const filteredData = getFilteredData(data, search);
     return <HandbookTable apiResponse={filteredData} tableName={handbook} />;
-  }, [
-    currentTableConfig,
-    loading,
-    error,
-    data,
-    search,
-    getFilteredData,
-    handbook,
-  ]);
+  };
 
   // Universal add function
   const handleAdd = async (formData, onReset) => {

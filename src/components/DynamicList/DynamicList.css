@@ -49,6 +49,7 @@
   min-width: 100px;
   transition: var(--main-border-color) 0.2s ease;
   flex: auto;
+  font-size: var(--main-small-font-size);
 }
 
 .item-row select:focus {
