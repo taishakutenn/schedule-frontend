@@ -4,9 +4,10 @@ import { useCallback, useState } from "react";
 import HandbookTable from "../components/HandbookTable/HandbookTable";
 import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
-import Modal from "../components/Modal/Modal";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
 import { usePost } from "../hooks/usePost";
+import { useUpdate } from "../hooks/useUpdate";
+import ModalForm from "../components/Modal/ModalForm"; // Импортируем новый компонент
 
 import "./Handbook.css";
 
@@ -17,7 +18,13 @@ const headerInfo = [
   },
 ];
 
-const ControlContainer = ({ handbook, onAdd, search, onSearchChange }) => {
+const ControlContainer = ({
+  handbook,
+  onAdd,
+  onEdit,
+  search,
+  onSearchChange,
+}) => {
   if (!handbook) return null;
 
   return (
@@ -25,7 +32,12 @@ const ControlContainer = ({ handbook, onAdd, search, onSearchChange }) => {
       <Button onClick={onAdd} size="small">
         Добавить запись
       </Button>
-      <Button variant="secondary" size="small">
+      <Button
+        variant="secondary"
+        size="small"
+        onClick={onEdit}
+        disabled={!onEdit} // Теперь onEdit передаётся, и если null, кнопка отключена
+      >
         Редактировать запись
       </Button>
       <Button variant="danger" size="small">
@@ -41,131 +53,14 @@ const ControlContainer = ({ handbook, onAdd, search, onSearchChange }) => {
   );
 };
 
-const ModalAdd = ({
-  isOpen,
-  onClose,
-  handbook,
-  teachersCategoryData,
-  teachersCategoryLoading,
-  teachersCategoryError,
-  onAdd,
-  loading,
-  error,
-}) => {
-  const [formData, setFormData] = useState({});
-
-  if (!isOpen) return null;
-
-  // configs for some post forms
-  const formConfig = {
-    teachers: {
-      fields: [
-        { name: "name", placeholder: "Имя", type: "text" },
-        { name: "surname", placeholder: "Фамилия", type: "text" },
-        { name: "fathername", placeholder: "Отчество", type: "text" },
-        { name: "phone_number", placeholder: "Номер телефона", type: "tel" },
-        { name: "email", placeholder: "Почта", type: "email" },
-        { name: "salary_rate", placeholder: "Ставка", type: "text" },
-      ],
-      selectField: {
-        name: "teacher_category",
-        options: teachersCategoryData?.map((t) => ({
-          value: t.teacher_category,
-          label: t.teacher_category,
-        })),
-        placeholder: "Категория",
-      },
-    },
-    // another handbooks add here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-  };
-
-  const config = formConfig[handbook];
-  if (!config) return null;
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onAdd(formData, () => {
-      setFormData({});
-      onClose();
-    });
-  };
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={`Добавить ${handbook === "teachers" ? "преподавателя" : handbook}`}
-      size="sm"
-    >
-      <form onSubmit={handleSubmit}>
-        <div className="teacher-add-container">
-          {config.fields.map((field) => (
-            <input
-              key={field.name}
-              type={field.type}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={formData[field.name] || ""}
-              onChange={handleChange}
-            />
-          ))}
-
-          {config.selectField && (
-            <>
-              {teachersCategoryLoading && <div>Загрузка категорий...</div>}
-              {teachersCategoryError && <div>Ошибка загрузки категорий</div>}
-
-              {!teachersCategoryLoading &&
-                !teachersCategoryError &&
-                config.selectField.options && (
-                  <select
-                    name={config.selectField.name}
-                    value={formData[config.selectField.name] || ""}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      {config.selectField.placeholder}
-                    </option>
-                    {config.selectField.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-            </>
-          )}
-
-          <Button type="submit" size="small" disabled={loading}>
-            {loading ? "Отправка..." : "Добавить"}
-          </Button>
-          {error && <div className="error-message">{error}</div>}
-        </div>
-      </form>
-    </Modal>
-  );
-};
-
 export default function Handbooks() {
   const [handbook, setHandbook] = useState(null);
   const [search, setSearch] = useState("");
 
   const [refreshTrigger, setRefreshTrigger] = useState(0); // trigger for update
+
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // get data from API with custom hook
   const currentTableConfig = tableConfig[handbook];
@@ -175,18 +70,25 @@ export default function Handbooks() {
     !!currentTableConfig
   );
 
-  // state for display Modal window
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // load teacher category
+  // load teacher category (для select в преподавателях)
   const {
     data: teachersCategoryData,
     loading: teachersCategoryLoading,
     error: teachersCategoryError,
-  } = useApiData(getTeachersCategory, [], isModalOpen);
+  } = useApiData(
+    getTeachersCategory,
+    [],
+    isModalOpen && handbook === "teachers"
+  ); // Загружаем только если handbook === "teachers" и окно открыто
 
   // consts for post requests
   const { post, loading: postLoading, error: postError } = usePost();
+  // consts for update requests
+  const {
+    update: updateRecord,
+    loading: updateLoading,
+    error: updateError,
+  } = useUpdate();
 
   // set handbook states
   const handleTeacher = () => setHandbook("teachers");
@@ -208,6 +110,31 @@ export default function Handbooks() {
     });
   }, []);
 
+  // Universal save edit function
+  const handleSaveEdit = async (updatedData, id, onReset) => {
+    try {
+      const result = await updateRecord(handbook, id, updatedData);
+      console.log("Успешно обновлено:", result);
+      setRefreshTrigger((prev) => prev + 1);
+      onReset();
+    } catch (err) {
+      // Ошибка уже установлена в хуке, но вы можете сделать что-то ещё
+      console.error("Ошибка обновления:", err);
+    }
+  };
+
+  // Universal add function
+  const handleAdd = async (formData, onReset) => {
+    try {
+      const result = await post(`/${handbook}`, formData);
+      console.log("Успешно добавлено:", result);
+      setRefreshTrigger((prev) => prev + 1);
+      onReset();
+    } catch (err) {
+      console.error("Ошибка добавления:", err);
+    }
+  };
+
   // return content depending on the state handbook
   const renderContent = () => {
     if (!currentTableConfig) return null;
@@ -226,19 +153,14 @@ export default function Handbooks() {
       );
 
     const filteredData = getFilteredData(data, search);
-    return <HandbookTable apiResponse={filteredData} tableName={handbook} />;
-  };
-
-  // Universal add function
-  const handleAdd = async (formData, onReset) => {
-    try {
-      const result = await post(`/${handbook}`, formData);
-      console.log("Успешно добавлено:", result);
-      setRefreshTrigger((prev) => prev + 1);
-      onReset();
-    } catch (err) {
-      console.error("Ошибка добавления:", err);
-    }
+    return (
+      <HandbookTable
+        apiResponse={filteredData}
+        tableName={handbook}
+        onRowClick={setSelectedRowData}
+        selectedRow={selectedRowData}
+      />
+    );
   };
 
   return (
@@ -269,21 +191,29 @@ export default function Handbooks() {
       </div>
       <ControlContainer
         handbook={handbook}
-        onAdd={() => setIsModalOpen(true)}
+        onAdd={() => {
+          setIsModalOpen(true);
+          setSelectedRowData(null);
+        }}
+        onEdit={selectedRowData ? () => setIsModalOpen(true) : null}
         search={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       />
       <div className="rendered-table">{renderContent()}</div>
-      <ModalAdd
+      <ModalForm
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedRowData(null);
+        }}
         handbook={handbook}
+        rowData={selectedRowData}
+        onSubmit={selectedRowData ? handleSaveEdit : handleAdd}
+        loading={postLoading || updateLoading}
+        error={postError || updateError}
         teachersCategoryData={teachersCategoryData}
         teachersCategoryLoading={teachersCategoryLoading}
         teachersCategoryError={teachersCategoryError}
-        onAdd={handleAdd}
-        loading={postLoading}
-        error={postError}
       />
     </main>
   );

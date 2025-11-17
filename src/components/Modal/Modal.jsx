@@ -9,7 +9,7 @@ export default function Modal({
   showCloseButton = true,
   closeOnOverlayClick = true,
   closeOnEscapeClick = true,
-  size = md, // 'sm', 'md', 'lg', 'xl'
+  size = "md", // 'sm', 'md', 'lg', 'xl', 'xxl'
 }) {
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
