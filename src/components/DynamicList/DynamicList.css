@@ -32,6 +32,19 @@
   background: var(--main-background-panel);
   color: var(--main-text-primary);
 }
+.item-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px;
+  font-size: var(--main-small-font-size);
+  border: 1px solid var(--main-border-color);
+  border-radius: 4px;
+  background: var(--main-background-panel);
+  color: var(--main-text-primary);
+}
+.long {
+  min-width: 150px;
+}
 
 .data h3 {
   font-size: var(--main-large-font-size);
@@ -58,4 +71,19 @@
 
 .item-row select:hover {
   border-color: var(--main-accent-color);
+}
+
+.long {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.medium {
+  min-width: 150px;
+  max-width: 250px;
+}
+
+.short {
+  min-width: 100px;
+  max-width: 150px;
 }

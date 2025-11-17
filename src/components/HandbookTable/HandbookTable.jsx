@@ -1,7 +1,12 @@
 import "./HandbookTable.css";
 import { fieldLabels } from "../../utils/fieldsLabel";
 
-export default function HandbookTable({ apiResponse, tableName }) {
+export default function HandbookTable({
+  apiResponse,
+  tableName,
+  onRowClick,
+  selectedRow = null,
+}) {
   // Select fieldsLabel
   const labels = fieldLabels[tableName] || {};
 
@@ -32,7 +37,11 @@ export default function HandbookTable({ apiResponse, tableName }) {
       {/* Fill table cells */}
       <tbody>
         {apiResponse.map((item) => (
-          <tr key={item.id}>
+          <tr
+            key={item.id}
+            onClick={() => onRowClick && onRowClick(item)}
+            className={selectedRow?.id === item.id ? "selected" : ""}
+          >
             {headers.map((header) => (
               <td key={header}>{item[header]}</td>
             ))}

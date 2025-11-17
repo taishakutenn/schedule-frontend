@@ -47,6 +47,7 @@ export default function DynamicTripleSelectList({
         return (
           <div key={index} className="item-row">
             <select
+              className="long"
               value={item.value1 || ""}
               onChange={(e) => handleUpdate(index, "value1", e.target.value)}
             >
@@ -61,6 +62,7 @@ export default function DynamicTripleSelectList({
 
             {showSecondSelect && (
               <select
+                className="short"
                 value={item.value2 || ""}
                 onChange={(e) => handleUpdate(index, "value2", e.target.value)}
                 disabled={!item.value1}
@@ -76,6 +78,7 @@ export default function DynamicTripleSelectList({
 
             {showThirdSelect && (
               <select
+                className="medium"
                 value={item.value3 || ""}
                 onChange={(e) => handleUpdate(index, "value3", e.target.value)}
                 disabled={!item.value2}
