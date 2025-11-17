@@ -1,3 +1,9 @@
+import ScheduleTable from "../components/Schedule/ScheduleTable/ScheduleTable";
+
 export default function Schedule() {
-  return <main>ИНФА ПРО РАСПИСАНИЯ</main>;
+  return (
+    <main>
+      <ScheduleTable />
+    </main>
+  );
 }
