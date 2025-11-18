@@ -7,7 +7,8 @@ import { tableConfig } from "../utils/tableConfig";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
 import { usePost } from "../hooks/usePost";
 import { useUpdate } from "../hooks/useUpdate";
-import ModalForm from "../components/Modal/ModalForm"; // Импортируем новый компонент
+import ModalForm from "../components/Modal/ModalForm"; 
+import Modal from "../components/Modal/Modal";
 
 import "./Handbook.css";
 
@@ -22,6 +23,7 @@ const ControlContainer = ({
   handbook,
   onAdd,
   onEdit,
+  onDelete,
   search,
   onSearchChange,
 }) => {
@@ -40,7 +42,11 @@ const ControlContainer = ({
       >
         Редактировать запись
       </Button>
-      <Button variant="danger" size="small">
+      <Button
+        onClick={onDelete} 
+        variant="danger" 
+        size="small"
+      >
         Удалить запись
       </Button>
       <input
@@ -61,6 +67,8 @@ export default function Handbooks() {
 
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isModalDelete, setIsModalDelete] = useState(false);
 
   // get data from API with custom hook
   const currentTableConfig = tableConfig[handbook];
@@ -98,6 +106,7 @@ export default function Handbooks() {
   const handleSpeciality = () => setHandbook("specialities");
   const handleSessionType = () => setHandbook("sessionTypes");
   const handleGroup = () => setHandbook("groups");
+  const handleStream = () => setHandbook("streams");
 
   // Function that filtered data
   const getFilteredData = useCallback((data, search) => {
@@ -109,6 +118,17 @@ export default function Handbooks() {
       });
     });
   }, []);
+
+  // Compomnent for count filtererd data
+  const CountHandbookRows = ({handbook, data, search}) => {
+    if (!handbook) return null;
+
+    return (
+      <div className="count-filtered-data">
+        Количество записей: {getFilteredData(data, search).length}
+      </div>
+    );
+  }
 
   // Universal save edit function
   const handleSaveEdit = async (updatedData, id, onReset) => {
@@ -134,6 +154,25 @@ export default function Handbooks() {
       console.error("Ошибка добавления:", err);
     }
   };
+
+  const handleDelete = async ({handbook}) => {
+    if (!selectedRowData || !handbook) return;
+
+  try {
+    const result = await del(`${API_BASE_URL}/${handbook}/${selectedRowData.id}`);
+
+    if (!response.ok) {
+      throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+    }
+
+    console.log("Успешно удалено");
+    setRefreshTrigger((prev) => prev + 1);
+    setIsModalDelete(false); 
+    setSelectedRowData(null);
+  } catch (err) {
+    console.error("Ошибка удаления:", err);
+  }
+  }
 
   // return content depending on the state handbook
   const renderContent = () => {
@@ -188,6 +227,9 @@ export default function Handbooks() {
         <Button onClick={handleGroup} size="small">
           Группы
         </Button>
+        <Button onClick={handleStream} size="small">
+          Потоки занятий
+        </Button>
       </div>
       <ControlContainer
         handbook={handbook}
@@ -196,10 +238,17 @@ export default function Handbooks() {
           setSelectedRowData(null);
         }}
         onEdit={selectedRowData ? () => setIsModalOpen(true) : null}
+        onDelete={selectedRowData ? () => setIsModalDelete(true) : null}
         search={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       />
       <div className="rendered-table">{renderContent()}</div>
+       {/* Count data rows */}
+      <CountHandbookRows
+       handbook={handbook}
+       data={data}
+       search={search}
+      />
       <ModalForm
         isOpen={isModalOpen}
         onClose={() => {

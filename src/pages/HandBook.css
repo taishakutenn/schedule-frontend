@@ -60,3 +60,7 @@
   min-width: 150px;
   transition: var(--main-border-color) 0.2s ease;
 }
+
+.count-filtered-data {
+  font-size: var(--main-medium-font-size);
+}

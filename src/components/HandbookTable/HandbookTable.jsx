@@ -21,8 +21,18 @@ export default function HandbookTable({
     return Array.from(headers);
   }
 
+  // Function to find id in data
+  function findIdInData() {
+    if (apiResponse && apiResponse.length > 0) {
+      const firstItem = apiResponse[0];
+      let firstKey = Object.keys(firstItem)[0];
+      return firstKey;
+    }
+  }
+
   // Get handlers
   const headers = findHeaders();
+  const dataId = findIdInData();
 
   return (
     <table className="data-table">
@@ -38,9 +48,9 @@ export default function HandbookTable({
       <tbody>
         {apiResponse.map((item) => (
           <tr
-            key={item.id}
+            key={item[dataId]}
             onClick={() => onRowClick && onRowClick(item)}
-            className={selectedRow?.id === item.id ? "selected" : ""}
+            className={selectedRow?.[dataId] === item[dataId] ? "selected" : ""}
           >
             {headers.map((header) => (
               <td key={header}>{item[header]}</td>

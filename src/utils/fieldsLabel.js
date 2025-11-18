@@ -50,6 +50,13 @@ export const groupFieldLabels = {
   "group_advisor_id": "Номер класс-рука. группы",
 }
 
+// Streams
+export const streamFieldLabels = {
+  "stream_id": "Номер потока",
+  "group_name": "Название группы",
+  "subject_id": "Номер предмета",
+}
+
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
@@ -57,5 +64,7 @@ export const fieldLabels = {
   cabinets: cabinetFieldLabels,
   buildings: buildingFieldLabels,
   specialities: specialityFieldLabels,
+  sessionTypes: sessionTypeFieldLabels,
   groups: groupFieldLabels,
+  streams: streamFieldLabels,
 };

@@ -64,15 +64,6 @@ export default function ScheduleTable() {
           <div className="schedule-table__cell">БД</div>
           <div className="schedule-table__cell">БД</div>
           <div className="schedule-table__cell"></div>
-
-          {/* Строка 6 */}
-          <div className="schedule-table__cell">6</div>
-          <div className="schedule-table__cell">ИСРПО</div>
-          <div className="schedule-table__cell">ИСРПО</div>
-          <div className="schedule-table__cell">БД</div>
-          <div className="schedule-table__cell">БД</div>
-          <div className="schedule-table__cell">БД</div>
-          <div className="schedule-table__cell"></div>
         </div>
       </div>
     </div>

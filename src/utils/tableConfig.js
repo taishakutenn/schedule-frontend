@@ -8,6 +8,7 @@ import { getBuildings } from "../api/buildingAPI";
 import { getSpecialities } from "../api/specialityAPI";
 import { getSessionTypes } from "../api/sessionTypeAPI";
 import { getGroups } from "../api/groupAPI";
+import { getStreams } from "../api/streamAPI";
 
 export const tableConfig = {
   teachers: {
@@ -49,5 +50,10 @@ export const tableConfig = {
     apiFunction: getGroups,
     loadingMessage: "Загрузка групп...",
     errorMessage: "Ошибка при загрузке групп",
+  },
+  streams: {
+    apiFunction: getStreams,
+    loadingMessage: "Загрузка потоков...",
+    errorMessage: "Ошибка при загрузке потоков",
   }
 };
