@@ -1,5 +1,3 @@
-import { buildingFieldLabels } from "./fieldsLabel";
-
 export const tableIds = {
   teachers: ["id"],
   teachers_category: ["teacher_category"],
