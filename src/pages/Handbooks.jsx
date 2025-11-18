@@ -7,8 +7,10 @@ import { tableConfig } from "../utils/tableConfig";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
 import { usePost } from "../hooks/usePost";
 import { useUpdate } from "../hooks/useUpdate";
-import ModalForm from "../components/Modal/ModalForm"; 
-import Modal from "../components/Modal/Modal";
+import ModalForm from "../components/Modal/ModalForm";
+import { useDelete } from "../hooks/useDelete";
+import ConfirmModal from "../components/Modal/ConfirmModal";
+import { tableIds } from "../utils/idTableConfig";
 
 import "./Handbook.css";
 
@@ -38,15 +40,11 @@ const ControlContainer = ({
         variant="secondary"
         size="small"
         onClick={onEdit}
-        disabled={!onEdit} // Теперь onEdit передаётся, и если null, кнопка отключена
+        disabled={!onEdit}
       >
         Редактировать запись
       </Button>
-      <Button
-        onClick={onDelete} 
-        variant="danger" 
-        size="small"
-      >
+      <Button onClick={onDelete} variant="danger" size="small">
         Удалить запись
       </Button>
       <input
@@ -68,7 +66,7 @@ export default function Handbooks() {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [isModalDelete, setIsModalDelete] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   // get data from API with custom hook
   const currentTableConfig = tableConfig[handbook];
@@ -97,6 +95,8 @@ export default function Handbooks() {
     loading: updateLoading,
     error: updateError,
   } = useUpdate();
+  // const for delete requests
+  const { del, loading: deleteLoading, error: deleteError } = useDelete();
 
   // set handbook states
   const handleTeacher = () => setHandbook("teachers");
@@ -119,8 +119,8 @@ export default function Handbooks() {
     });
   }, []);
 
-  // Compomnent for count filtererd data
-  const CountHandbookRows = ({handbook, data, search}) => {
+  // Component for count filtererd data
+  const CountHandbookRows = ({ handbook, data, search }) => {
     if (!handbook) return null;
 
     return (
@@ -128,7 +128,7 @@ export default function Handbooks() {
         Количество записей: {getFilteredData(data, search).length}
       </div>
     );
-  }
+  };
 
   // Universal save edit function
   const handleSaveEdit = async (updatedData, id, onReset) => {
@@ -155,24 +155,43 @@ export default function Handbooks() {
     }
   };
 
-  const handleDelete = async ({handbook}) => {
-    if (!selectedRowData || !handbook) return;
-
-  try {
-    const result = await del(`${API_BASE_URL}/${handbook}/${selectedRowData.id}`);
-
-    if (!response.ok) {
-      throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  // Function for open delete modal
+  const handleOpenConfirmDelete = () => {
+    if (selectedRowData) {
+      setIsConfirmModalOpen(true);
+    }
+  };
+  // Function confirm delete
+  const handleConfirmDelete = async () => {
+    if (!selectedRowData || !handbook) {
+      setIsConfirmModalOpen(false);
+      return;
     }
 
-    console.log("Успешно удалено");
-    setRefreshTrigger((prev) => prev + 1);
-    setIsModalDelete(false); 
-    setSelectedRowData(null);
-  } catch (err) {
-    console.error("Ошибка удаления:", err);
-  }
-  }
+    const idFields = tableIds[handbook];
+
+    if (!idFields || !Array.isArray(idFields) || idFields.length === 0) {
+      console.error(
+        `Неизвестная или некорректная конфигурация ID для таблицы: ${handbook}`
+      );
+      setIsConfirmModalOpen(false);
+      return;
+    }
+
+    const idValue = idFields.map((field) => selectedRowData[field]);
+
+    try {
+      await del(`/${handbook}`, idValue);
+
+      console.log("Успешно удалено");
+      console.log("ID для удаления:", idValue);
+      setRefreshTrigger((prev) => prev + 1);
+      setIsConfirmModalOpen(false);
+      setSelectedRowData(null);
+    } catch (err) {
+      console.error("Ошибка удаления:", err);
+    }
+  };
 
   // return content depending on the state handbook
   const renderContent = () => {
@@ -238,17 +257,16 @@ export default function Handbooks() {
           setSelectedRowData(null);
         }}
         onEdit={selectedRowData ? () => setIsModalOpen(true) : null}
-        onDelete={selectedRowData ? () => setIsModalDelete(true) : null}
+        onDelete={selectedRowData ? handleOpenConfirmDelete : null}
         search={search}
         onSearchChange={(e) => setSearch(e.target.value)}
       />
-      <div className="rendered-table">{renderContent()}</div>
-       {/* Count data rows */}
-      <CountHandbookRows
-       handbook={handbook}
-       data={data}
-       search={search}
-      />
+      <div className="rendered-table">
+        {renderContent()}
+        {/* Count data rows */}
+        <CountHandbookRows handbook={handbook} data={data} search={search} />
+      </div>
+
       <ModalForm
         isOpen={isModalOpen}
         onClose={() => {
@@ -263,6 +281,25 @@ export default function Handbooks() {
         teachersCategoryData={teachersCategoryData}
         teachersCategoryLoading={teachersCategoryLoading}
         teachersCategoryError={teachersCategoryError}
+      />
+
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Подтвердите удаление"
+        message={
+          tableIds[handbook] && Array.isArray(tableIds[handbook])
+            ? `Вы уверены, что хотите удалить запись с ${tableIds[handbook]
+                .map(
+                  (field) => `${field}: "${selectedRowData?.[field] ?? "N/A"}"`
+                )
+                .join(", ")}?`
+            : `Вы уверены, что хотите удалить запись?`
+        }
+        confirmText="Удалить"
+        cancelText="Отмена"
+        loading={deleteLoading}
       />
     </main>
   );

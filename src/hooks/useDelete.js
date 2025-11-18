@@ -10,7 +10,14 @@ export const useDelete = () => {
     setError(null);
 
     try {
-      const url = `${API_BASE_URL}${endpoint}/delete/${idElem}`;
+      let idPath;
+      if (Array.isArray(idElem)) {
+        idPath = idElem.join("/");
+      } else {
+        idPath = idElem;
+      }
+
+      const url = `${API_BASE_URL}${endpoint}/delete/${idPath}`;
       const response = await fetch(url, {
         method: "DELETE",
       });
@@ -19,7 +26,14 @@ export const useDelete = () => {
         throw new Error(`Ошибка: ${response.statusText}`);
       }
 
-      const result = await response.json();
+      let result;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        result = { success: true };
+      }
+
       return result;
     } catch (err) {
       setError(err.message);

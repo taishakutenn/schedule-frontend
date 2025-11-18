@@ -75,6 +75,7 @@
 }
 
 .modal-body {
+  font-size: var(--main-medium-font-size);
   padding: 16px;
   flex: 1;
   overflow-y: auto;

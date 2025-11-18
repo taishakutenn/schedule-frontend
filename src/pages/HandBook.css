@@ -64,3 +64,16 @@
 .count-filtered-data {
   font-size: var(--main-medium-font-size);
 }
+
+.rendered-table {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  width: 100%;
+}
+
+.rendered-table table {
+  margin: 0 auto;
+}
