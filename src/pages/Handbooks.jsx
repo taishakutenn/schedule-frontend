@@ -44,7 +44,7 @@ const ControlContainer = ({
       >
         Редактировать запись
       </Button>
-      <Button onClick={onDelete} variant="danger" size="small">
+      <Button onClick={onDelete} variant="danger" size="small" disabled={!onEdit}>
         Удалить запись
       </Button>
       <input
@@ -100,11 +100,11 @@ export default function Handbooks() {
 
   // set handbook states
   const handleTeacher = () => setHandbook("teachers");
-  const handleTeacherCategory = () => setHandbook("teachers_category");
+  const handleTeacherCategory = () => setHandbook("teacher_category");
   const handleCabinet = () => setHandbook("cabinets");
   const handleBuilding = () => setHandbook("buildings");
   const handleSpeciality = () => setHandbook("specialities");
-  const handleSessionType = () => setHandbook("sessionTypes");
+  const handleSessionType = () => setHandbook("session_type");
   const handleGroup = () => setHandbook("groups");
   const handleStream = () => setHandbook("streams");
 

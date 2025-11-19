@@ -87,6 +87,26 @@ export default function ModalForm({
             </select>
           );
         }
+        // if (name === "speciality_code" && handbook === "groups") {
+        //   return (
+        //     <select
+        //       key={name}
+        //       name={name}
+        //       value={value}
+        //       onChange={handleChange}
+        //       required={required}
+        //     >
+        //       <option value="" disabled>
+        //         {placeholder || "Выберите..."}
+        //       </option>
+        //       {teachersCategoryData.map((cat) => (
+        //         <option key={cat.teacher_category} value={cat.teacher_category}>
+        //           {cat.teacher_category}
+        //         </option>
+        //       ))}
+        //     </select>
+        //   );
+        // }
         if (options && Array.isArray(options)) {
           return (
             <select
@@ -140,11 +160,7 @@ export default function ModalForm({
       isOpen={isOpen}
       onClose={onClose}
       title={
-        rowData
-          ? `Редактировать ${
-              handbook === "teachers" ? "преподавателя" : handbook
-            }`
-          : `Добавить ${handbook === "teachers" ? "преподавателя" : handbook}`
+        rowData ? `Редактировать запись` : `Добавить запись`
       }
       size="sm"
     >

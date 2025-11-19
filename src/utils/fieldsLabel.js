@@ -60,11 +60,11 @@ export const streamFieldLabels = {
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
-  teachers_category: teacherCategoryFieldLabel,
+  teacher_category: teacherCategoryFieldLabel,
   cabinets: cabinetFieldLabels,
   buildings: buildingFieldLabels,
   specialities: specialityFieldLabels,
-  sessionTypes: sessionTypeFieldLabels,
+  session_type: sessionTypeFieldLabels,
   groups: groupFieldLabels,
   streams: streamFieldLabels,
 };

@@ -13,13 +13,16 @@ export const useUpdate = () => {
       const response = await fetch(`${API_BASE_URL}/${tableName}/update`, {
         method: "PUT",
         headers: {
+          "accept": "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: itemId,
+          teacher_id: itemId,
           ...updatedData,
         }),
       });
+      
+      console.log("Даты: ", JSON.stringify(updatedData, null, 2));
 
       let responseData = null;
       const contentType = response.headers.get("content-type");

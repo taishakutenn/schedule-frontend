@@ -16,7 +16,7 @@ export const tableConfig = {
     loadingMessage: "Загрузка преподавателей...",
     errorMessage: "Ошибка при загрузке преподавателей",
   },
-  teachers_category: {
+  teacher_category: {
     apiFunction: getTeachersCategory,
     loadingMessage: "Загрузка категорий преподавателей...",
     errorMessage: "Ошибка при загрузке категорий преподавателей",
@@ -41,7 +41,7 @@ export const tableConfig = {
     loadingMessage: "Загрузка специальностей...",
     errorMessage: "Ошибка при загрузке специальностей",
   },
-  sessionTypes: {
+  session_type: {
     apiFunction: getSessionTypes,
     loadingMessage: "Загрузка типов занятий...",
     errorMessage: "Ошибка при загрузке типов занятий",

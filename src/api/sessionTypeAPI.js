@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./apiURL";
 
 export const getSessionTypes = async () => {
-  const response = await fetch(`${API_BASE_URL}/session-type/search`);
+  const response = await fetch(`${API_BASE_URL}/session_type/search`);
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
   }

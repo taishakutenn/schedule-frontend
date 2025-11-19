@@ -47,6 +47,7 @@
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
   outline: none;
+  max-width: 270px;
 }
 
 .teacher-add-container select {
@@ -59,6 +60,7 @@
   cursor: pointer;
   min-width: 150px;
   transition: var(--main-border-color) 0.2s ease;
+  max-width: 270px;
 }
 
 .count-filtered-data {
