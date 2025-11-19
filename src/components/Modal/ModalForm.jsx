@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import { formConfig } from "../../utils/formConfig";
 import Button from "../Button/Button";
 import { tableIds } from "../../utils/idTableConfig";
+import { useApiData } from "../../hooks/useApiData";
 
 export default function ModalForm({
   isOpen,
@@ -12,7 +13,6 @@ export default function ModalForm({
   onSubmit,
   loading = false,
   error = null,
-  teachersCategoryData = [],
 }) {
   const [formData, setFormData] = useState({});
 
@@ -65,98 +65,107 @@ export default function ModalForm({
     }
   };
 
+  const DynamicSelect = ({ fieldConfig, value, onChange, disabled }) => {
+    const { apiFunction, labelField, valueField } = fieldConfig;
+
+    const { data, loading, error } = useApiData(apiFunction, [], isOpen);
+
+    if (error) {
+      return <div className="error-message">Ошибка загрузки: {error}</div>;
+    }
+
+    const getDisplayLabel = (item, labelField) => {
+      if (Array.isArray(labelField)) {
+        return labelField
+          .map((field) => item[field] || "")
+          .join(" ")
+          .trim();
+      }
+      return item[labelField] || "";
+    };
+
+    return (
+      <select
+        name={fieldConfig.name}
+        value={value}
+        onChange={onChange}
+        required={fieldConfig.required}
+        disabled={disabled || loading}
+      >
+        <option value="" disabled>
+          {loading ? "Загрузка..." : fieldConfig.placeholder || "Выберите..."}
+        </option>
+        {data?.map((item) => (
+          <option key={item[valueField]} value={item[valueField]}>
+            {getDisplayLabel(item, labelField)}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
   const renderField = (fieldConfig) => {
     const { name, type, placeholder, required, options } = fieldConfig;
     const value = formData[name] || "";
-
-    switch (type) {
-      case "select":
-        if (name === "teacher_category" && handbook === "teachers") {
-          return (
-            <select
-              key={name}
-              name={name}
-              value={value}
-              onChange={handleChange}
-              required={required}
-            >
-              <option value="" disabled>
-                {placeholder || "Выберите..."}
-              </option>
-              {teachersCategoryData.map((cat) => (
-                <option key={cat.teacher_category} value={cat.teacher_category}>
-                  {cat.teacher_category}
-                </option>
-              ))}
-            </select>
-          );
-        }
-        // if (name === "speciality_code" && handbook === "groups") {
-        //   return (
-        //     <select
-        //       key={name}
-        //       name={name}
-        //       value={value}
-        //       onChange={handleChange}
-        //       required={required}
-        //     >
-        //       <option value="" disabled>
-        //         {placeholder || "Выберите..."}
-        //       </option>
-        //       {teachersCategoryData.map((cat) => (
-        //         <option key={cat.teacher_category} value={cat.teacher_category}>
-        //           {cat.teacher_category}
-        //         </option>
-        //       ))}
-        //     </select>
-        //   );
-        // }
-        if (options && Array.isArray(options)) {
-          return (
-            <select
-              key={name}
-              name={name}
-              value={value}
-              onChange={handleChange}
-              required={required}
-            >
-              <option value="" disabled>
-                {placeholder || "Выберите..."}
-              </option>
-              {options.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          );
-        }
-        console.warn(`Поле ${name} типа select не имеет опций.`);
+    if (fieldConfig.type === "select") {
+      if (fieldConfig.dynamicOptions) {
         return (
-          <input
-            key={name}
-            type="text"
-            name={name}
-            placeholder={placeholder}
+          <DynamicSelect
+            key={fieldConfig.name}
+            fieldConfig={fieldConfig}
             value={value}
             onChange={handleChange}
-            required={required}
+            disabled={loading}
           />
         );
+      }
 
-      default:
+      if (fieldConfig.options && Array.isArray(fieldConfig.options)) {
         return (
-          <input
-            key={name}
-            type={type}
-            name={name}
-            placeholder={placeholder}
+          <select
+            key={fieldConfig.name}
+            name={fieldConfig.name}
             value={value}
             onChange={handleChange}
-            required={required}
-          />
+            required={fieldConfig.required}
+          >
+            <option value="" disabled>
+              {fieldConfig.placeholder || "Выберите..."}
+            </option>
+            {fieldConfig.options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         );
+      }
+
+      console.warn(`Поле ${fieldConfig.name} типа select не имеет опций.`);
+      return (
+        <input
+          key={fieldConfig.name}
+          type="text"
+          name={fieldConfig.name}
+          placeholder={fieldConfig.placeholder}
+          value={value}
+          onChange={handleChange}
+          required={fieldConfig.required}
+        />
+      );
     }
+
+    return (
+      <input
+        key={fieldConfig.name}
+        type={fieldConfig.type}
+        name={fieldConfig.name}
+        placeholder={fieldConfig.placeholder}
+        value={value}
+        onChange={handleChange}
+        required={fieldConfig.required}
+      />
+    );
   };
 
   return (

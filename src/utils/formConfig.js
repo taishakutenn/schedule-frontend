@@ -1,15 +1,27 @@
+import { getTeachers } from "../api/teachersAPI";
+import { getTeachersCategory } from "../api/teacherCategoryAPI";
+import { getSpecialities } from "../api/specialityAPI";
+
 const createField = (
   name,
   type = "text",
   placeholder = "",
   required = false,
-  options = null
+  options = null,
+  dynamicOptions = false,
+  apiFunction = null,
+  labelField = null,
+  valueField = null
 ) => ({
   name,
   type,
   placeholder,
   required,
   options,
+  dynamicOptions,
+  apiFunction,
+  labelField,
+  valueField,
 });
 
 export const formConfig = {
@@ -21,7 +33,17 @@ export const formConfig = {
       createField("phone_number", "tel", "Номер телефона", true),
       createField("email", "email", "Почта", true),
       createField("salary_rate", "text", "Ставка", true),
-      createField("teacher_category", "select", "Категория", true, null),
+      createField(
+        "teacher_category",
+        "select",
+        "Категория",
+        true,
+        null,
+        true,
+        getTeachersCategory,
+        "teacher_category",
+        "teacher_category"
+      ),
     ],
   },
   buildings: {
@@ -37,9 +59,7 @@ export const formConfig = {
     ],
   },
   specialities: {
-    fields: [
-      createField("speciality_code", "text", "Код специальности", true),
-    ],
+    fields: [createField("speciality_code", "text", "Код специальности", true)],
   },
   cabinets: {
     fields: [
@@ -50,16 +70,34 @@ export const formConfig = {
     ],
   },
   session_type: {
-    fields: [
-      createField("name", "text", "Тип занятия", true),
-    ],
+    fields: [createField("name", "text", "Тип занятия", true)],
   },
   groups: {
     fields: [
       createField("group_name", "text", "Название группы", true),
-      createField("speciality_code", "select", "Код специальности", true, null),
+      createField(
+        "speciality_code",
+        "select",
+        "Код специальности",
+        true,
+        null,
+        true,
+        getSpecialities,
+        "speciality_code",
+        "speciality_code"
+      ),
       createField("quantity_students", "text", "Количество студентов", true),
-      createField("group_advisor_id", "select", "Номер класс-рука группы", true, null),
+      createField(
+        "group_advisor_id",
+        "select",
+        "Класс-рук группы",
+        true,
+        null,
+        true,
+        getTeachers,
+        ["fathername", "name", "surname"],
+        "id"
+      ),
     ],
   },
   streams: {

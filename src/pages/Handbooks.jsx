@@ -283,9 +283,6 @@ export default function Handbooks() {
         onSubmit={selectedRowData ? handleSaveEdit : handleAdd}
         loading={postLoading || updateLoading}
         error={postError || updateError}
-        teachersCategoryData={teachersCategoryData}
-        teachersCategoryLoading={teachersCategoryLoading}
-        teachersCategoryError={teachersCategoryError}
       />
 
       <ConfirmModal
