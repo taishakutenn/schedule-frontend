@@ -1,6 +1,9 @@
 import { getTeachers } from "../api/teachersAPI";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
 import { getSpecialities } from "../api/specialityAPI";
+import { getGroups } from "../api/groupAPI";
+import { getBuildings } from "../api/buildingAPI";
+import { getSubjects } from "../api/subjectAPI";
 
 const createField = (
   name,
@@ -64,7 +67,17 @@ export const formConfig = {
   cabinets: {
     fields: [
       createField("cabinet_number", "text", "Номер кабинета", true),
-      createField("building_number", "text", "Номер здания", true),
+      createField(
+        "building_number",
+        "select",
+        "Номер здания",
+        true,
+        null,
+        true,
+        getBuildings,
+        ["building_number", "building_address"],
+        "building_number"
+      ),
       createField("capacity", "text", "Вместимость", true),
       createField("cabinet_state", "text", "Тип кабинета", true),
     ],
@@ -103,8 +116,28 @@ export const formConfig = {
   streams: {
     fields: [
       createField("stream_id", "text", "Номер потока", true),
-      createField("group_name", "select", "Название группы", true, null),
-      createField("subject_id", "select", "Предмет", true, null),
+      createField(
+        "group_name",
+        "select",
+        "Название группы",
+        true,
+        null,
+        true,
+        getGroups,
+        "group_name",
+        "group_name"
+      ),
+      createField(
+        "subject_id",
+        "select",
+        "Предмет",
+        true,
+        null,
+        true,
+        getSubjects,
+        "title",
+        "id"
+      ),
     ],
   },
 };
