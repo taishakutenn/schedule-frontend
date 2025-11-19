@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Modal from "./Modal";
 import { formConfig } from "../../utils/formConfig";
 import Button from "../Button/Button";
+import { tableIds } from "../../utils/idTableConfig";
 
 export default function ModalForm({
   isOpen,
@@ -49,7 +50,10 @@ export default function ModalForm({
     }
 
     if (rowData) {
-      onSubmit(filteredFormData, rowData.id, () => {
+      const tableIdFields = tableIds[handbook];
+      const idValues = tableIdFields.map((field) => rowData[field]);
+
+      onSubmit(filteredFormData, idValues, () => {
         setFormData({});
         onClose();
       });
@@ -159,9 +163,7 @@ export default function ModalForm({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={
-        rowData ? `Редактировать запись` : `Добавить запись`
-      }
+      title={rowData ? `Редактировать запись` : `Добавить запись`}
       size="sm"
     >
       <form onSubmit={handleSubmit}>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../api/apiURL";
+import { tableIds } from "../utils/idTableConfig";
 
 export const useUpdate = () => {
   const [loading, setLoading] = useState(false);
@@ -10,18 +11,31 @@ export const useUpdate = () => {
     setError(null);
 
     try {
+      let id = {};
+
+      if (Array.isArray(itemId)) {
+        if (typeof itemId[0] === "object" && itemId.length === 1) {
+          id = itemId[0];
+        } else {
+          const tableFields = tableIds[tableName];
+          tableFields.forEach((field, index) => {
+            id[field] = itemId[index];
+          });
+        }
+      }
+
       const response = await fetch(`${API_BASE_URL}/${tableName}/update`, {
         method: "PUT",
         headers: {
-          "accept": "application/json",
+          accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          teacher_id: itemId,
+          ...id,
           ...updatedData,
         }),
       });
-      
+
       console.log("Даты: ", JSON.stringify(updatedData, null, 2));
 
       let responseData = null;

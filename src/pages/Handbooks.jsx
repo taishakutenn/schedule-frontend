@@ -44,7 +44,12 @@ const ControlContainer = ({
       >
         Редактировать запись
       </Button>
-      <Button onClick={onDelete} variant="danger" size="small" disabled={!onEdit}>
+      <Button
+        onClick={onDelete}
+        variant="danger"
+        size="small"
+        disabled={!onEdit}
+      >
         Удалить запись
       </Button>
       <input
@@ -85,7 +90,7 @@ export default function Handbooks() {
     getTeachersCategory,
     [],
     isModalOpen && handbook === "teachers"
-  ); // Загружаем только если handbook === "teachers" и окно открыто
+  );
 
   // consts for post requests
   const { post, loading: postLoading, error: postError } = usePost();
@@ -131,14 +136,14 @@ export default function Handbooks() {
   };
 
   // Universal save edit function
-  const handleSaveEdit = async (updatedData, id, onReset) => {
+  const handleSaveEdit = async (updatedData, idValues, onReset) => {
     try {
-      const result = await updateRecord(handbook, id, updatedData);
+      const result = await updateRecord(handbook, idValues, updatedData);
+
       console.log("Успешно обновлено:", result);
       setRefreshTrigger((prev) => prev + 1);
       onReset();
     } catch (err) {
-      // Ошибка уже установлена в хуке, но вы можете сделать что-то ещё
       console.error("Ошибка обновления:", err);
     }
   };
