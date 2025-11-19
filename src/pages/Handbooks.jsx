@@ -5,6 +5,7 @@ import HandbookTable from "../components/HandbookTable/HandbookTable";
 import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
+import { getTeachers } from "../api/teachersAPI";
 import { usePost } from "../hooks/usePost";
 import { useUpdate } from "../hooks/useUpdate";
 import ModalForm from "../components/Modal/ModalForm";
@@ -81,16 +82,12 @@ export default function Handbooks() {
     !!currentTableConfig
   );
 
-  // load teacher category (для select в преподавателях)
+  // load teachers for group table
   const {
-    data: teachersCategoryData,
-    loading: teachersCategoryLoading,
-    error: teachersCategoryError,
-  } = useApiData(
-    getTeachersCategory,
-    [],
-    isModalOpen && handbook === "teachers"
-  );
+    data: teachersData,
+    loading: teachersLoading,
+    error: teachersError,
+  } = useApiData(getTeachers, [], handbook === "groups");
 
   // consts for post requests
   const { post, loading: postLoading, error: postError } = usePost();
@@ -215,7 +212,28 @@ export default function Handbooks() {
         </div>
       );
 
-    const filteredData = getFilteredData(data, search);
+    let processedData = data;
+
+    if (
+      handbook === "groups" &&
+      !teachersLoading &&
+      !teachersError &&
+      teachersData
+    ) {
+      const teacherMap = {};
+      teachersData.forEach((teacher) => {
+        teacherMap[teacher.id] =
+          `${teacher.surname} ${teacher.name} ${teacher.fathername}`.trim();
+      });
+
+      processedData = data.map((group) => ({
+        ...group,
+        group_advisor_id:
+          teacherMap[group.group_advisor_id] || "Неизвестный преподаватель",
+      }));
+    }
+
+    const filteredData = getFilteredData(processedData, search);
     return (
       <HandbookTable
         apiResponse={filteredData}

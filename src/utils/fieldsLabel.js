@@ -34,28 +34,28 @@ export const cabinetFieldLabels = {
 
 // Specialities
 export const specialityFieldLabels = {
-  "speciality_code": "Код специальности",
+  speciality_code: "Код специальности",
 };
 
 // Session types
 export const sessionTypeFieldLabels = {
-  "name": "Название типа занятия",
+  name: "Название типа занятия",
 };
 
 // Groups
 export const groupFieldLabels = {
-  "group_name": "Название группы",
-  "speciality_code": "Код специальности",
-  "quantity_students": "Кол-во студентов",
-  "group_advisor_id": "Номер класс-рука. группы",
-}
+  group_name: "Название группы",
+  speciality_code: "Код специальности",
+  quantity_students: "Кол-во студентов",
+  group_advisor_id: "Класс-рук. группы",
+};
 
 // Streams
 export const streamFieldLabels = {
-  "stream_id": "Номер потока",
-  "group_name": "Название группы",
-  "subject_id": "Номер предмета",
-}
+  stream_id: "Номер потока",
+  group_name: "Название группы",
+  subject_id: "Номер предмета",
+};
 
 // list for export, add the table here if you added it above
 export const fieldLabels = {
