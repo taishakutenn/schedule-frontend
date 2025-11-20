@@ -9,6 +9,7 @@ import { getSpecialities } from "../api/specialityAPI";
 import { getSessionTypes } from "../api/sessionTypeAPI";
 import { getGroups } from "../api/groupAPI";
 import { getStreams } from "../api/streamAPI";
+import { getPaymentForms } from "../api/paymentAPI";
 
 export const tableConfig = {
   teachers: {
@@ -55,5 +56,10 @@ export const tableConfig = {
     apiFunction: getStreams,
     loadingMessage: "Загрузка потоков...",
     errorMessage: "Ошибка при загрузке потоков",
-  }
+  },
+  payment_forms: {
+    apiFunction: getPaymentForms,
+    loadingMessage: "Загрузка форм оплаты...",
+    errorMessage: "Ошибка при загрузке форм оплаты",
+  },
 };

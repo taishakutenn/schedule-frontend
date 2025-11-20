@@ -151,4 +151,7 @@ export const formConfig = {
       ),
     ],
   },
+  payment_forms: {
+    fields: [createField("payment_name", "text", "Название", true)],
+  },
 };

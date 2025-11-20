@@ -58,6 +58,11 @@ export const streamFieldLabels = {
   subject_id: "Номер предмета",
 };
 
+// Payments
+export const paymentFormFieldLabels = {
+  payment_name: "Название",
+};
+
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
@@ -68,4 +73,5 @@ export const fieldLabels = {
   session_type: sessionTypeFieldLabels,
   groups: groupFieldLabels,
   streams: streamFieldLabels,
+  payment_forms: paymentFormFieldLabels,
 };

@@ -129,6 +129,7 @@ export default function Handbooks() {
   const handleSessionType = () => setHandbook("session_type");
   const handleGroup = () => setHandbook("groups");
   const handleStream = () => setHandbook("streams");
+  const handlePaymentForm = () => setHandbook("payment_forms");
 
   // Component for count filtererd data
   const CountHandbookRows = ({ handbook, data, search }) => {
@@ -282,6 +283,9 @@ export default function Handbooks() {
         </Button>
         <Button onClick={handleStream} size="small">
           Потоки занятий
+        </Button>
+        <Button onClick={handlePaymentForm} size="small">
+          Формы оплаты
         </Button>
       </div>
       <ControlContainer

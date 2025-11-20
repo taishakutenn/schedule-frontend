@@ -1,4 +1,7 @@
 import { API_BASE_URL } from "./apiURL";
+import { getPlanByYearAndSpeciality } from "./plansAPI";
+import { getAllSubjectsInPlan } from "./subjectAPI";
+import { getSubjectHoursBySubject } from "./subjectHoursAPI";
 
 export const getGroups = async () => {
   const response = await fetch(`${API_BASE_URL}/groups/search`);
@@ -38,8 +41,13 @@ export const getSubjectsByGroupAndSemesters = async (groupName) => {
   // Get group speciality and group date
   const group = await getGroupByName(groupName);
   const specialityGroup = group.speciality_code;
-  const groupDate = group.group_name.slice(0, 2);
+  const groupDate = "20" + group.group_name.slice(0, 2); // and add current millennium
 
-  
-  return groupDate;
+  // Get a plan using this data
+  const plan = await getPlanByYearAndSpeciality(groupDate, specialityGroup);
+  const planId = plan.id;
+
+  // Get all subject in this plan
+  const subjects = await getAllSubjectsInPlan(planId);
+  // Get subject hours
 };
