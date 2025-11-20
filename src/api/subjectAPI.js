@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "./apiURL";
-
 import { getChaptersInPlan } from "./chapterAPI";
 import { getCyclesInChapter } from "./cycleAPI";
 import { getModulesInCycle } from "./moduleAPI";
