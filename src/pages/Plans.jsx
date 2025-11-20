@@ -217,17 +217,6 @@ export default function Plans() {
     }
   }, [plan, plans]);
 
-  // Function that filtered data
-  const getFilteredData = useCallback((data, search) => {
-    if (!search) return data;
-    const lowerSearch = search.toLowerCase();
-    return data.filter((item) => {
-      return Object.values(item).some((value) => {
-        return String(value).toLowerCase().includes(lowerSearch);
-      });
-    });
-  }, []);
-
   // List of loaded plans
 
   // Chapters function
@@ -416,14 +405,22 @@ export default function Plans() {
               <div className="right-column">
                 <div className="teach-load-stats">
                   <div className="stat-item">
+                    <span className="stat-label">Ставка до назначения:</span>
+                    <span className="stat-value">{loadTeach.general}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Текущая ставка:</span>
+                    <span className="stat-value">{loadTeach.current}</span>
+                  </div>
+                  <div className="stat-item">
                     <span className="stat-label">
-                      Количество ставок преподавателя:
+                      Количество учебных часов до назначения:
                     </span>
                     <span className="stat-value">{loadTeach.general}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">
-                      Текущее количество ставок:
+                      Текущее количество учебных часов:
                     </span>
                     <span className="stat-value">{loadTeach.current}</span>
                   </div>

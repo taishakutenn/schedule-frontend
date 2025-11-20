@@ -1,6 +1,6 @@
 import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import HandbookTable from "../components/HandbookTable/HandbookTable";
 import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
@@ -75,6 +75,9 @@ export default function Handbooks() {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+  // Ref for table
+  const tableRef = useRef(null);
+
   // get data from API with custom hook
   const currentTableConfig = tableConfig[handbook];
   const { data, loading, error } = useApiData(
@@ -100,6 +103,21 @@ export default function Handbooks() {
   } = useUpdate();
   // const for delete requests
   const { del, loading: deleteLoading, error: deleteError } = useDelete();
+
+  // clear selected row
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (tableRef.current && !tableRef.current.contains(event.target)) {
+        setSelectedRowData(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
 
   // set handbook states
   const handleTeacher = () => setHandbook("teachers");
@@ -225,12 +243,14 @@ export default function Handbooks() {
 
     const filteredData = getFilteredData(processedData, search);
     return (
-      <HandbookTable
-        apiResponse={filteredData}
-        tableName={handbook}
-        onRowClick={setSelectedRowData}
-        selectedRow={selectedRowData}
-      />
+      <div ref={tableRef}>
+        <HandbookTable
+          apiResponse={filteredData}
+          tableName={handbook}
+          onRowClick={setSelectedRowData}
+          selectedRow={selectedRowData}
+        />
+      </div>
     );
   };
 
