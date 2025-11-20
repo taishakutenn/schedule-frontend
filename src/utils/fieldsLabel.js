@@ -46,6 +46,7 @@ export const sessionTypeFieldLabels = {
 export const groupFieldLabels = {
   group_name: "Название группы",
   speciality_code: "Код специальности",
+  payment_form: "Форма оплаты",
   quantity_students: "Кол-во студентов",
   group_advisor_id: "Класс-рук. группы",
 };

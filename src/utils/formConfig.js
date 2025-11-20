@@ -4,6 +4,7 @@ import { getSpecialities } from "../api/specialityAPI";
 import { getGroups } from "../api/groupAPI";
 import { getBuildings } from "../api/buildingAPI";
 import { getSubjects } from "../api/subjectAPI";
+import { getPaymentForm } from "../api/paymentAPI";
 
 const createField = (
   name,
@@ -98,6 +99,17 @@ export const formConfig = {
         getSpecialities,
         "speciality_code",
         "speciality_code"
+      ),
+      createField(
+        "payment_form",
+        "select",
+        "Форма оплаты",
+        true,
+        null,
+        true,
+        getPaymentForm,
+        "payment_name",
+        "payment_name"
       ),
       createField("quantity_students", "text", "Количество студентов", true),
       createField(
