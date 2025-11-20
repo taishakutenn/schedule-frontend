@@ -217,6 +217,19 @@ export default function Plans() {
     }
   }, [plan, plans]);
 
+  // Function that filtered data
+  const getFilteredData = useCallback((data, search) => {
+    if (!search) return data;
+    const lowerSearch = search.toLowerCase();
+    return data.filter((item) => {
+      return Object.values(item).some((value) => {
+        return String(value).toLowerCase().includes(lowerSearch);
+      });
+    });
+  }, []);
+
+  // List of loaded plans
+
   // Chapters function
   const addSection = () => setSections([...sections, { name: "" }]);
   const updateSection = (index, value) => {

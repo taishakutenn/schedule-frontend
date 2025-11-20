@@ -5,6 +5,7 @@ import HandbookTable from "../components/HandbookTable/HandbookTable";
 import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
+import { getFilteredData } from "../utils/getFilteredData";
 import { getTeachers } from "../api/teachersAPI";
 import { usePost } from "../hooks/usePost";
 import { useUpdate } from "../hooks/useUpdate";
@@ -109,17 +110,6 @@ export default function Handbooks() {
   const handleSessionType = () => setHandbook("session_type");
   const handleGroup = () => setHandbook("groups");
   const handleStream = () => setHandbook("streams");
-
-  // Function that filtered data
-  const getFilteredData = useCallback((data, search) => {
-    if (!search) return data;
-    const lowerSearch = search.toLowerCase();
-    return data.filter((item) => {
-      return Object.values(item).some((value) => {
-        return String(value).toLowerCase().includes(lowerSearch);
-      });
-    });
-  }, []);
 
   // Component for count filtererd data
   const CountHandbookRows = ({ handbook, data, search }) => {
