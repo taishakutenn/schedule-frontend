@@ -23,18 +23,14 @@ const headerInfo = [
   },
 ];
 
-const ControlContainer = ({
-  handbook,
-  onAdd,
-  onEdit,
-  onDelete,
-  search,
-  onSearchChange,
-}) => {
+const ControlContainer = (
+  { handbook, onAdd, onEdit, onDelete, search, onSearchChange },
+  ref
+) => {
   if (!handbook) return null;
 
   return (
-    <div className="control-container">
+    <div ref={ref} className="control-container">
       <Button onClick={onAdd} size="small">
         Добавить запись
       </Button>
@@ -77,6 +73,7 @@ export default function Handbooks() {
 
   // Ref for table
   const tableRef = useRef(null);
+  const controlContainerRef = useRef(null);
 
   // get data from API with custom hook
   const currentTableConfig = tableConfig[handbook];
@@ -107,7 +104,12 @@ export default function Handbooks() {
   // clear selected row
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (tableRef.current && !tableRef.current.contains(event.target)) {
+      if (
+        tableRef.current &&
+        !tableRef.current.contains(event.target) &&
+        controlContainerRef.current &&
+        !controlContainerRef.current.contains(event.target)
+      ) {
         setSelectedRowData(null);
       }
     };
@@ -284,6 +286,7 @@ export default function Handbooks() {
         </Button>
       </div>
       <ControlContainer
+        ref={controlContainerRef}
         handbook={handbook}
         onAdd={() => {
           setIsModalOpen(true);
