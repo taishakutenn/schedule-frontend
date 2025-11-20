@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import HandbookTable from "../components/HandbookTable/HandbookTable";
 import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
-import { getTeachersCategory } from "../api/teacherCategoryAPI";
 import { getFilteredData } from "../utils/getFilteredData";
 import { getTeachers } from "../api/teachersAPI";
 import { usePost } from "../hooks/usePost";
