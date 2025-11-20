@@ -5,7 +5,7 @@
 		{"id":"700a07b11d7adb61","type":"text","text":"# заголовки первой степени - отдельные страницы\n\n## второй степени - содержимое страницы\n","x":-1040,"y":-560,"width":535,"height":180},
 		{"id":"053a7b70c2c34ab9","type":"text","text":"## create|edit schedule","x":-785,"y":-115,"width":280,"height":70},
 		{"id":"93d4ec79ab70203d","type":"text","text":"# index","x":-130,"y":-380,"width":140,"height":80},
-		{"id":"3b8f910160e3ba99","type":"text","text":"Схема НЕ описывает навигацию между страницами сайта,","x":-1040,"y":-360,"width":205,"height":120},
+		{"id":"3b8f910160e3ba99","type":"text","text":"Схема НЕ описывает навигацию между страницами сайта,","x":-1040,"y":-360,"width":320,"height":100},
 		{"id":"010646d23a5551d6","type":"text","text":"## links to other pages","x":-205,"y":-620,"width":290,"height":100},
 		{"id":"8de88251e7be0c96","type":"text","text":"## print schedule and ether reports","x":-785,"y":0,"width":280,"height":110},
 		{"id":"135c7bf503fc9576","type":"text","text":"## plan load","x":440,"y":-175,"width":250,"height":60},
@@ -18,8 +18,10 @@
 		{"id":"134ef6eec56da936","type":"text","text":"## specialities","x":135,"y":290,"width":250,"height":60},
 		{"id":"5543f09427cd19ea","type":"text","text":"## site description","x":93,"y":-620,"width":250,"height":100},
 		{"id":"657c2f5519a3c3d4","type":"text","text":"# handbooks","x":-184,"y":80,"width":250,"height":60},
-		{"id":"e5382b581205c451","x":-772,"y":140,"width":250,"height":60,"type":"text","text":"# Gallery"},
-		{"id":"79b5356d7ac79195","x":-1062,"y":230,"width":342,"height":105,"type":"text","text":"## mini-preview of all schedules"}
+		{"id":"e5382b581205c451","type":"text","text":"# Gallery","x":-772,"y":140,"width":250,"height":60},
+		{"id":"79b5356d7ac79195","type":"text","text":"## mini-preview of all schedules","x":-1051,"y":245,"width":342,"height":105},
+		{"id":"4f535dd294f09efe","x":820,"y":-120,"width":280,"height":50,"type":"text","text":"## group table view"},
+		{"id":"cf7c5b3a7d7dea7c","x":820,"y":-12,"width":250,"height":60,"type":"text","text":"## plan table view"}
 	],
 	"edges":[
 		{"id":"20eaad60771144c5","fromNode":"93d4ec79ab70203d","fromSide":"bottom","toNode":"ea6c5358fa1f3742","toSide":"top"},
@@ -38,6 +40,8 @@
 		{"id":"0511e75a05056849","fromNode":"ea6c5358fa1f3742","fromSide":"left","toNode":"8de88251e7be0c96","toSide":"right"},
 		{"id":"73423b44f5171c20","fromNode":"53ba95acf541f9cb","fromSide":"right","toNode":"a39eea312045ac8d","toSide":"left"},
 		{"id":"49016b2dbd0c34c9","fromNode":"ea6c5358fa1f3742","fromSide":"bottom","toNode":"e5382b581205c451","toSide":"right"},
-		{"id":"f07e92c132ed4f77","fromNode":"e5382b581205c451","fromSide":"bottom","toNode":"79b5356d7ac79195","toSide":"right"}
+		{"id":"f07e92c132ed4f77","fromNode":"e5382b581205c451","fromSide":"bottom","toNode":"79b5356d7ac79195","toSide":"right"},
+		{"id":"d2e005d85effe88a","fromNode":"668bcf98feafb9e9","fromSide":"right","toNode":"4f535dd294f09efe","toSide":"left"},
+		{"id":"5943d6ee422ef4f0","fromNode":"668bcf98feafb9e9","fromSide":"right","toNode":"cf7c5b3a7d7dea7c","toSide":"left"}
 	]
 }

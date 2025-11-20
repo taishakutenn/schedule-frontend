@@ -4,7 +4,7 @@ import { getSpecialities } from "../api/specialityAPI";
 import { getGroups } from "../api/groupAPI";
 import { getBuildings } from "../api/buildingAPI";
 import { getSubjects } from "../api/subjectAPI";
-import { getPaymentForm } from "../api/paymentAPI";
+import { getPaymentForms } from "../api/paymentAPI";
 
 const createField = (
   name,
@@ -31,12 +31,11 @@ const createField = (
 export const formConfig = {
   teachers: {
     fields: [
-      createField("name", "text", "Имя", true),
       createField("surname", "text", "Фамилия", true),
+      createField("name", "text", "Имя", true),
       createField("fathername", "text", "Отчество", true),
       createField("phone_number", "tel", "Номер телефона", true),
       createField("email", "email", "Почта", true),
-      createField("salary_rate", "text", "Ставка", true),
       createField(
         "teacher_category",
         "select",
@@ -107,7 +106,7 @@ export const formConfig = {
         true,
         null,
         true,
-        getPaymentForm,
+        getPaymentForms,
         "payment_name",
         "payment_name"
       ),

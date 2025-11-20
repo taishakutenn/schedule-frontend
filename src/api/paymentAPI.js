@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./apiURL";
 
-export const getPaymentForm = async () => {
-  const response = await fetch(`${API_BASE_URL}/payment-form/search`);
+export const getPaymentForms = async () => {
+  const response = await fetch(`${API_BASE_URL}/payment_forms/search`);
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
   }

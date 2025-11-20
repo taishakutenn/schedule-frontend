@@ -7,4 +7,5 @@ export const tableIds = {
   session_type: ["name"],
   groups: ["group_name"],
   streams: ["stream_id"],
+  payment_forms: ["payment_name"],
 };
