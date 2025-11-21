@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
 import DynamicInputList from "../components/DynamicList/DynamicInputList";
-import DynamicTripleSelectList from "../components/DynamicList/DynamicTripleSelectList";
 import { getTeachers } from "../api/teachersAPI";
 import { getPlans } from "../api/plansAPI";
 import { getAllSubjectsInPlan } from "../api/subjectAPI";
@@ -10,6 +9,7 @@ import { getGroupsBySpeciality } from "../api/groupAPI";
 import { getSubjectHoursBySubject } from "../api/subjectHoursAPI";
 import Modal from "../components/Modal/Modal";
 import { useApiData } from "../hooks/useApiData";
+import TeachLoad from "../components/Plan/TeachLoad";
 
 import "./Plan.css";
 
@@ -39,18 +39,6 @@ const planLoadInstructionHeaderInfo = [
     ],
   },
 ];
-
-const teachLoadHeaderInfo = [
-  {
-    title: "Учебная нагрузка преподавателей",
-    text: [],
-  },
-];
-
-const loadTeach = {
-  general: 2,
-  current: 1.3,
-};
 
 export default function Plans() {
   const [activeView, setActiveView] = useState(null);
@@ -307,130 +295,7 @@ export default function Plans() {
     }
 
     if (activeView === "teachLoad") {
-      return (
-        <div className="dynamic-content">
-          <InfoBlock items={teachLoadHeaderInfo} />
-          <Button size="small" onClick={() => setIsModalOpen(true)}>
-            Назначить нагрузку
-          </Button>
-
-          <Modal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            title="Назначение нагрузки"
-            size="xl"
-          >
-            {(teachersLoading || plansLoading) && (
-              <p className="loading">Загрузка...</p>
-            )}
-            {teachersError && <p className="error">{teachersError}</p>}
-            {plansError && <p className="error">{plansError}</p>}
-            <div className="teachLoad-data-modal">
-              <div className="select-container">
-                <select
-                  value={teacher}
-                  onChange={(e) => setTeacher(e.target.value)}
-                  disabled={teachersLoading}
-                >
-                  <option value="">Выберите преподавателя</option>
-                  {teachersLoading ? (
-                    <option disabled>Загрузка преподавателей...</option>
-                  ) : teachersError ? (
-                    <option disabled>Ошибка: {teachersError}</option>
-                  ) : teachers?.length > 0 ? (
-                    teachers.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.surname} {t.name} {t.fathername}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Нет данных</option>
-                  )}
-                </select>
-
-                <select
-                  value={plan}
-                  onChange={(e) => setPlan(e.target.value)}
-                  disabled={plansLoading}
-                >
-                  <option value="">Выберите учебный план</option>
-                  {plansLoading ? (
-                    <option disabled>Загрузка планов...</option>
-                  ) : plansError ? (
-                    <option disabled>Ошибка: {plansError}</option>
-                  ) : plans?.length > 0 ? (
-                    plans.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.year} - {p.speciality_code}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Нет данных</option>
-                  )}
-                </select>
-
-                <select
-                  value={group}
-                  onChange={(e) => setGroup(e.target.value)}
-                  disabled={groupsLoading}
-                >
-                  <option value="">Выберите группу</option>
-                  {allGroupsInSpeciality.map((g) => (
-                    <option key={g.group_name} value={g.group_name}>
-                      {g.group_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <DynamicTripleSelectList
-                title="Дисциплины"
-                items={subjects}
-                onAdd={addSubject}
-                onRemove={removeSubject}
-                onUpdate={updateSubject}
-                options1={allSubjectsInPlan.map((s) => ({
-                  label: s.name || s.title || s.subject_name,
-                  value: s.id,
-                }))}
-                getOptions2={getSemestersBySubject}
-                getOptions3={getClassTypesBySemester}
-                placeholder1="Выберите дисциплину"
-                placeholder2="Выберите семестр"
-                placeholder3="Выберите тип пары"
-                label="дисциплину"
-                showSecondSelect={true}
-                showThirdSelect={true}
-              />
-              <div className="right-column">
-                <div className="teach-load-stats">
-                  <div className="stat-item">
-                    <span className="stat-label">Ставка до назначения:</span>
-                    <span className="stat-value">{loadTeach.general}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">Текущая ставка:</span>
-                    <span className="stat-value">{loadTeach.current}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">
-                      Количество учебных часов до назначения:
-                    </span>
-                    <span className="stat-value">{loadTeach.general}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">
-                      Текущее количество учебных часов:
-                    </span>
-                    <span className="stat-value">{loadTeach.current}</span>
-                  </div>
-                </div>
-                <Button>Сохранить</Button>
-              </div>
-            </div>
-          </Modal>
-        </div>
-      );
+      return <TeachLoad />;
     }
 
     return null;
@@ -441,7 +306,7 @@ export default function Plans() {
       <InfoBlock items={plansInfo} />
       <div className="btn--box">
         <Button onClick={handleLoadPlan}>Загрузка плана</Button>
-        <Button onClick={handleTeachLoad}>Назначение учебной нагрузки</Button>
+        <Button onClick={handleTeachLoad}>Учебная нагрузка</Button>
       </div>
       <div>{Content()}</div>
     </main>

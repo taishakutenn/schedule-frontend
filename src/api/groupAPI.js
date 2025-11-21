@@ -51,3 +51,21 @@ export const getSubjectsByGroupAndSemesters = async (groupName) => {
   const subjects = await getAllSubjectsInPlan(planId);
   // Get subject hours
 };
+
+export const getGroupsByNames = async (names) => {
+  if (!Array.isArray(names) || names.length === 0) {
+    throw new Error("Параметр 'names' должен быть непустым массивом строк.");
+  }
+  const params = new URLSearchParams();
+  names.forEach((group_name) => params.append("names", group_name));
+
+  const url = `${API_BASE_URL}/groups/search/by_names?${params.toString()}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.groups.map((item) => item.group);
+};

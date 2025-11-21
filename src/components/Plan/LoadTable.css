@@ -1,0 +1,61 @@
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+  margin: 0;
+}
+
+.load-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  background-color: var(--main-background-panel);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-size: var(--main-small-font-size);
+  border: 1px solid var(--main-border-color);
+  /* border-radius: 8px; */
+  overflow: hidden;
+}
+
+.load-table th {
+  background-color: var(--main-header-footer-background-color);
+  color: var(--main-font-color);
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+  border: 1px solid var(--main-border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.load-table thead tr:first-child th {
+  padding: 12px 8px;
+}
+
+.load-table thead tr:nth-child(2) th {
+  padding: 8px 4px;
+}
+
+.load-table td {
+  padding: 10px 8px;
+  border: 1px solid var(--main-border-color);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.load-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.load-table tbody tr.hovered-row {
+  background-color: var(--main-background-color);
+}
+
+.load-table tbody tr.hovered-row td {
+  background-color: inherit;
+}
+
+.load-table tbody td.hovered-cell {
+  background-color: var(--main-background-color);
+}
