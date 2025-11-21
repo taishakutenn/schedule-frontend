@@ -41,6 +41,17 @@ const determineSemesterType = (groupName, semesterNumber) => {
   }
 };
 
+const formatTeacherName = (teacherObj) => {
+  if (!teacherObj) return "Преподаватель";
+
+  const surname = teacherObj.surname || "";
+  const nameInitial = teacherObj.name ? teacherObj.name.charAt(0) + "." : "";
+  const patronymicInitial = teacherObj.fathername
+    ? teacherObj.fathername.charAt(0) + "."
+    : "";
+  return `${surname} ${nameInitial}${patronymicInitial}`.trim();
+};
+
 export const fetchTeachLoadData = async () => {
   try {
     console.log("Загрузка записей о нагрузке...");
@@ -138,12 +149,15 @@ export const fetchTeachLoadData = async () => {
       const groupKey = `${planItem.teacher_id}-${subjectData.id}-${planItem.group_name}`;
 
       let loadEntry = groupedLoadDataMap.get(groupKey);
+
       if (!loadEntry) {
         loadEntry = {
           id: planItem.id,
           teacher_id: planItem.teacher_id,
-          teacher_name:
-            teacherData?.name || `Преподаватель ${planItem.teacher_id}`,
+          teacher_name: teacherData
+            ? formatTeacherName(teacherData)
+            : `Преподаватель ${planItem.teacher_id}`,
+          subject_id: subjectData.id,
           subject_id: subjectData.id,
           subject: subjectData.title,
           group: planItem.group_name,

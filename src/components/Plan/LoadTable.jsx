@@ -56,7 +56,7 @@ export default function LoadTable({ loadData }) {
             <th colSpan={2}>Практические, лабораторные</th>
             <th rowSpan={2}>Курсовое проектирование</th>
             <th rowSpan={2}>Консультации</th>
-            <th rowSpan={2}>Диф зачёт</th>
+            <th rowSpan={2}>Диф. зачёт</th>
             <th rowSpan={2}>Экзамен</th>
             <th rowSpan={2}>Бюджет (часы)</th>
             <th rowSpan={2}>Бюджет (доля ставки)</th>
