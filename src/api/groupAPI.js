@@ -49,5 +49,30 @@ export const getSubjectsByGroupAndSemesters = async (groupName) => {
 
   // Get all subject in this plan
   const subjects = await getAllSubjectsInPlan(planId);
-  // Get subject hours
+  const subjectsIds = subjects.map((subject) => subject.id); // create array subjects ids 
+
+  // In cycle get all subject hours
+  const subjectHours = [];
+  for (let id in subjectsIds) {
+    try {
+      const subjectHour = await getSubjectHoursBySubject(id);
+      subjectHours.push(subjectHour);
+    } catch (err) {
+      console.log(`Не удалось получить часы для предмета с id: ${id}. Ошибка: ${err}`);
+    }
+  }
+  
+  // ОТЛАДКА
+  console.log("Отладочный вывод");
+  subjectHours.forEach(subjectHour => {
+    subjectHour.forEach(array => {
+      console.log(array);
+    })
+  });
+  console.log("ПРЕДМЕТЫ");
+  console.log(subjects);
+
+  // console.log(subjectsIds);
+  // Get subject hourss
+  return subjectHours;
 };
