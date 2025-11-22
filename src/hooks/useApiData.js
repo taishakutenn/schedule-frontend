@@ -13,6 +13,7 @@ export const useApiData = (apiFunction, dependencies = [], enabled = true) => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      // console.log("Даты: ", JSON.stringify(data, null, 2));
 
       try {
         const result = await apiFunction();

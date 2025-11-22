@@ -1,0 +1,16 @@
+.control-line {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--main-background-panel);
+  border: 1px solid var(--main-border-color);
+  /* border-radius: 4px; */
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.control-line button {
+  margin-left: auto;
+  margin-top: 0%;
+}
