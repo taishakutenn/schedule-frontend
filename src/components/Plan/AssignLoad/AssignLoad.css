@@ -34,12 +34,26 @@
   font-weight: 600;
 }
 
-.assign-load-table select {
-  width: 100%;
-  padding: 5px;
+select {
+  padding: 8px 12px;
   border: 1px solid var(--main-border-color);
-  border-radius: 3px;
+  border-radius: 4px;
+  background-color: var(--main-background-panel);
+  color: var(--main-font-color);
+  outline: none;
+  cursor: pointer;
+  min-width: 100px;
+  transition: var(--main-border-color) 0.2s ease;
+  flex: auto;
   font-size: var(--main-small-font-size);
+}
+
+select:focus {
+  border-color: var(--main-accent-color);
+}
+
+select:hover {
+  border-color: var(--main-accent-color);
 }
 
 @media (max-width: 768px) {

@@ -528,7 +528,13 @@ export default function AssignLoad({ onClose }) {
                           <option value="">-- Выберите преподавателя --</option>
                           {teachers.map((teacher) => (
                             <option key={teacher.id} value={teacher.id}>
-                              {teacher.name}
+                              {teacher.fathername
+                                ? `${teacher.surname} ${teacher.name.charAt(
+                                    0
+                                  )}. ${teacher.fathername.charAt(0)}.`
+                                : `${teacher.surname} ${teacher.name.charAt(
+                                    0
+                                  )}.`}
                             </option>
                           ))}
                         </select>
