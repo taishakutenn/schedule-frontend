@@ -40,8 +40,6 @@ export default function LoadTable({ loadData }) {
     { key: "budget_rate", label: "Бюджет (ставка)" },
     { key: "extrabudget_hours", label: "Внебюджет (часы)" },
     { key: "extrabudget_rate", label: "Внебюджет (ставка)" },
-    { key: "hourly_budget", label: "Почасовка бюджет" },
-    { key: "hourly_extrabudget", label: "Почасовка внебюджет" },
     { key: "group", label: "Группа" },
   ];
 
@@ -62,8 +60,6 @@ export default function LoadTable({ loadData }) {
             <th rowSpan={2}>Бюджет (доля ставки)</th>
             <th rowSpan={2}>Внебюджет (часы)</th>
             <th rowSpan={2}>Внебюджет (доля ставки)</th>
-            <th rowSpan={2}>Почасовка бюджет</th>
-            <th rowSpan={2}>Почасовка внебюджет</th>
             <th rowSpan={2}>Группа</th>
           </tr>
           <tr>
@@ -107,20 +103,18 @@ export default function LoadTable({ loadData }) {
                       </td>
                     ) : null}
 
-                    <td>{item.lecture_1}</td>
-                    <td>{item.lecture_2}</td>
-                    <td>{item.practical_1}</td>
-                    <td>{item.practical_2}</td>
-                    <td>{item.course_project}</td>
-                    <td>{item.consultation}</td>
-                    <td>{item.diff_exam}</td>
-                    <td>{item.exam}</td>
-                    <td>{item.budget_hours}</td>
-                    <td>{item.budget_rate}</td>
-                    <td>{item.extrabudget_hours}</td>
-                    <td>{item.extrabudget_rate}</td>
-                    <td>{item.hourly_budget}</td>
-                    <td>{item.hourly_extrabudget}</td>
+                    <td>{item.lecture_1 || ""}</td>
+                    <td>{item.lecture_2 || ""}</td>
+                    <td>{item.practical_1 || ""}</td>
+                    <td>{item.practical_2 || ""}</td>
+                    <td>{item.course_project || ""}</td>
+                    <td>{item.consultation || ""}</td>
+                    <td>{item.diff_exam || ""}</td>
+                    <td>{item.exam || ""}</td>
+                    <td>{item.budget_hours || ""}</td>
+                    <td>{item.budget_rate || ""}</td>
+                    <td>{item.extrabudget_hours || ""}</td>
+                    <td>{item.extrabudget_rate || ""}</td>
                     <td>{item.group}</td>
                   </tr>
                 ))}

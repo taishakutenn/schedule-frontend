@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import FilterInput from "./FilterInput";
 import Button from "../../Button/Button";
 
-const ControlLine = ({ onFilterChange }) => {
+const ControlLine = ({ onFilterChange, onEditClick }) => {
   // filters states
   const [teacherFilter, setTeacherFilter] = useState({
     enabled: false,
@@ -85,7 +85,9 @@ const ControlLine = ({ onFilterChange }) => {
         onToggle={handleSubjectToggle}
         onValueChange={handleSubjectChange}
       />
-      <Button size="small">Назначить нагрузку</Button>
+      <Button size="small" onClick={onEditClick}>
+        Назначить нагрузку
+      </Button>
     </div>
   );
 };

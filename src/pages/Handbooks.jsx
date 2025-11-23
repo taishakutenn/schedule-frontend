@@ -1,6 +1,6 @@
 import InfoBlock from "../components/InfoBlock/InfoBlock";
 import Button from "../components/Button/Button";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import HandbookTable from "../components/HandbookTable/HandbookTable";
 import { useApiData } from "../hooks/useApiData";
 import { tableConfig } from "../utils/tableConfig";
@@ -131,13 +131,14 @@ export default function Handbooks() {
   const handleStream = () => setHandbook("streams");
   const handlePaymentForm = () => setHandbook("payment_forms");
 
-  // Component for count filtererd data
+  // Component for count filtered data
   const CountHandbookRows = ({ handbook, data, search }) => {
     if (!handbook) return null;
 
     return (
       <div className="count-filtered-data">
-        Количество записей: {getFilteredData(data, search).length}
+        Количество записей:{" "}
+        {Array.isArray(data) ? getFilteredData(data, search).length : []}
       </div>
     );
   };
@@ -243,7 +244,9 @@ export default function Handbooks() {
       }));
     }
 
-    const filteredData = getFilteredData(processedData, search);
+    const filteredData = Array.isArray(data)
+      ? getFilteredData(processedData, search)
+      : [];
     return (
       <div ref={tableRef}>
         <HandbookTable

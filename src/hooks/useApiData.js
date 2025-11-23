@@ -6,20 +6,20 @@ export const useApiData = (apiFunction, dependencies = [], enabled = true) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!enabled || !apiFunction) {
+    if (!enabled || typeof apiFunction !== "function") {
       return;
     }
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-      // console.log("Даты: ", JSON.stringify(data, null, 2));
 
       try {
         const result = await apiFunction();
         setData(result);
       } catch (err) {
         setError(err.message);
+        setData([]);
         console.error("Ошибка загрузки:", err);
       } finally {
         setLoading(false);
@@ -27,7 +27,7 @@ export const useApiData = (apiFunction, dependencies = [], enabled = true) => {
     };
 
     fetchData();
-  }, [enabled, apiFunction, ...dependencies]);
+  }, [apiFunction, enabled, ...dependencies]);
 
   return { data, loading, error };
 };

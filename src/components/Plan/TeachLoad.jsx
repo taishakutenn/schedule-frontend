@@ -1,11 +1,10 @@
-// pages/Plan/TeachLoad.jsx
-
 import InfoBlock from "../InfoBlock/InfoBlock";
 import LoadTable from "./LoadTable";
-import { useApiData } from "../../hooks/useApiData";
 import { fetchTeachLoadData } from "../../api/teachLoadAPI";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import ControlLine from "./ControlLine/ControlLine";
+import Modal from "../../components/Modal/Modal";
+import AssignLoad from "./AssignLoad/AssignLoad";
 
 const teachLoadHeaderInfo = [
   {
@@ -15,11 +14,32 @@ const teachLoadHeaderInfo = [
 ];
 
 export default function TeachLoad() {
-  const {
-    data: loadData,
-    loading,
-    error,
-  } = useApiData(fetchTeachLoadData, [], true);
+  const [loadData, setLoadData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchTeachLoadData();
+        setLoadData(data);
+        // console.log("TeachLoad: Data loaded successfully:", data);
+      } catch (err) {
+        console.error("TeachLoad: Error loading data:", err);
+        setError(err.message);
+        setLoadData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filters states
   const [filters, setFilters] = useState({
@@ -32,11 +52,22 @@ export default function TeachLoad() {
     setFilters(newFilters);
   }, []);
 
+  const handleEditClick = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
   // Filter data
   const filteredData = useMemo(() => {
     if (!loadData || !Array.isArray(loadData)) {
+      // console.log("TeachLoad: loadData is not an array, returning [].");
       return [];
     }
+
+    // console.log("TeachLoad: Filtering data with filters:", filters);
 
     return loadData.filter((item) => {
       if (filters.teacher.enabled && filters.teacher.value) {
@@ -76,15 +107,24 @@ export default function TeachLoad() {
   if (error) {
     return <div>Ошибка загрузки данных: {error}</div>;
   }
-  if (!loadData) {
-    return <div>Данные отсутствуют.</div>;
-  }
 
   return (
     <div>
       <InfoBlock items={teachLoadHeaderInfo} />
-      <ControlLine onFilterChange={handleFilterChange} />
+      <ControlLine
+        onFilterChange={handleFilterChange}
+        onEditClick={handleEditClick}
+      />
+      <p>Количество отфильтрованных записей: {filteredData.length}</p>
       <LoadTable loadData={filteredData} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Назначение учебной нагрузки"
+        size="xl"
+      >
+        <AssignLoad onClose={handleCloseModal} />
+      </Modal>
     </div>
   );
 }

@@ -36,6 +36,7 @@ export const useUpdate = () => {
         }),
       });
 
+      console.log("Ids: ", JSON.stringify(id, null, 2));
       console.log("Даты: ", JSON.stringify(updatedData, null, 2));
 
       let responseData = null;

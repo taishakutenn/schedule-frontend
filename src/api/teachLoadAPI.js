@@ -4,6 +4,7 @@ import { getSubjectHoursByIds } from "./subjectHoursAPI";
 import { getPlans } from "./plansAPI";
 import { getSubjectsByIds } from "./subjectAPI";
 import { getTeachersByIds } from "./teachersAPI";
+import { getCertificationsByIds } from "./certificationAPI";
 
 const determineSemesterType = (groupName, semesterNumber) => {
   const groupYearSuffix = groupName.substring(0, 2);
@@ -113,6 +114,14 @@ export const fetchTeachLoadData = async () => {
     console.log("Загрузка данных о преподавателях...");
     const teacherDataArray = await getTeachersByIds(uniqueTeacherIds);
 
+    console.log("Загрузка данных о сертификациях...");
+    const certificationsDataArray = await getCertificationsByIds(
+      uniqueHoursIds
+    );
+    const certificationsMap = new Map(
+      certificationsDataArray.map((cert) => [cert.id, cert])
+    );
+
     const hoursDataMap = new Map(hoursDataArray.map((item) => [item.id, item]));
     const teacherDataMap = new Map(
       teacherDataArray.map((item) => [item.id, item])
@@ -125,6 +134,9 @@ export const fetchTeachLoadData = async () => {
       const hoursData = hoursDataMap.get(planItem.subject_in_cycle_hours_id);
       const subjectData = subjectDataMap.get(hoursData?.subject_in_cycle_id);
       const teacherData = teacherDataMap.get(planItem.teacher_id);
+      const certificationData = certificationsMap.get(
+        planItem.subject_in_cycle_hours_id
+      );
 
       if (!hoursData || !subjectData) {
         console.warn("Не найдены данные для одной из записей:", planItem);
@@ -158,24 +170,22 @@ export const fetchTeachLoadData = async () => {
             ? formatTeacherName(teacherData)
             : `Преподаватель ${planItem.teacher_id}`,
           subject_id: subjectData.id,
-          subject_id: subjectData.id,
           subject: subjectData.title,
           group: planItem.group_name,
           semester: hoursData.semester,
-          lecture_1: 0,
-          lecture_2: 0,
-          practical_1: 0,
-          practical_2: 0,
-          course_project: 0,
-          consultation: 0,
-          diff_exam: 0,
-          exam: 0,
+
+          lecture_1: undefined,
+          lecture_2: undefined,
+          practical_1: undefined,
+          practical_2: undefined,
+          course_project: undefined,
+          consultation: undefined,
+          diff_exam: undefined,
+          exam: undefined,
           budget_hours: 0,
           budget_rate: 0,
           extrabudget_hours: 0,
           extrabudget_rate: 0,
-          hourly_budget: 0,
-          hourly_extrabudget: 0,
         };
       }
 
@@ -187,13 +197,28 @@ export const fetchTeachLoadData = async () => {
         loadEntry.practical_1 = totalPracticalHours;
         loadEntry.course_project = hoursData.course_project_hours;
         loadEntry.consultation = hoursData.consultation_hours;
-        loadEntry.diff_exam = hoursData.intermediate_assessment_hours;
+
+        if (certificationData) {
+          if (certificationData.differentiated_credit) {
+            loadEntry.diff_exam = hoursData.intermediate_assessment_hours;
+          } else if (certificationData.credit) {
+            loadEntry.exam = hoursData.intermediate_assessment_hours;
+          }
+        } else {
+        }
       } else if (isSecondHalf) {
         loadEntry.lecture_2 = hoursData.lectures_hours;
         loadEntry.practical_2 = totalPracticalHours;
         loadEntry.course_project = hoursData.course_project_hours;
         loadEntry.consultation = hoursData.consultation_hours;
-        loadEntry.diff_exam = hoursData.intermediate_assessment_hours;
+
+        if (certificationData) {
+          if (certificationData.differentiated_credit) {
+            loadEntry.diff_exam = hoursData.intermediate_assessment_hours;
+          } else if (certificationData.credit) {
+            loadEntry.exam = hoursData.intermediate_assessment_hours;
+          }
+        }
       }
 
       groupedLoadDataMap.set(groupKey, loadEntry);
@@ -208,24 +233,24 @@ export const fetchTeachLoadData = async () => {
 
       if (groupPaymentType === "Бюджет") {
         loadEntry.budget_hours =
-          loadEntry.lecture_1 +
-          loadEntry.lecture_2 +
-          loadEntry.practical_1 +
-          loadEntry.practical_2 +
-          loadEntry.course_project +
-          loadEntry.consultation +
-          loadEntry.diff_exam +
-          loadEntry.exam;
+          (loadEntry.lecture_1 || 0) +
+          (loadEntry.lecture_2 || 0) +
+          (loadEntry.practical_1 || 0) +
+          (loadEntry.practical_2 || 0) +
+          (loadEntry.course_project || 0) +
+          (loadEntry.consultation || 0) +
+          (loadEntry.diff_exam || 0) +
+          (loadEntry.exam || 0);
         loadEntry.extrabudget_hours = 0;
       } else if (groupPaymentType === "Внебюджет") {
         loadEntry.budget_hours = 0;
         loadEntry.extrabudget_hours =
-          loadEntry.practical_1 +
-          loadEntry.practical_2 +
-          loadEntry.course_project +
-          loadEntry.consultation +
-          loadEntry.diff_exam +
-          loadEntry.exam;
+          (loadEntry.practical_1 || 0) +
+          (loadEntry.practical_2 || 0) +
+          (loadEntry.course_project || 0) +
+          (loadEntry.consultation || 0) +
+          (loadEntry.diff_exam || 0) +
+          (loadEntry.exam || 0);
       } else {
         console.warn(
           `Неизвестный тип оплаты (payment_form) для группы ${loadEntry.group}: ${groupPaymentType}. Установлены 0.`

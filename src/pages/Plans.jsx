@@ -7,7 +7,6 @@ import { getPlans } from "../api/plansAPI";
 import { getAllSubjectsInPlan } from "../api/subjectAPI";
 import { getGroupsBySpeciality } from "../api/groupAPI";
 import { getSubjectHoursBySubject } from "../api/subjectHoursAPI";
-import Modal from "../components/Modal/Modal";
 import { useApiData } from "../hooks/useApiData";
 import TeachLoad from "../components/Plan/TeachLoad";
 

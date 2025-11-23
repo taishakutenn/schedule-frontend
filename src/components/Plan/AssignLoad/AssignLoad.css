@@ -1,0 +1,54 @@
+.assign-load-controls {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.assign-load-table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.assign-load-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--main-background-panel);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-size: var(--main-small-font-size);
+  border: 1px solid var(--main-border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.assign-load-table th,
+.assign-load-table td {
+  padding: 8px;
+  border: 1px solid var(--main-border-color);
+  text-align: left;
+}
+
+.assign-load-table th {
+  background-color: var(--main-header-footer-background-color);
+  font-weight: 600;
+}
+
+.assign-load-table select {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 3px;
+  font-size: var(--main-small-font-size);
+}
+
+@media (max-width: 768px) {
+  .assign-load-table {
+    font-size: 12px;
+  }
+
+  .assign-load-table th,
+  .assign-load-table td {
+    padding: 4px;
+  }
+}
