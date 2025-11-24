@@ -274,7 +274,6 @@ export default function AssignLoad({ onClose }) {
     fetchAssignments();
   }, [selectedGroup, selectedPlanId, subjects, allSubjectHours]);
 
-  // Используем useMemo для подготовки данных для отображения в виде строк (семестр-предмет)
   const tableRows = useMemo(() => {
     if (
       !selectedGroup ||
@@ -314,7 +313,6 @@ export default function AssignLoad({ onClose }) {
       }
     });
 
-    // Сортируем по семестру, затем по названию предмета
     rows.sort((a, b) => {
       if (a.semester !== b.semester) {
         return a.semester - b.semester;
@@ -420,7 +418,6 @@ export default function AssignLoad({ onClose }) {
       }
     } catch (err) {
       console.error("Failed to update or create assignment:", err);
-      // Откат изменений в состоянии в случае ошибки
       setAssignedTeachers((prevAssigned) => ({
         ...prevAssigned,
         [assignmentKey]: currentAssignment,
