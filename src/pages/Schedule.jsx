@@ -1,9 +1,11 @@
 import ScheduleTable from "../components/Schedule/ScheduleTable/ScheduleTable";
+import ScheduleTeachersTable from "../components/Schedule/ScheduleTeachersTable/ScheduleTeachersTable";
 import Button from "../components/Button/Button";
 import { useState } from "react";
-import { getSubjectsByGroupAndSemesters } from "../api/groupAPI";
+import { getInfoForCreateSchedule } from "../api/scheduleAPI";
 
 export default function Schedule() {
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -13,7 +15,7 @@ export default function Schedule() {
     setError(null);
 
     try {
-      const result = await getSubjectsByGroupAndSemesters("24МАШ1");
+      const result = await getInfoForCreateSchedule("23ПКС1", 5);
       setData(result);
       console.log(result);
     } catch(error) {
@@ -25,7 +27,7 @@ export default function Schedule() {
 
   return (
     <main>
-      <ScheduleTable />
+      <ScheduleTeachersTable />
       <Button onClick={handleLoadData} disabled={loading}>
         Получить данные
       </Button>

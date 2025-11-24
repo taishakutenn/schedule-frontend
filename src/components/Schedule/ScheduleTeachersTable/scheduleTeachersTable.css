@@ -1,0 +1,180 @@
+@import url("../../../css/variables.css");
+
+.schedule-teacher-table__container {
+  overflow-x: auto;
+}
+
+.schedule-teacher-table {
+	width: 100%;
+  background-color: var(--main-background-panel);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-size: 13px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 8px;
+	border-collapse:collapse;
+	border-spacing:0;
+	height: auto;
+}
+
+.schedule-teacher-table,.schedule-teacher-table td, .schedule-teacher-table th {
+	border: 1px solid var(--main-border-color);
+}
+
+.schedule-teacher-table thead tr {
+  background-color: var(--main-header-footer-background-color);
+}
+
+.schedule-teacher-table thead tr:last-child {
+  background-color: var(--main-second-header-footer-background-color);
+}
+
+.schedule-teacher-table td,.schedule-teacher-table th {
+	padding: 3px;
+	min-width: 55px;
+	height: 35px;
+}
+
+.schedule-teacher-table th {
+	background-color: var(--main-background-panel);
+	color: var(--main-font-color);
+	font-weight: normal;
+}
+
+.schedule-teacher-table tr td.far-left {
+  border-left: 1px solid orangered;
+}
+
+.schedule-teacher-table tr td.far-right {
+  border-right: 1px solid orangered;
+}
+
+/* Custom date time peaker */
+
+.react-datepicker-wrapper input {
+  font-size: 20px;
+}
+/* === Базовый контейнер календаря === */
+
+
+.react-datepicker {
+  background-color: var(--main-background-panel);
+  border: 1px solid var(--main-border-color);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-size: var(--main-small-font-size);
+  border-radius: 6px;
+}
+
+/* === Шапка календаря === */
+.react-datepicker__header {
+  background-color: var(--main-second-header-footer-background-color);
+  border-bottom: 1px solid var(--main-border-color);
+  color: var(--main-font-color);
+}
+
+/* Текст месяца */
+.react-datepicker__current-month {
+  color: var(--main-font-color);
+  font-weight: var(--main-font-weight);
+}
+
+/* Названия дней недели */
+.react-datepicker__day-name {
+  color: var(--main-second-font-color);
+}
+
+/*  */
+.react-datepicker__navigation {
+  top: 12px;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: var(--main-font-color);
+}
+
+/* Days */
+.react-datepicker__day {
+  color: var(--main-font-color);
+  border-radius: 4px;
+}
+
+/* Hover */
+.react-datepicker__day:hover {
+  background-color: var(--main-second-header-footer-background-color);
+  color: var(--main-font-color);
+}
+
+/* Current date */
+.react-datepicker__day--selected,
+.react-datepicker__day--selected:hover {
+  background-color: var(--main-accent-color);
+  color: #fff;
+}
+
+/* Today */
+.react-datepicker__day--today {
+  border: 1px solid var(--main-accent-secondary-color);
+  color: var(--main-accent-secondary-color);
+}
+
+/* Non-active days */
+.react-datepicker__day--disabled {
+  color: var(--main-second-font-color);
+  opacity: 0.4;
+}
+
+/* Sizes */
+.react-datepicker {
+  padding: 6px;
+}
+
+.react-datepicker__day,
+.react-datepicker__day-name {
+  width: 32px;
+  line-height: 32px;
+}
+
+/* .rendered-table {
+  display: flex;
+  justify-content: center;
+} */
+
+/* .data-table {
+  width: max-content;
+  /* border-collapse: collapse; */
+  /* background-color: var(--main-background-panel);
+  color: var(--main-font-color);
+  font-family: var(--main-font-family);
+  font-size: 13px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 8px; */
+  /* overflow: hidden; */
+/* } */ 
+
+/* .data-table th,
+.data-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--main-border-color);
+} */
+
+/* .data-table th {
+  background-color: var(--main-header-footer-background-color);
+  color: var(--main-font-color);
+  font-weight: 800;
+  text-align: center;
+  text-transform: initial;
+} */
+
+/* .data-table tbody tr {
+  transition: background-color 0.2s ease;
+} */
+
+/* .data-table tbody tr.selected {
+  background-color: var(--main-header-footer-background-color);
+} */
+
+/* .data-table tbody tr:hover {
+  background-color: var(--main-background-color);
+} */
