@@ -88,6 +88,7 @@ export default function AssignLoad({ onClose }) {
         setAllSubjectHours({});
         setGroups([]);
         setAssignedTeachers({});
+        setRelevantSemesters([]); // Добавлено
         return;
       }
 
@@ -142,6 +143,7 @@ export default function AssignLoad({ onClose }) {
         setAllSubjectHours({});
         setGroups([]);
         setAssignedTeachers({});
+        setRelevantSemesters([]); // Добавлено
       } finally {
         setLoadingSubjects(false);
       }
@@ -272,9 +274,14 @@ export default function AssignLoad({ onClose }) {
     fetchAssignments();
   }, [selectedGroup, selectedPlanId, subjects, allSubjectHours]);
 
-  const { subjectsBySemester, semesterColSpans } = useMemo(() => {
-    if (!selectedGroup || !Object.keys(allSubjectHours).length) {
-      return { subjectsBySemester: {}, semesterColSpans: {} };
+  // Используем useMemo для подготовки данных для отображения в виде строк (семестр-предмет)
+  const tableRows = useMemo(() => {
+    if (
+      !selectedGroup ||
+      !Object.keys(allSubjectHours).length ||
+      !subjects.length
+    ) {
+      return [];
     }
 
     const { relevantSemesters: calculatedRelevantSemesters, error: calcError } =
@@ -285,59 +292,58 @@ export default function AssignLoad({ onClose }) {
         `useMemo: Ошибка вычисления семестров для группы ${selectedGroup}:`,
         calcError
       );
-      return { subjectsBySemester: {}, semesterColSpans: {} };
+      return [];
     }
 
-    const subjectsBySemesterMap = {};
-    const semesterColSpansMap = {};
+    const rows = [];
 
     Object.entries(allSubjectHours).forEach(([subjectId, hoursArray]) => {
       if (Array.isArray(hoursArray)) {
         hoursArray.forEach((hour) => {
           if (calculatedRelevantSemesters.includes(hour.semester)) {
-            if (!subjectsBySemesterMap[hour.semester]) {
-              subjectsBySemesterMap[hour.semester] = [];
-            }
             const subject = subjects.find((s) => s.id === parseInt(subjectId));
-            if (
-              subject &&
-              !subjectsBySemesterMap[hour.semester].some(
-                (s) => s.id === subject.id
-              )
-            ) {
-              subjectsBySemesterMap[hour.semester].push(subject);
+            if (subject) {
+              rows.push({
+                semester: hour.semester,
+                subjectId: subject.id,
+                subjectTitle: subject.title,
+              });
             }
           }
         });
       }
     });
 
-    Object.keys(subjectsBySemesterMap).forEach((sem) => {
-      semesterColSpansMap[sem] = subjectsBySemesterMap[sem].length;
+    // Сортируем по семестру, затем по названию предмета
+    rows.sort((a, b) => {
+      if (a.semester !== b.semester) {
+        return a.semester - b.semester;
+      }
+      return a.subjectTitle.localeCompare(b.subjectTitle);
     });
 
-    console.log(
-      "useMemo: Calculated subjectsBySemester and semesterColSpans:",
-      { subjectsBySemesterMap, semesterColSpansMap }
-    );
-    return {
-      subjectsBySemester: subjectsBySemesterMap,
-      semesterColSpans: semesterColSpansMap,
-    };
+    console.log("useMemo: Calculated tableRows for vertical table:", rows);
+    return rows;
   }, [selectedGroup, allSubjectHours, subjects]);
 
-  const handleTeacherChange = async (semester, subject, group, e) => {
+  const handleTeacherChange = async (
+    semester,
+    subjectId,
+    subjectTitle,
+    group,
+    e
+  ) => {
     const selectedTeacherId = e.target.value;
     console.log(
-      `Преподаватель для группы ${group}, семестр ${semester}, предмет ${subject.title} изменён на ID: ${selectedTeacherId}`
+      `Преподаватель для группы ${group}, семестр ${semester}, предмет "${subjectTitle}" (${subjectId}) изменён на ID: ${selectedTeacherId}`
     );
 
-    const assignmentKey = `${group}-${semester}-${subject.id}`;
+    const assignmentKey = `${group}-${semester}-${subjectId}`;
 
-    const subjectHoursForSubject = allSubjectHours[subject.id];
+    const subjectHoursForSubject = allSubjectHours[subjectId];
     if (!Array.isArray(subjectHoursForSubject)) {
       console.error(
-        `Hours for subject ${subject.id} not found or not an array.`
+        `Hours for subject ${subjectId} not found or not an array.`
       );
       return;
     }
@@ -347,7 +353,7 @@ export default function AssignLoad({ onClose }) {
     );
     if (!hourForSemester) {
       console.error(
-        `Hours for subject ${subject.id} in semester ${semester} not found.`
+        `Hours for subject ${subjectId} in semester ${semester} not found.`
       );
       return;
     }
@@ -414,6 +420,7 @@ export default function AssignLoad({ onClose }) {
       }
     } catch (err) {
       console.error("Failed to update or create assignment:", err);
+      // Откат изменений в состоянии в случае ошибки
       setAssignedTeachers((prevAssigned) => ({
         ...prevAssigned,
         [assignmentKey]: currentAssignment,
@@ -482,44 +489,35 @@ export default function AssignLoad({ onClose }) {
           <table className="assign-load-table">
             <thead>
               <tr>
-                {relevantSemesters.map((semester) => (
-                  <th
-                    key={`semester-${semester}`}
-                    colSpan={semesterColSpans[semester] || 0}
-                  >
-                    {`Семестр ${semester}`}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                {relevantSemesters.map((semester) => {
-                  const subjectsInSemester = subjectsBySemester[semester] || [];
-                  return subjectsInSemester.map((subject) => (
-                    <th key={`subject-${subject.id}`}>{subject.title}</th>
-                  ));
-                })}
+                <th>Семестр</th>
+                <th>Предмет</th>
+                <th>Преподаватель</th>
               </tr>
             </thead>
             <tbody>
-              <tr key={`group-${selectedGroup}`}>
-                {relevantSemesters.map((semester) => {
-                  const subjectsInSemester = subjectsBySemester[semester] || [];
-                  return subjectsInSemester.map((subject) => {
-                    const assignmentKey = `${selectedGroup}-${semester}-${subject.id}`;
-                    const assignmentInfo = assignedTeachers[assignmentKey] || {
-                      id: null,
-                      teacher_id: "",
-                    };
-                    const assignedTeacherId = assignmentInfo.teacher_id;
+              {tableRows.length > 0 ? (
+                tableRows.map((row, index) => {
+                  const assignmentKey = `${selectedGroup}-${row.semester}-${row.subjectId}`;
+                  const assignmentInfo = assignedTeachers[assignmentKey] || {
+                    id: null,
+                    teacher_id: "",
+                  };
+                  const assignedTeacherId = assignmentInfo.teacher_id;
 
-                    return (
-                      <td key={`teacher-${selectedGroup}-${subject.id}`}>
+                  return (
+                    <tr
+                      key={`row-${selectedGroup}-${row.semester}-${row.subjectId}-${index}`}
+                    >
+                      <td>{`Семестр ${row.semester}`}</td>
+                      <td>{row.subjectTitle}</td>
+                      <td>
                         <select
                           value={assignedTeacherId}
                           onChange={(e) =>
                             handleTeacherChange(
-                              semester,
-                              subject,
+                              row.semester,
+                              row.subjectId,
+                              row.subjectTitle,
                               selectedGroup,
                               e
                             )
@@ -539,10 +537,14 @@ export default function AssignLoad({ onClose }) {
                           ))}
                         </select>
                       </td>
-                    );
-                  });
-                })}
-              </tr>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="3">Нет данных для отображения</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

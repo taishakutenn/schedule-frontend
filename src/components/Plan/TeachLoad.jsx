@@ -121,7 +121,7 @@ export default function TeachLoad() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title="Назначение учебной нагрузки"
-        size="xl"
+        size="lg"
       >
         <AssignLoad onClose={handleCloseModal} />
       </Modal>
