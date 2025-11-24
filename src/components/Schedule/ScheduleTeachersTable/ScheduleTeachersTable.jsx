@@ -21,6 +21,14 @@ export default function SchedulteTeachersTable() {
     setDate(newDate);
   }
 
+  function addDays(baseDate, n) {
+    return new Date (
+      baseDate.getFullYear(),
+      baseDate.getMonth(),
+      baseDate.getDate() + n
+    );
+  }
+
   return (
     <div className="schedule-teacher-table__container">
       <table className="schedule-teacher-table">
@@ -37,27 +45,27 @@ export default function SchedulteTeachersTable() {
             </td>
             <td colSpan="5" className="far-left far-right">
               Понедельник
-              {date ? date.toLocaleDateString('ru-RU') : ""}
+              {date ? addDays(date, 0).toLocaleDateString('ru-RU', {day: "2-digit", month: "2-digit"}) : ""}
             </td>
             <td colSpan="5" className="far-left far-right">
               Вторник
-              {date ? date.toLocaleDateString('ru-RU') : ""}
+              {date ? addDays(date, 1).toLocaleDateString('ru-RU', {day: "2-digit", month: "2-digit"}) : ""}
               </td>
             <td colSpan="5" className="far-left far-right">
               Среда
-              {date ? date.toLocaleDateString('ru-RU') : ""}
+              {date ? addDays(date, 2).toLocaleDateString('ru-RU', {day: "2-digit", month: "2-digit"}) : ""}
               </td>
             <td colSpan="5" className="far-left far-right">
               Четверг
-              {date ? date.toLocaleDateString('ru-RU') : ""}
+              {date ? addDays(date, 3).toLocaleDateString('ru-RU', {day: "2-digit", month: "2-digit"}) : ""}
               </td>
             <td colSpan="5" className="far-left far-right">
               Пятница
-              {date ? date.toLocaleDateString('ru-RU') : ""}
+              {date ? addDays(date, 4).toLocaleDateString('ru-RU', {day: "2-digit", month: "2-digit"}) : ""}
               </td>
             <td colSpan="5" className="far-left">
               Суббота
-              {date ? date.toLocaleDateString('ru-RU') : ""}
+              {date ? addDays(date, 5).toLocaleDateString('ru-RU', {day: "2-digit", month: "2-digit"}) : ""}
               </td>
           </tr>
           <tr>
