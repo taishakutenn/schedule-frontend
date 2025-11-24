@@ -40,20 +40,63 @@ export default function ModalForm({
     e.preventDefault();
 
     const filteredFormData = {};
+    const updateData = {};
+    const idData = {};
+
     for (const key in formData) {
       if (Object.prototype.hasOwnProperty.call(formData, key)) {
         const value = formData[key];
         if (value !== "") {
-          filteredFormData[key] = value;
+          const fieldConfig = config.fields.find((f) => f.name === key);
+          if (fieldConfig && fieldConfig.isPrimaryKey) {
+            if (rowData) {
+              const oldValue = rowData[key];
+              // --- МОДИФИКАЦИЯ: Проверка на равенство ---
+              if (oldValue !== value) {
+                // Значение изменилось, добавляем в updateData
+                if (fieldConfig.newNameForUpdate) {
+                  updateData[fieldConfig.newNameForUpdate] = value;
+                } else {
+                  console.warn(
+                    `Поле ${key} отмечено как ключ, но newNameForUpdate не указано.`
+                  );
+                  updateData[key] = value; // Или игнорировать, если newNameForUpdate обязателен
+                }
+              } else {
+                // Значение НЕ изменилось, не добавляем в updateData
+                console.log(
+                  `Ключевое поле ${key} не изменилось, пропускаем: ${value}`
+                );
+              }
+              // idData всегда содержит старое значение для идентификации
+              idData[key] = oldValue;
+            } else {
+              // Режим создания: просто добавляем
+              filteredFormData[key] = value;
+            }
+          } else {
+            // Обычные поля (не ключевые)
+            if (rowData) {
+              updateData[key] = value;
+            } else {
+              filteredFormData[key] = value;
+            }
+          }
         }
       }
     }
 
+    // --- МОДИФИКАЦИЯ: Проверка, есть ли что отправлять при обновлении ---
     if (rowData) {
-      const tableIdFields = tableIds[handbook];
-      const idValues = tableIdFields.map((field) => rowData[field]);
-
-      onSubmit(filteredFormData, idValues, () => {
+      // Если updateData пуст после обработки, возможно, нечего обновлять
+      if (Object.keys(updateData).length === 0) {
+        console.log("Нет изменений для отправки в updateData.");
+        // Можно закрыть модальное окно без отправки запроса
+        setFormData({});
+        onClose();
+        return; // Прерываем выполнение handleSubmit
+      }
+      onSubmit(updateData, idData, () => {
         setFormData({});
         onClose();
       });
