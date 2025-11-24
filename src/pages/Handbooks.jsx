@@ -12,6 +12,7 @@ import ModalForm from "../components/Modal/ModalForm";
 import { useDelete } from "../hooks/useDelete";
 import ConfirmModal from "../components/Modal/ConfirmModal";
 import { tableIds } from "../utils/idTableConfig";
+import { API_BASE_URL } from "../api/apiURL";
 
 import "./Handbook.css";
 
@@ -144,15 +145,59 @@ export default function Handbooks() {
   };
 
   // Universal save edit function
-  const handleSaveEdit = async (updatedData, idValues, onReset) => {
-    try {
-      const result = await updateRecord(handbook, idValues, updatedData);
+  const handleSaveEdit = async (
+    updateDataOrFormData,
+    idDataOrIdValues,
+    onReset
+  ) => {
+    if (
+      typeof idDataOrIdValues === "object" &&
+      idDataOrIdValues !== null &&
+      !Array.isArray(idDataOrIdValues)
+    ) {
+      const updateData = updateDataOrFormData;
+      const idData = idDataOrIdValues;
 
-      console.log("Успешно обновлено:", result);
-      setRefreshTrigger((prev) => prev + 1);
-      onReset();
-    } catch (err) {
-      console.error("Ошибка обновления:", err);
+      try {
+        const requestBody = { ...idData, ...updateData };
+        console.log("Отправка обновления с изменяемым ключом:", requestBody);
+
+        const response = await fetch(`${API_BASE_URL}/${handbook}/update`, {
+          method: "PUT",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          let errorText = `HTTP error! status: ${response.status}`;
+          try {
+            errorText = await response.text();
+          } catch (e) {}
+          throw new Error(errorText);
+        }
+
+        const result = await response.json();
+        console.log("Успешно обновлено (ключевой метод):", result);
+        setRefreshTrigger((prev) => prev + 1);
+        onReset();
+      } catch (err) {
+        console.error("Ошибка обновления (ключевой метод):", err);
+      }
+    } else {
+      const updatedData = updateDataOrFormData;
+      const idValues = idDataOrIdValues;
+
+      try {
+        const result = await updateRecord(handbook, idValues, updatedData);
+        console.log("Успешно обновлено (старый метод):", result);
+        setRefreshTrigger((prev) => prev + 1);
+        onReset();
+      } catch (err) {
+        console.error("Ошибка обновления (старый метод):", err);
+      }
     }
   };
 

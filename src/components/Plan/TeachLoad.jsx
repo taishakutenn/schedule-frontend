@@ -18,24 +18,24 @@ export default function TeachLoad() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchTeachLoadData();
+      setLoadData(data);
+      // console.log("TeachLoad: Data loaded successfully:", data);
+    } catch (err) {
+      console.error("TeachLoad: Error loading data:", err);
+      setError(err.message);
+      setLoadData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await fetchTeachLoadData();
-        setLoadData(data);
-        // console.log("TeachLoad: Data loaded successfully:", data);
-      } catch (err) {
-        console.error("TeachLoad: Error loading data:", err);
-        setError(err.message);
-        setLoadData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -56,9 +56,10 @@ export default function TeachLoad() {
     setIsModalOpen(true);
   }, []);
 
-  const handleCloseModal = useCallback(() => {
+  const handleCloseModal = useCallback(async () => {
+    await fetchData();
     setIsModalOpen(false);
-  }, []);
+  }, [fetchData]);
 
   // Filter data
   const filteredData = useMemo(() => {
@@ -121,7 +122,7 @@ export default function TeachLoad() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title="Назначение учебной нагрузки"
-        size="xl"
+        size="lg"
       >
         <AssignLoad onClose={handleCloseModal} />
       </Modal>

@@ -11,6 +11,8 @@ const createField = (
   type = "text",
   placeholder = "",
   required = false,
+  isPrimaryKey = false,
+  newNameForUpdate = null,
   options = null,
   dynamicOptions = false,
   apiFunction = null,
@@ -21,6 +23,8 @@ const createField = (
   type,
   placeholder,
   required,
+  isPrimaryKey,
+  newNameForUpdate,
   options,
   dynamicOptions,
   apiFunction,
@@ -31,11 +35,11 @@ const createField = (
 export const formConfig = {
   teachers: {
     fields: [
-      createField("surname", "text", "Фамилия", true),
-      createField("name", "text", "Имя", true),
-      createField("fathername", "text", "Отчество", true),
-      createField("phone_number", "tel", "Номер телефона", true),
-      createField("email", "email", "Почта", true),
+      createField("surname", "text", "Фамилия", true, false),
+      createField("name", "text", "Имя", true, false),
+      createField("fathername", "text", "Отчество", true, false),
+      createField("phone_number", "tel", "Номер телефона", true, false),
+      createField("email", "email", "Почта", true, false),
       createField(
         "teacher_category",
         "select",
@@ -45,54 +49,98 @@ export const formConfig = {
         true,
         getTeachersCategory,
         "teacher_category",
-        "teacher_category"
+        "teacher_category",
+        false
       ),
     ],
   },
   buildings: {
     fields: [
-      createField("building_number", "text", "Номер корпуса", true),
-      createField("city", "text", "Город", true),
-      createField("building_address", "text", "Адрес корпуса", true),
+      createField(
+        "building_number",
+        "text",
+        "Номер корпуса",
+        true,
+        true,
+        "new_building_number"
+      ),
+      createField("city", "text", "Город", true, false),
+      createField("building_address", "text", "Адрес корпуса", true, false),
     ],
   },
   teacher_category: {
     fields: [
-      createField("teacher_category", "text", "Название категории", true),
+      createField(
+        "teacher_category",
+        "text",
+        "Название категории",
+        true,
+        true,
+        "new_teacher_category"
+      ),
     ],
   },
   specialities: {
-    fields: [createField("speciality_code", "text", "Код специальности", true)],
+    fields: [
+      createField(
+        "speciality_code",
+        "text",
+        "Код специальности",
+        true,
+        true,
+        "new_speciality_code"
+      ),
+    ],
   },
   cabinets: {
     fields: [
-      createField("cabinet_number", "text", "Номер кабинета", true),
+      createField(
+        "cabinet_number",
+        "text",
+        "Номер кабинета",
+        false,
+        true,
+        "new_cabinet_number"
+      ),
       createField(
         "building_number",
         "select",
         "Номер здания",
         true,
+        true,
+        "new_building_number",
         null,
         true,
         getBuildings,
-        ["building_number", "building_address"],
+        "building_number",
         "building_number"
       ),
-      createField("capacity", "text", "Вместимость", true),
-      createField("cabinet_state", "text", "Тип кабинета", true),
+      createField("capacity", "text", "Вместимость", false, false),
+      createField("cabinet_state", "text", "Тип кабинета", true, false),
     ],
   },
   session_type: {
-    fields: [createField("name", "text", "Тип занятия", true)],
+    fields: [
+      createField("name", "text", "Тип занятия", true, true, "new_name"),
+    ],
   },
   groups: {
     fields: [
-      createField("group_name", "text", "Название группы", true),
+      createField(
+        "group_name",
+        "text",
+        "Название группы",
+        true,
+        true,
+        "new_group_name"
+      ),
       createField(
         "speciality_code",
         "select",
         "Код специальности",
         true,
+        false,
+        null,
         null,
         true,
         getSpecialities,
@@ -104,18 +152,28 @@ export const formConfig = {
         "select",
         "Форма оплаты",
         true,
+        false,
+        null,
         null,
         true,
         getPaymentForms,
         "payment_name",
         "payment_name"
       ),
-      createField("quantity_students", "text", "Количество студентов", true),
+      createField(
+        "quantity_students",
+        "text",
+        "Количество студентов",
+        true,
+        false
+      ),
       createField(
         "group_advisor_id",
         "select",
         "Класс-рук группы",
         true,
+        false,
+        null,
         null,
         true,
         getTeachers,
@@ -126,7 +184,7 @@ export const formConfig = {
   },
   streams: {
     fields: [
-      createField("stream_id", "text", "Номер потока", true),
+      createField("stream_id", "text", "Номер потока", true, true),
       createField(
         "group_name",
         "select",
@@ -152,6 +210,15 @@ export const formConfig = {
     ],
   },
   payment_forms: {
-    fields: [createField("payment_name", "text", "Название", true)],
+    fields: [
+      createField(
+        "payment_name",
+        "text",
+        "Название",
+        true,
+        true,
+        "new_payment_name"
+      ),
+    ],
   },
 };
