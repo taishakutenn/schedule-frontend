@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Navigation from "./Navigation/Navigation";
 import Button from "../Button/Button";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 import "./header.css";
 
@@ -17,9 +18,11 @@ export default function Header() {
         <div className="header-box">
           <h1 className="header__logo">
             <Link to="/">Schedule</Link>
+
           </h1>
           <Navigation items={navItems} />
           <div className="header__account-container">
+            <ThemeSwitcher></ThemeSwitcher>
             <Button>Вход</Button>
             <Button>Регистрация</Button>
           </div>

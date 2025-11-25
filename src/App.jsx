@@ -7,9 +7,11 @@ import Footer from "./components/Footer/Footer";
 import Plans from "./pages/Plans";
 import Schedule from "./pages/Schedule";
 import Handbooks from "./pages/Handbooks";
+import { ThemeProvider } from "./components/Header/ThemeContext";
 
 function App() {
   return (
+<ThemeProvider>
     <Router>
       <div className="global-box">
         <Header />
@@ -22,6 +24,7 @@ function App() {
         <Footer />
       </div>
     </Router>
+</ThemeProvider>
   );
 }
 

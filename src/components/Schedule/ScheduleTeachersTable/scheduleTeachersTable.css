@@ -44,8 +44,14 @@
 .schedule-teacher-table tr td.far-left {
   border-left: 1px solid orangered;
 }
-
 .schedule-teacher-table tr td.far-right {
+  border-right: 1px solid orangered;
+}
+
+.schedule-teacher-table tbody tr td.far-left {
+  border-left: 1px solid orangered;
+}
+.schedule-teacher-table tbody tr td.far-right {
   border-right: 1px solid orangered;
 }
 
