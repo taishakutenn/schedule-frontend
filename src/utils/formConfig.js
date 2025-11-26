@@ -45,6 +45,8 @@ export const formConfig = {
         "select",
         "Категория",
         true,
+        false,
+        null,
         null,
         true,
         getTeachersCategory,

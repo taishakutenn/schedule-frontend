@@ -86,15 +86,12 @@ export default function ModalForm({
       }
     }
 
-    // --- МОДИФИКАЦИЯ: Проверка, есть ли что отправлять при обновлении ---
     if (rowData) {
-      // Если updateData пуст после обработки, возможно, нечего обновлять
       if (Object.keys(updateData).length === 0) {
         console.log("Нет изменений для отправки в updateData.");
-        // Можно закрыть модальное окно без отправки запроса
         setFormData({});
         onClose();
-        return; // Прерываем выполнение handleSubmit
+        return;
       }
       onSubmit(updateData, idData, () => {
         setFormData({});
