@@ -1,0 +1,70 @@
+/* Стили для компонента StaffingSchedule */
+.staffing-schedule-report {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--main-medium-font-size);
+  padding: 350px;
+  padding-top: 0;
+}
+
+.staffing-schedule-report h2 {
+  text-align: center;
+  font-size: var(--main-font-size);
+}
+
+.report-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+}
+
+.report-controls select {
+  padding: 6px 10px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 2px;
+  outline: none;
+  max-width: 100px;
+}
+
+.report-controls select:focus {
+  border-color: var(--main-accent-secondary-color);
+}
+
+.table-container {
+  display: flex;
+  justify-content: center;
+}
+
+.report-table {
+  width: 500px;
+  border-collapse: collapse;
+  font-size: var(--main-medium-font-size);
+  border: 1px solid var(--main-border-color);
+  overflow: hidden;
+}
+
+.report-table th,
+.report-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border: 1px solid var(--main-border-color);
+}
+
+.report-table th {
+  background-color: var(--main-header-footer-background-color);
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid var(--main-border-color);
+}
+
+.report-table td {
+  vertical-align: top;
+}
+
+.staffing-schedule-report p {
+  font-style: italic;
+  color: var(--main-second-font-color);
+  text-align: center;
+  margin-top: 1rem;
+}

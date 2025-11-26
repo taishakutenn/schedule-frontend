@@ -121,27 +121,29 @@ export default function StaffingSchedule({ selectedReport }) {
           ))}
         </select>
       </div>
-      <table className="report-table">
-        <thead>
-          <tr>
-            <th>Преподаватель</th>
-            <th>Общее количество часов</th>
-            <th>Количество ставок (FTE)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {staffingData.map((entry) => (
-            <tr key={entry.teacherId}>
-              <td>{entry.teacherName}</td>
-              <td>{entry.totalHours}</td>
-              <td>{entry.fte}</td>
+      <div className="table-container">
+        <table className="report-table">
+          <thead>
+            <tr>
+              <th>Преподаватель</th>
+              {/* <th>Общее количество часов</th> */}
+              <th>Количество ставок</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {staffingData.length === 0 && (
-        <p>Нет данных для отображения за {selectedYear} год.</p>
-      )}
+          </thead>
+          <tbody>
+            {staffingData.map((entry) => (
+              <tr key={entry.teacherId}>
+                <td>{entry.teacherName}</td>
+                {/* <td>{entry.totalHours}</td> */}
+                <td>{entry.fte}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {staffingData.length === 0 && (
+          <p>Нет данных для отображения на {selectedYear} год.</p>
+        )}
+      </div>
     </div>
   );
 }
