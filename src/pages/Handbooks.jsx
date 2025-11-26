@@ -13,6 +13,7 @@ import { useDelete } from "../hooks/useDelete";
 import ConfirmModal from "../components/Modal/ConfirmModal";
 import { tableIds } from "../utils/idTableConfig";
 import { API_BASE_URL } from "../api/apiURL";
+import GroupPlate from "../components/GroupPlate/GroupPlate";
 
 import "./Handbook.css";
 
@@ -304,37 +305,51 @@ export default function Handbooks() {
     );
   };
 
+  // array of tab buttons
+  const tabButtonsTeacher = [
+    <Button onClick={handleTeacher} size="small">
+      Преподаватели
+    </Button>,
+    <Button onClick={handleTeacherCategory} size="small">
+      Категории преподавателей
+    </Button>,
+  ];
+  const tabButtonsGroup = [
+    <Button onClick={handleSpeciality} size="small">
+      Специальности
+    </Button>,
+    <Button onClick={handleGroup} size="small">
+      Группы
+    </Button>,
+    <Button onClick={handlePaymentForm} size="small">
+      Формы оплаты
+    </Button>,
+  ];
+  const tabButtonsCabinet = [
+    <Button onClick={handleBuilding} size="small">
+      Здания
+    </Button>,
+    <Button onClick={handleCabinet} size="small">
+      Кабинеты
+    </Button>,
+  ];
+  const tabButtonsSession = [
+    <Button onClick={handleSessionType} size="small">
+      Типы занятий
+    </Button>,
+    <Button onClick={handleStream} size="small">
+      Потоки занятий
+    </Button>,
+  ];
+
   return (
     <main>
       <InfoBlock items={headerInfo} />
       <div className="handbooks__navigation">
-        <Button onClick={handleTeacher} size="small">
-          Преподаватели
-        </Button>
-        <Button onClick={handleTeacherCategory} size="small">
-          Категории преподавателей
-        </Button>
-        <Button onClick={handleSpeciality} size="small">
-          Специальности
-        </Button>
-        <Button onClick={handleBuilding} size="small">
-          Здания
-        </Button>
-        <Button onClick={handleCabinet} size="small">
-          Кабинеты
-        </Button>
-        <Button onClick={handleSessionType} size="small">
-          Типы занятий
-        </Button>
-        <Button onClick={handleGroup} size="small">
-          Группы
-        </Button>
-        <Button onClick={handleStream} size="small">
-          Потоки занятий
-        </Button>
-        <Button onClick={handlePaymentForm} size="small">
-          Формы оплаты
-        </Button>
+        <GroupPlate groupElements={tabButtonsTeacher} />
+        <GroupPlate groupElements={tabButtonsGroup} />
+        <GroupPlate groupElements={tabButtonsCabinet} />
+        <GroupPlate groupElements={tabButtonsSession} />
       </div>
       <ControlContainer
         ref={controlContainerRef}

@@ -9,6 +9,7 @@ const navItems = [
   { title: "Расписание", link: "/schedule" },
   { title: "Учебные планы", link: "/plans" },
   { title: "Хендбуки", link: "/handbooks" },
+  { title: "Отчёты", link: "/reports" },
 ];
 
 export default function Header() {
@@ -18,7 +19,6 @@ export default function Header() {
         <div className="header-box">
           <h1 className="header__logo">
             <Link to="/">Schedule</Link>
-
           </h1>
           <Navigation items={navItems} />
           <div className="header__account-container">

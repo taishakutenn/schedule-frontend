@@ -22,7 +22,21 @@ export const getPlanById = async (plan) => {
 };
 
 export const getPlanByYearAndSpeciality = async (year, speciality) => {
-  const response = await fetch(`${API_BASE_URL}/plans/search/by_year_and_speciality/${year}/${speciality}`);
+  const response = await fetch(
+    `${API_BASE_URL}/plans/search/by_year_and_speciality/${year}/${speciality}`
+  );
+
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  return data.plan;
+};
+
+export const getPlanBySubjectHoursId = async (hourId) => {
+  const response = await fetch(
+    `${API_BASE_URL}/plans/search/by_subject_hours_id/${hourId}`
+  );
 
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);

@@ -1,0 +1,9 @@
+@import "../css/variables.css";
+
+.reports__navigation {
+  display: flex;
+  justify-content: center;
+  gap: 2%;
+  margin: 20px;
+  flex-wrap: wrap;
+}

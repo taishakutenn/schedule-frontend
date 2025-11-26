@@ -7,24 +7,27 @@ import Footer from "./components/Footer/Footer";
 import Plans from "./pages/Plans";
 import Schedule from "./pages/Schedule";
 import Handbooks from "./pages/Handbooks";
+import Reports from "./pages/Reports";
+
 import { ThemeProvider } from "./components/Header/ThemeContext";
 
 function App() {
   return (
-<ThemeProvider>
-    <Router>
-      <div className="global-box">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/plans" element={<Plans />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/handbooks" element={<Handbooks />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
-</ThemeProvider>
+    <ThemeProvider>
+      <Router>
+        <div className="global-box">
+          <Header />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/handbooks" element={<Handbooks />} />
+            <Route path="/reports" element={<Reports />} />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
