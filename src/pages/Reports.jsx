@@ -40,9 +40,9 @@ export default function Reports() {
     <Button key={"btn-load"} onClick={handleLoad} size="small">
       Нагрузка преподавателей
     </Button>,
-    <Button key={"btn-hours"} size="small">
-      Количество часов в учебном плане
-    </Button>,
+    // <Button key={"btn-hours"} size="small">
+    //   Количество часов в учебном плане
+    // </Button>,
   ];
 
   return (
