@@ -1,4 +1,5 @@
 import StaffingSchedule from "./StaffingSchedule";
+import TeachLoadReport from "./TeachLoadReport";
 
 export default function TeachLoad({ selectedReport }) {
   const RenderContent = () => {
@@ -7,7 +8,7 @@ export default function TeachLoad({ selectedReport }) {
     if (selectedReport === "StaffingSchedule") {
       return <StaffingSchedule selectedReport={selectedReport} />;
     } else if (selectedReport === "Load") {
-      return <div>Load</div>;
+      return <TeachLoadReport />;
     }
   };
 

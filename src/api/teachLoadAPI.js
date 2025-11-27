@@ -5,6 +5,7 @@ import { getPlans } from "./plansAPI";
 import { getSubjectsByIds } from "./subjectAPI";
 import { getTeachersByIds } from "./teachersAPI";
 import { getCertificationsByIds } from "./certificationAPI";
+import { processPlanItems } from "../utils/processTEachLoadData";
 
 const determineSemesterType = (groupName, semesterNumber) => {
   const groupYearSuffix = groupName.substring(0, 2);
@@ -60,10 +61,6 @@ export const fetchTeachLoadData = async () => {
 
     console.log("Загрузка всех планов...");
     const allPlans = await getPlans();
-    const plansMap = new Map();
-    allPlans.forEach((plan) => {
-      plansMap.set(`${plan.speciality_code}-${plan.year}`, plan);
-    });
 
     console.log("Сбор уникальных имён групп...");
     const uniqueGroupNamesSet = new Set();
@@ -127,145 +124,117 @@ export const fetchTeachLoadData = async () => {
       teacherDataArray.map((item) => [item.id, item])
     );
 
-    const groupedLoadDataMap = new Map();
-
-    console.log("Сбор итоговых данных...");
-    for (const planItem of planItems) {
-      const hoursData = hoursDataMap.get(planItem.subject_in_cycle_hours_id);
-      const subjectData = subjectDataMap.get(hoursData?.subject_in_cycle_id);
-      const teacherData = teacherDataMap.get(planItem.teacher_id);
-      const certificationData = certificationsMap.get(
-        planItem.subject_in_cycle_hours_id
-      );
-
-      if (!hoursData || !subjectData) {
-        console.warn("Не найдены данные для одной из записей:", planItem);
-        continue;
-      }
-
-      const groupPaymentType = groupPaymentMap.get(planItem.group_name);
-
-      if (groupPaymentType === undefined) {
-        console.warn(
-          `Тип оплаты (payment_form) для группы ${planItem.group_name} не найден в ответе API.`,
-          planItem
-        );
-        continue;
-      }
-
-      const { isFirstHalf, isSecondHalf } = determineSemesterType(
-        planItem.group_name,
-        hoursData.semester
-      );
-
-      const groupKey = `${planItem.teacher_id}-${subjectData.id}-${planItem.group_name}`;
-
-      let loadEntry = groupedLoadDataMap.get(groupKey);
-
-      if (!loadEntry) {
-        loadEntry = {
-          id: planItem.id,
-          teacher_id: planItem.teacher_id,
-          teacher_name: teacherData
-            ? formatTeacherName(teacherData)
-            : `Преподаватель ${planItem.teacher_id}`,
-          subject_id: subjectData.id,
-          subject: subjectData.title,
-          group: planItem.group_name,
-          semester: hoursData.semester,
-
-          lecture_1: undefined,
-          lecture_2: undefined,
-          practical_1: undefined,
-          practical_2: undefined,
-          course_project: undefined,
-          consultation: undefined,
-          diff_exam: undefined,
-          exam: undefined,
-          budget_hours: 0,
-          budget_rate: 0,
-          extrabudget_hours: 0,
-          extrabudget_rate: 0,
-        };
-      }
-
-      const totalPracticalHours =
-        (hoursData.laboratory_hours || 0) + (hoursData.practical_hours || 0);
-
-      if (isFirstHalf) {
-        loadEntry.lecture_1 = hoursData.lectures_hours;
-        loadEntry.practical_1 = totalPracticalHours;
-        loadEntry.course_project = hoursData.course_project_hours;
-        loadEntry.consultation = hoursData.consultation_hours;
-
-        if (certificationData) {
-          if (certificationData.differentiated_credit) {
-            loadEntry.diff_exam = hoursData.intermediate_assessment_hours;
-          } else if (certificationData.credit) {
-            loadEntry.exam = hoursData.intermediate_assessment_hours;
-          }
-        } else {
-        }
-      } else if (isSecondHalf) {
-        loadEntry.lecture_2 = hoursData.lectures_hours;
-        loadEntry.practical_2 = totalPracticalHours;
-        loadEntry.course_project = hoursData.course_project_hours;
-        loadEntry.consultation = hoursData.consultation_hours;
-
-        if (certificationData) {
-          if (certificationData.differentiated_credit) {
-            loadEntry.diff_exam = hoursData.intermediate_assessment_hours;
-          } else if (certificationData.credit) {
-            loadEntry.exam = hoursData.intermediate_assessment_hours;
-          }
-        }
-      }
-
-      groupedLoadDataMap.set(groupKey, loadEntry);
-    }
-
-    // calculate
-    groupedLoadDataMap.forEach((loadEntry) => {
-      const groupPaymentType = groupPaymentMap.get(loadEntry.group);
-
-      loadEntry.budget_hours = 0;
-      loadEntry.extrabudget_hours = 0;
-
-      if (groupPaymentType === "Бюджет") {
-        loadEntry.budget_hours =
-          (loadEntry.lecture_1 || 0) +
-          (loadEntry.lecture_2 || 0) +
-          (loadEntry.practical_1 || 0) +
-          (loadEntry.practical_2 || 0) +
-          (loadEntry.course_project || 0) +
-          (loadEntry.consultation || 0) +
-          (loadEntry.diff_exam || 0) +
-          (loadEntry.exam || 0);
-        loadEntry.extrabudget_hours = 0;
-      } else if (groupPaymentType === "Внебюджет") {
-        loadEntry.budget_hours = 0;
-        loadEntry.extrabudget_hours =
-          (loadEntry.practical_1 || 0) +
-          (loadEntry.practical_2 || 0) +
-          (loadEntry.course_project || 0) +
-          (loadEntry.consultation || 0) +
-          (loadEntry.diff_exam || 0) +
-          (loadEntry.exam || 0);
-      } else {
-        console.warn(
-          `Неизвестный тип оплаты (payment_form) для группы ${loadEntry.group}: ${groupPaymentType}. Установлены 0.`
-        );
-        loadEntry.budget_hours = 0;
-        loadEntry.extrabudget_hours = 0;
-      }
-    });
-
-    const finalLoadData = Array.from(groupedLoadDataMap.values());
+    const finalLoadData = processPlanItems(
+      planItems,
+      groupPaymentMap,
+      hoursDataMap,
+      subjectDataMap,
+      teacherDataMap,
+      certificationsMap,
+      determineSemesterType,
+      formatTeacherName,
+      null
+    );
 
     console.log("Данные нагрузки собраны:", finalLoadData);
     return finalLoadData;
   } catch (error) {
     console.error("Ошибка при загрузке данных о нагрузке:", error);
+    throw error;
+  }
+};
+
+export const fetchTeachLoadDataByYear = async (targetYear) => {
+  try {
+    console.log(`Загрузка записей о нагрузке за ${targetYear} год...`);
+    const planItems = await getTeachersInPlans();
+
+    console.log("Загрузка всех планов...");
+    const allPlans = await getPlans();
+
+    console.log("Сбор уникальных имён групп...");
+    const uniqueGroupNamesSet = new Set();
+    planItems.forEach((item) => {
+      uniqueGroupNamesSet.add(item.group_name);
+    });
+    const uniqueGroupNames = Array.from(uniqueGroupNamesSet);
+
+    console.log("Загрузка информации о группах по именам...");
+    if (uniqueGroupNames.length === 0) {
+      console.warn("Не найдено уникальных имён групп в данных о нагрузке.");
+      return [];
+    }
+    const allGroups = await getGroupsByNames(uniqueGroupNames);
+
+    const groupPaymentMap = new Map();
+    allGroups.forEach((group) => {
+      groupPaymentMap.set(group.group_name, group.payment_form);
+    });
+
+    const uniqueHoursIdsSet = new Set();
+    const uniqueTeacherIdsSet = new Set();
+    const uniqueSubjectIdsSet = new Set();
+
+    planItems.forEach((item) => {
+      uniqueHoursIdsSet.add(item.subject_in_cycle_hours_id);
+      uniqueTeacherIdsSet.add(item.teacher_id);
+    });
+
+    const uniqueHoursIds = Array.from(uniqueHoursIdsSet);
+    const uniqueTeacherIds = Array.from(uniqueTeacherIdsSet);
+
+    console.log("Загрузка данных о часах...");
+    const hoursDataArray = await getSubjectHoursByIds(uniqueHoursIds);
+
+    hoursDataArray.forEach((hoursItem) => {
+      uniqueSubjectIdsSet.add(hoursItem.subject_in_cycle_id);
+    });
+    const uniqueSubjectIds = Array.from(uniqueSubjectIdsSet);
+
+    console.log("Загрузка данных о предметах...");
+    const subjectDataArray = await getSubjectsByIds(uniqueSubjectIds);
+
+    const subjectDataMap = new Map(
+      subjectDataArray.map((item) => [item.id, item])
+    );
+
+    console.log("Загрузка данных о преподавателях...");
+    const teacherDataArray = await getTeachersByIds(uniqueTeacherIds);
+
+    console.log("Загрузка данных о сертификациях...");
+    const certificationsDataArray = await getCertificationsByIds(
+      uniqueHoursIds
+    );
+    const certificationsMap = new Map(
+      certificationsDataArray.map((cert) => [cert.id, cert])
+    );
+
+    const hoursDataMap = new Map(hoursDataArray.map((item) => [item.id, item]));
+    const teacherDataMap = new Map(
+      teacherDataArray.map((item) => [item.id, item])
+    );
+
+    const finalLoadData = processPlanItems(
+      planItems,
+      groupPaymentMap,
+      hoursDataMap,
+      subjectDataMap,
+      teacherDataMap,
+      certificationsMap,
+      determineSemesterType,
+      formatTeacherName,
+      (planItem, hoursData, groupStartYear) => {
+        const semester = hoursData.semester;
+        const academicYearStart =
+          groupStartYear + Math.floor((semester - 1) / 2);
+        return academicYearStart === targetYear;
+      }
+    );
+
+    console.log(`Данные нагрузки за ${targetYear} год собраны:`, finalLoadData);
+    return finalLoadData;
+  } catch (error) {
+    console.error("Ошибка при загрузке данных о нагрузке по году:", error);
     throw error;
   }
 };

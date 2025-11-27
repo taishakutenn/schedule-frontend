@@ -6,7 +6,7 @@
 
 .load-table {
   width: 100%;
-  min-width: 800px;
+  min-width: 400px;
   border-collapse: collapse;
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
