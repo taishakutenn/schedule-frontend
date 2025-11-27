@@ -56,6 +56,8 @@ td.far-left {
   border-left: 1px solid orangered;
 }
 
+.teachers-table__select {
+}
 /* Custom date time pecker */
 
 .react-datepicker-wrapper input {

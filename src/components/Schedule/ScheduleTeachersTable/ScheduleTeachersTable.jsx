@@ -22,6 +22,13 @@ export default function SchedulteTeachersTable() {
     error: teachersError,
   } = useApiData(getTeachers, [selectedDate]);
 
+  // Sort teachers
+  const sortedTeachersData = [...teachersData].sort((a, b) => {
+    if (a.surname < b.surname) return -1;
+    if (a.surname > b.surname) return 1;
+    return 0;
+  });
+
   return (
     <div className="schedule-teacher-table__container">
       <table className="schedule-teacher-table">
@@ -29,7 +36,7 @@ export default function SchedulteTeachersTable() {
           <ScheduleTeachersTableHeader onDateChange={handleDateChange} />
         </thead>
         <tbody>
-          {teachersData.map((item) => {
+          {sortedTeachersData.map((item) => {
             return (
               <ScheduleTeachersTableRow
                 selectedDate={selectedDate}
