@@ -7,7 +7,7 @@ import "./header.css";
 
 const navItems = [
   { title: "Расписание", link: "/schedule" },
-  { title: "Учебные планы", link: "/plans" },
+  { title: "Нагрузка", link: "/plans" },
   { title: "Хендбуки", link: "/handbooks" },
   { title: "Отчёты", link: "/reports" },
 ];
