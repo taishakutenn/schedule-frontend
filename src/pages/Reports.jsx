@@ -19,10 +19,6 @@ export default function Reports() {
     setSelectedReport("Load");
     setSelectedGroup("TeachLoad");
   };
-  //   const handleStaffingSchedule = () => {
-  //     setSelectedReport("StaffingSchedule");
-  //     setSelectedGroup("TeachLoad");
-  //   };
 
   // render content
   const RenderContent = () => {
