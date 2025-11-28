@@ -5,8 +5,8 @@
 }
 
 .load-table {
-  width: 100%;
-  min-width: 400px;
+  /* width: 100%; */
+  /* min-width: 400px; */
   border-collapse: collapse;
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
@@ -15,6 +15,7 @@
   border: 1px solid var(--main-border-color);
   /* border-radius: 8px; */
   overflow: hidden;
+  table-layout: auto;
 }
 
 .load-table th {
@@ -27,6 +28,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  word-break: break-all;
 }
 
 .load-table thead tr:first-child th {
