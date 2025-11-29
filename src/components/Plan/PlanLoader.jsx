@@ -1,5 +1,6 @@
-// components/Plan/PlanLoader.jsx
-import { useState, useEffect } from "react";
+import "./PlanLoader.css";
+
+import { useState, useEffect, useRef } from "react";
 import InfoBlock from "../InfoBlock/InfoBlock";
 import Button from "../Button/Button";
 import DynamicInputList from "../DynamicList/DynamicInputList";
@@ -9,8 +10,9 @@ import { getAllSubjectsInPlan } from "../../api/subjectAPI";
 import { getGroupsBySpeciality } from "../../api/groupAPI";
 import { getSubjectHoursBySubject } from "../../api/subjectHoursAPI";
 import { useApiData } from "../../hooks/useApiData";
+import { uploadAndParsePlan } from "../../api/parserLoad";
+import HandbookTable from "../HandbookTable/HandbookTable";
 
-// Информационные блоки
 const planLoadHeaderInfo = [
   {
     title: "Загрузка учебных планов",
@@ -29,11 +31,9 @@ const planLoadInstructionHeaderInfo = [
 ];
 
 export default function PlanLoader() {
-  // --- Состояния для вводимых пользователем кодов ---
   const [sections, setSections] = useState([]);
   const [cycles, setCycles] = useState([]);
   const [modules, setModules] = useState([]);
-  // ---
 
   const [plan, setPlan] = useState("");
   const [group, setGroup] = useState("");
@@ -44,6 +44,17 @@ export default function PlanLoader() {
 
   const [subjectHoursData, setSubjectHoursData] = useState({}); // { subjectId: [hours] }
   const [loadingHours, setLoadingHours] = useState({}); // { subjectId: true/false }
+
+  const [uploadStatus, setUploadStatus] = useState(null); // 'idle', 'loading', 'success', 'error'
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const [showPlansTable, setShowPlansTable] = useState(false);
+  const [plansTableData, setPlansTableData] = useState([]);
+  const [plansTableLoading, setPlansTableLoading] = useState(false);
+  const [plansTableError, setPlansTableError] = useState(null);
+
+  const fileInputRef = useRef(null);
 
   const {
     data: teachers,
@@ -191,7 +202,6 @@ export default function PlanLoader() {
     }
   }, [plan, plans]);
 
-  // --- Функции для управления вводимыми списками (как раньше) ---
   const addSection = () => setSections([...sections, { name: "" }]);
   const updateSection = (index, value) => {
     const newSections = [...sections];
@@ -218,7 +228,6 @@ export default function PlanLoader() {
   };
   const removeModule = (index) =>
     setModules(modules.filter((_, i) => i !== index));
-  // ---
 
   const addSubject = () => {
     setSubjects([...subjects, { value1: "", value2: "", value3: "" }]);
@@ -234,13 +243,41 @@ export default function PlanLoader() {
     setSubjects(subjects.filter((_, i) => i !== index));
   };
 
-  // --- Функция загрузки Excel файла ---
+  const togglePlansTable = async () => {
+    if (showPlansTable) {
+      setShowPlansTable(false);
+    } else {
+      setPlansTableLoading(true);
+      setPlansTableError(null);
+      try {
+        const data = await getPlans();
+        setPlansTableData(data);
+        setShowPlansTable(true);
+      } catch (err) {
+        console.error("Ошибка загрузки планов для таблицы:", err);
+        setPlansTableError(err.message);
+        setShowPlansTable(true);
+      } finally {
+        setPlansTableLoading(false);
+      }
+    }
+  };
+
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
+    if (!file.name.match(/\.(xls|xlsx)$/i)) {
+      setUploadStatus("error");
+      setUploadMessage("Файл должен быть в формате .xls или .xlsx");
+      return;
+    }
+
+    setUploadStatus("loading");
+    setUploadMessage("Загрузка и обработка файла...");
+    setUploadProgress(0);
+
     try {
-      // Проверим, что парсер может получить коды из состояния
       const sectionCodes = sections
         .map((s) => s.name)
         .filter((n) => n.trim() !== "");
@@ -251,29 +288,37 @@ export default function PlanLoader() {
         .map((m) => m.name)
         .filter((n) => n.trim() !== "");
 
-      console.log("Коды разделов (ОП, ПП, ...):", sectionCodes);
-      console.log("Коды циклов (НО, ОО, ...):", cycleCodes);
-      console.log("Коды модулей (ОУД, ПОО, ...):", moduleCodes);
+      console.log("Коды разделов:", sectionCodes);
+      console.log("Коды циклов:", cycleCodes);
+      console.log("Коды модулей:", moduleCodes);
 
-      // Загрузка файла и вызов парсера
-      // Здесь нужно интегрировать логику парсера
-      // 1. Прочитать файл (используя XLSX или другой пакет в браузере)
-      // 2. Вызвать processStructureData(jsonData, sectionCodes, cycleCodes, moduleCodes)
-      // и другие функции парсера с этими кодами
-      // 3. Отправить результат на бэкенд
+      const result = await uploadAndParsePlan(
+        file,
+        sectionCodes,
+        cycleCodes,
+        moduleCodes
+      );
 
-      // ПОКА: Заглушка для демонстрации
-      alert(
-        `Файл ${file.name} загружен. Коды: ОП=${sectionCodes.join(
-          ", "
-        )}, ОО=${cycleCodes.join(", ")}, ОУД=${moduleCodes.join(", ")}`
+      console.log("Результат загрузки:", result);
+
+      setUploadStatus("success");
+      setUploadMessage(
+        `Файл ${result.filename} успешно загружен и данные сохранены в БД. Номер плана: ${result.saved_plan_id}`
       );
     } catch (err) {
-      console.error("Ошибка обработки файла:", err);
-      // Отобразить ошибку пользователю
+      console.error("Ошибка загрузки файла:", err);
+      setUploadStatus("error");
+      setUploadMessage(`Ошибка загрузки: ${err.message}`);
+    } finally {
+      setUploadProgress(100);
+      setTimeout(() => {
+        if (uploadStatus !== "success") {
+          setUploadStatus(null);
+          setUploadMessage("");
+        }
+      }, 5000);
     }
   };
-  // ---
 
   return (
     <div className="dynamic-content">
@@ -304,21 +349,50 @@ export default function PlanLoader() {
           placeholder="Название модуля"
         />
       </div>
+      <Button size="small" onClick={togglePlansTable}>
+        {showPlansTable ? "Скрыть список планов" : "Список загруженных планов"}
+      </Button>
+      <Button
+        size="small"
+        action="load"
+        onClick={() => fileInputRef.current && fileInputRef.current.click()}
+      >
+        Загрузить файл плана
+      </Button>
       <input
         type="file"
         accept=".xls, .xlsx"
         onChange={handleFileUpload}
-        style={{ marginBottom: "10px" }} // Простой стиль для отступа
+        ref={fileInputRef}
+        style={{ display: "none" }}
       />
-      <Button size="small">Список загруженных планов</Button>
-      {/* Кнопка "Загрузить файл плана" теперь триггерит выбор файла через input */}
-      <Button
-        size="small"
-        action="load"
-        onClick={() => document.querySelector('input[type="file"]').click()}
-      >
-        Загрузить файл плана
-      </Button>
+
+      {uploadStatus && (
+        <div className={`upload-status upload-status--${uploadStatus}`}>
+          <p>{uploadMessage}</p>
+          {uploadStatus === "loading" && (
+            <div className="progress-bar">
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {showPlansTable && (
+        <div className="plans-table-container">
+          {plansTableLoading && <p>Загрузка списка планов...</p>}
+          {plansTableError && (
+            <p className="error-message">Ошибка: {plansTableError}</p>
+          )}
+          {!plansTableLoading && !plansTableError && (
+            <HandbookTable apiResponse={plansTableData} tableName="plans" />
+          )}
+        </div>
+      )}
+
       <div className="instruction">
         <InfoBlock items={planLoadInstructionHeaderInfo} />
       </div>

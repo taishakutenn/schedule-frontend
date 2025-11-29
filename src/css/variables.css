@@ -3,12 +3,17 @@
   --main-background-panel: #3a3a3a;
   --main-header-footer-background-color: #252526;
   --main-second-header-footer-background-color: #2b2b2c;
+
   --main-font-color: #ffffff;
   --main-second-font-color: #cccccc;
+
   --main-border-color: #454545;
+
   --main-accent-color: #2b5278;
   --main-accent-danger-color: #a33226;
   --main-accent-secondary-color: #4d82b8;
+  --main-accent-success-color: #4caf50;
+
   --main-font-weight: 418;
   --main-biggest-font-size: 22px; /*h1*/
   --main-font-size: 20px; /*h2*/
@@ -19,19 +24,20 @@
 }
 
 [data-theme="light"] {
-  --main-background-color: #f5f5f5; 
-  --main-background-panel: #ffffff; 
-  --main-header-footer-background-color: #e0e0e0; 
-  --main-second-header-footer-background-color: #d0d0d0; 
+  --main-background-color: #f5f5f5;
+  --main-background-panel: #ffffff;
+  --main-header-footer-background-color: #e0e0e0;
+  --main-second-header-footer-background-color: #d0d0d0;
 
-  --main-font-color: #1a1a1a; 
-  --main-second-font-color: #444444; 
+  --main-font-color: #1a1a1a;
+  --main-second-font-color: #444444;
 
-  --main-border-color: #cccccc; 
+  --main-border-color: #cccccc;
 
-  --main-accent-color: #4d90fe; 
+  --main-accent-color: #4d90fe;
   --main-accent-danger-color: #d93025;
-  --main-accent-secondary-color: #7baaf7; 
+  --main-accent-secondary-color: #7baaf7;
+  --main-accent-success-color: #34a853;
 
   --main-font-weight: 418;
   --main-biggest-font-size: 22px; /* h1 */
