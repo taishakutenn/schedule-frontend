@@ -58,18 +58,29 @@ td.far-left {
 
 .teachers-table__select-container {
   display: flex;
-  max-width: 150px;
-  width: auto;
+  /* max-width: 150px; */
+  width: 100%;
 }
 
 .teachers-table__group-subject-container {
   display: flex;
   flex-direction: column;
+  flex: 1;
+}
+
+.teachers-table__session-type-container {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .teachers-table__select {
   border: none;
   border-bottom: 1px solid var(--main-second-header-footer-background-color);
+  max-width: 200px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .teachers-table__select:disabled {
@@ -78,6 +89,15 @@ td.far-left {
 
 .select__option {
   font-size: var(--main-medium-font-size);
+}
+
+.type-select {
+  width: 45px;
+  max-width: 45px;
+  min-width: 45px;
+  padding: 2px 4px;
+  text-align: center;
+  flex: 0 0 45px;
 }
 
 /* Custom date time pecker */

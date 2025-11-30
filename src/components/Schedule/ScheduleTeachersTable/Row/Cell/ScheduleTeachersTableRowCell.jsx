@@ -42,7 +42,7 @@ export default function ScheduleTeachersTableCell({classCell}) {
             </select>
           </div>
           <div className="teachers-table__session-type-container">
-            <select teachers-table__select>
+            <select className="type-select">
               <option selected disabled className="select__option--disabled">Пара</option>
               <option className="select__option">Лк</option>
               <option className="select__option">Лб</option>
