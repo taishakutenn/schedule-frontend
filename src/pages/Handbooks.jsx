@@ -14,6 +14,7 @@ import ConfirmModal from "../components/Modal/ConfirmModal";
 import { tableIds } from "../utils/idTableConfig";
 import { API_BASE_URL } from "../api/apiURL";
 import GroupPlate from "../components/GroupPlate/GroupPlate";
+import { displayFieldConfig } from "../utils/tableConfig";
 
 import "./Handbook.css";
 
@@ -123,15 +124,42 @@ export default function Handbooks() {
   });
 
   // set handbook states
-  const handleTeacher = () => setHandbook("teachers");
-  const handleTeacherCategory = () => setHandbook("teacher_category");
-  const handleCabinet = () => setHandbook("cabinets");
-  const handleBuilding = () => setHandbook("buildings");
-  const handleSpeciality = () => setHandbook("specialities");
-  const handleSessionType = () => setHandbook("session_type");
-  const handleGroup = () => setHandbook("groups");
-  const handleStream = () => setHandbook("streams");
-  const handlePaymentForm = () => setHandbook("payment_forms");
+  const handleTeacher = () => {
+    setHandbook("teachers");
+    setSelectedRowData(null);
+  };
+  const handleTeacherCategory = () => {
+    setHandbook("teacher_category");
+    setSelectedRowData(null);
+  };
+  const handleCabinet = () => {
+    setHandbook("cabinets");
+    setSelectedRowData(null);
+  };
+  const handleBuilding = () => {
+    setHandbook("buildings");
+    setSelectedRowData(null);
+  };
+  const handleSpeciality = () => {
+    setHandbook("specialities");
+    setSelectedRowData(null);
+  };
+  const handleSessionType = () => {
+    setHandbook("session_type");
+    setSelectedRowData(null);
+  };
+  const handleGroup = () => {
+    setHandbook("groups");
+    setSelectedRowData(null);
+  };
+  const handleStream = () => {
+    setHandbook("streams");
+    setSelectedRowData(null);
+  };
+  const handlePaymentForm = () => {
+    setHandbook("payment_forms");
+    setSelectedRowData(null);
+  };
 
   // Component for count filtered data
   const CountHandbookRows = ({ handbook, data, search }) => {
@@ -387,15 +415,8 @@ export default function Handbooks() {
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={handleConfirmDelete}
         title="Подтвердите удаление"
-        message={
-          tableIds[handbook] && Array.isArray(tableIds[handbook])
-            ? `Вы уверены, что хотите удалить запись с ${tableIds[handbook]
-                .map(
-                  (field) => `${field}: "${selectedRowData?.[field] ?? "N/A"}"`
-                )
-                .join(", ")}?`
-            : `Вы уверены, что хотите удалить запись?`
-        }
+        rowData={selectedRowData}
+        displayFields={displayFieldConfig[handbook] || []}
         confirmText="Удалить"
         cancelText="Отмена"
         loading={deleteLoading}

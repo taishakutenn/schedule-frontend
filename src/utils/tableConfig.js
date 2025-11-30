@@ -63,3 +63,15 @@ export const tableConfig = {
     errorMessage: "Ошибка при загрузке форм оплаты",
   },
 };
+
+// config fields for delete message
+export const displayFieldConfig = {
+  teachers: ["surname", "name", "fathername"],
+  groups: ["group_name"],
+  specialities: ["speciality_code"],
+  cabinets: ["building_number", "cabinet_number"],
+  buildings: ["building_number"],
+  teacher_category: ["teacher_category"],
+  payment_forms: ["payment_name"],
+  session_type: ["name"],
+};

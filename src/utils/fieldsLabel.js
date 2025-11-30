@@ -63,6 +63,13 @@ export const paymentFormFieldLabels = {
   payment_name: "Название",
 };
 
+// Plans
+export const plansFieldsLabel = {
+  id: "Номер",
+  year: "Год поступления",
+  speciality_code: "Код специальности",
+};
+
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
@@ -74,4 +81,5 @@ export const fieldLabels = {
   groups: groupFieldLabels,
   streams: streamFieldLabels,
   payment_forms: paymentFormFieldLabels,
+  plans: plansFieldsLabel,
 };

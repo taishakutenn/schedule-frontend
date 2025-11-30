@@ -8,11 +8,29 @@ export default function ConfirmationModal({
   onClose,
   onConfirm,
   title = "Подтвердите действие",
-  message = "Вы уверены, что хотите удалить эту запись?",
+  rowData = null,
+  displayFields = [],
   confirmText = "Удалить",
   cancelText = "Отменить",
   loading = false,
 }) {
+  const getMessage = () => {
+    if (
+      !rowData ||
+      !Array.isArray(displayFields) ||
+      displayFields.length === 0
+    ) {
+      return "Вы уверены, что хотите удалить эту запись?";
+    }
+
+    const fieldParts = displayFields.map((field) => {
+      const value = rowData[field];
+      return value != null ? value : "N/A";
+    });
+
+    return `Вы уверены, что хотите удалить ${fieldParts.join(" ")}?`;
+  };
+
   const handleConfirm = () => {
     onConfirm();
   };
@@ -20,7 +38,7 @@ export default function ConfirmationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="md">
       <div className="confirmation-modal-body">
-        <p>{message}</p>
+        <p>{getMessage()}</p>
         <div className="confirmation-modal-actions">
           <Button
             variant="secondary"

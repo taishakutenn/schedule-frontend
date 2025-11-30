@@ -88,7 +88,7 @@ export default function AssignLoad({ onClose }) {
         setAllSubjectHours({});
         setGroups([]);
         setAssignedTeachers({});
-        setRelevantSemesters([]); // Добавлено
+        setRelevantSemesters([]);
         return;
       }
 
@@ -143,7 +143,7 @@ export default function AssignLoad({ onClose }) {
         setAllSubjectHours({});
         setGroups([]);
         setAssignedTeachers({});
-        setRelevantSemesters([]); // Добавлено
+        setRelevantSemesters([]);
       } finally {
         setLoadingSubjects(false);
       }
@@ -505,7 +505,7 @@ export default function AssignLoad({ onClose }) {
                     <tr
                       key={`row-${selectedGroup}-${row.semester}-${row.subjectId}-${index}`}
                     >
-                      <td>{`Семестр ${row.semester}`}</td>
+                      <td>{`${row.semester}`}</td>
                       <td>{row.subjectTitle}</td>
                       <td>
                         <select
