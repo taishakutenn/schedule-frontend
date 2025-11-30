@@ -100,10 +100,18 @@ export default function TeachLoadReport() {
       setError(null);
 
       try {
-        const data = await fetchTeachLoadDataByYear(selectedYear);
+        let data = await fetchTeachLoadDataByYear(selectedYear);
+
+        // Сортировка данных по полю teacher_name в алфавитном порядке
+        data = data.sort((a, b) => {
+          const nameA = a.teacher_name || "";
+          const nameB = b.teacher_name || "";
+          return nameA.localeCompare(nameB, "ru-RU", { sensitivity: "base" });
+        });
+
         setReportData(data);
         console.log(
-          `Данные для отчёта за ${selectedYear} год загружены.`,
+          `Данные для отчёта за ${selectedYear} год загружены и отсортированы.`,
           data
         );
       } catch (err) {

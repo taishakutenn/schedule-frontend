@@ -7,21 +7,6 @@
   margin: 1%;
 }
 
-.dynamic-content {
-  padding: 1%;
-  margin: 1%;
-  border: 2px solid;
-  border-radius: 8px;
-  border-color: var(--main-border-color);
-  text-align: center;
-}
-
-.plan-structure-data {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 5%;
-}
-
 .btn--load {
   margin: 15px;
 }

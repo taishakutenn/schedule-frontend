@@ -323,31 +323,33 @@ export default function PlanLoader() {
   return (
     <div className="dynamic-content">
       <InfoBlock items={planLoadHeaderInfo} />
-      <div className="plan-structure-data">
-        <DynamicInputList
-          title="Разделы"
-          items={sections}
-          onAdd={addSection}
-          onRemove={removeSection}
-          onUpdate={updateSection}
-          placeholder="Название раздела"
-        />
-        <DynamicInputList
-          title="Циклы"
-          items={cycles}
-          onAdd={addCycle}
-          onRemove={removeCycle}
-          onUpdate={updateCycle}
-          placeholder="Название цикла"
-        />
-        <DynamicInputList
-          title="Модули"
-          items={modules}
-          onAdd={addModule}
-          onRemove={removeModule}
-          onUpdate={updateModule}
-          placeholder="Название модуля"
-        />
+      <div className="plan-structure-data-wrapper">
+        <div className="plan-structure-data">
+          <DynamicInputList
+            title="Разделы"
+            items={sections}
+            onAdd={addSection}
+            onRemove={removeSection}
+            onUpdate={updateSection}
+            placeholder="Название раздела"
+          />
+          <DynamicInputList
+            title="Циклы"
+            items={cycles}
+            onAdd={addCycle}
+            onRemove={removeCycle}
+            onUpdate={updateCycle}
+            placeholder="Название цикла"
+          />
+          <DynamicInputList
+            title="Модули"
+            items={modules}
+            onAdd={addModule}
+            onRemove={removeModule}
+            onUpdate={updateModule}
+            placeholder="Название модуля"
+          />
+        </div>
       </div>
       <Button size="small" onClick={togglePlansTable}>
         {showPlansTable ? "Скрыть список планов" : "Список загруженных планов"}
@@ -393,9 +395,9 @@ export default function PlanLoader() {
         </div>
       )}
 
-      <div className="instruction">
+      {/* <div className="instruction">
         <InfoBlock items={planLoadInstructionHeaderInfo} />
-      </div>
+      </div> */}
     </div>
   );
 }

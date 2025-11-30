@@ -128,7 +128,7 @@ export default function StaffingSchedule({ selectedReport }) {
           <thead>
             <tr>
               <th>Преподаватель</th>
-              {/* <th>Общее количество часов</th> */}
+              <th>Общее количество часов</th>
               <th>Количество ставок</th>
             </tr>
           </thead>
@@ -136,7 +136,7 @@ export default function StaffingSchedule({ selectedReport }) {
             {staffingData.map((entry) => (
               <tr key={entry.teacherId}>
                 <td>{entry.teacherName}</td>
-                {/* <td>{entry.totalHours}</td> */}
+                <td>{entry.totalHours}</td>
                 <td>{entry.fte}</td>
               </tr>
             ))}
