@@ -10,7 +10,7 @@ import { getTeachers } from "../../../api/teachersAPI";
 
 export default function SchedulteTeachersTable() {
   // Syncrhonize date from header to current component
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
   };
@@ -33,7 +33,10 @@ export default function SchedulteTeachersTable() {
     <div className="schedule-teacher-table__container">
       <table className="schedule-teacher-table">
         <thead>
-          <ScheduleTeachersTableHeader onDateChange={handleDateChange} />
+          <ScheduleTeachersTableHeader
+            selectedDate={selectedDate}
+            onDateChange={handleDateChange}
+          />
         </thead>
         <tbody>
           {sortedTeachersData.map((item) => {

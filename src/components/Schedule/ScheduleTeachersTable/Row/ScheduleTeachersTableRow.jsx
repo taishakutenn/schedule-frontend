@@ -15,6 +15,7 @@ export default function ScheduleTeachersTableRow({
   // Get teacher in plan datas for current teacher
   const [teachersInPlanData, setTeacherInPlanData] = useState([]);
   const [teacherSubjects, setSubjects] = useState([]);
+  const [subjectHoursData, setSubjectHours] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,6 +30,7 @@ export default function ScheduleTeachersTableRow({
         // If we have subjectsHoursIds get subjectHours data
         if (subjectHoursIds.length > 0) {
           const subjectsHoursData = await getSubjectHoursByIds(subjectHoursIds);
+          setSubjectHours(subjectsHoursData);
 
           // Get subject ids
           const subjectIds = subjectsHoursData.map((subjectHour) => subjectHour.subject_in_cycle_id)
@@ -59,8 +61,15 @@ export default function ScheduleTeachersTableRow({
     "teacherInfo": teacherInfo,
     "teacherGroups": teacherGroups,
     "teacherSubjectsInCycleHours": teacherSubjectsInCycleHours,
-    "teacherSubjects": teacherSubjects
+    "teacherSubjects": teacherSubjects,
+    "teachersInPlanData": teachersInPlanData,
+    "subjectHoursData": subjectHoursData,
   };
+
+  // console.log(`Инфо препод:`, teacherInfo);
+  // console.log(`Группы препод:`, teacherGroups);
+  // console.log(`Препод в цикле:`, teacherSubjectsInCycleHours);
+  // console.log(`Учителя предметы:`, teacherSubjects);
   
   return (
     <tr>
@@ -70,12 +79,12 @@ export default function ScheduleTeachersTableRow({
           : `${teacherInfo.surname} ${teacherInfo.name.charAt(0)}.`}
       </td>
       <TeacherContext.Provider value={teacherContext}>
-        <ScheduleTeachersTableRowStudyDay />
-        <ScheduleTeachersTableRowStudyDay />
-        <ScheduleTeachersTableRowStudyDay />
-        <ScheduleTeachersTableRowStudyDay />
-        <ScheduleTeachersTableRowStudyDay />
-        <ScheduleTeachersTableRowStudyDay />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={0} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={2} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={3} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={4} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={5} />
       </TeacherContext.Provider>
     </tr>
   );

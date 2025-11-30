@@ -33,3 +33,15 @@ export const getTeacherInPlanByGroup = async (name) => {
   const data = await response.json();
   return data.teachers_in_plans.map((item) => item.teacher_in_plan);
 };
+
+export const getTeacherInPlanByGroupAndSubjectHours = async (groupName, subjectHoursId) => {
+  const response = await fetch(
+    `${API_BASE_URL}/teachers_in_plans/search/by_group_and_subject_hours/${groupName}/${subjectHoursId}`
+  );
+
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  return data.teacher_in_plan;
+}

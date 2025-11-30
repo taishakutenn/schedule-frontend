@@ -83,8 +83,9 @@ td.far-left {
   text-overflow: ellipsis;
 }
 
-.teachers-table__select:disabled {
-  color: var(--main-second-font-color);
+/* Select in placeholder mode (no value selected) */
+.select--placeholder {
+  color: var(--main-third-font-color);
 }
 
 .select__option {
