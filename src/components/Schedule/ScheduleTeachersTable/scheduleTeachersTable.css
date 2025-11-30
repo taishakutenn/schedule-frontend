@@ -56,8 +56,30 @@ td.far-left {
   border-left: 1px solid orangered;
 }
 
-.teachers-table__select {
+.teachers-table__select-container {
+  display: flex;
+  max-width: 150px;
+  width: auto;
 }
+
+.teachers-table__group-subject-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.teachers-table__select {
+  border: none;
+  border-bottom: 1px solid var(--main-second-header-footer-background-color);
+}
+
+.teachers-table__select:disabled {
+  color: var(--main-second-font-color);
+}
+
+.select__option {
+  font-size: var(--main-medium-font-size);
+}
+
 /* Custom date time pecker */
 
 .react-datepicker-wrapper input {
