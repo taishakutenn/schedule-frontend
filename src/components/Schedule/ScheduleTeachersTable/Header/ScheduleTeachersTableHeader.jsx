@@ -1,18 +1,6 @@
-import { DatePicker } from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
-// Locale
-import { registerLocale } from "react-datepicker";
-import ru from "date-fns/locale/ru";
-registerLocale("ru", ru);
+import MondayDatePicker from "../../../DatePicker/MondayDatePicker";
 
 export default function ScheduleTeachersTableHeader({ selectedDate, onDateChange }) {
-  
-  // Filter - onlu monday
-  function isMonday(dateToCheck) {
-    if (!dateToCheck) return false;
-    return dateToCheck.getDay() === 1;
-  }
 
   function addDays(baseDate, n) {
     return new Date(
@@ -27,12 +15,9 @@ export default function ScheduleTeachersTableHeader({ selectedDate, onDateChange
       <tr>
         {/* LEFT CELL WITH DATE PICKER */}
         <td rowSpan="2" className="far-right">
-          <DatePicker
-            selected={selectedDate}
-            onChange={onDateChange}
-            filterDate={isMonday}
-            dateFormat="dd-MM-yyyy"
-            locale="ru"
+          <MondayDatePicker
+            selectedDate={selectedDate}
+            onDateChange={onDateChange}
           />
         </td>
 

@@ -1,0 +1,15 @@
+.data-for-report-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.date-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.group-container {
+    display: flex;
+    flex-direction: column;
+}

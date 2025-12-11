@@ -36,6 +36,17 @@ export const createNewSession = async (sessionNumber, sessionDate, teacherInPlan
   return data;
 }
 
+export const getReportForGroup = async (groupName, startPeriodDate) => {
+  const response = await fetch(`${API_BASE_URL}/schedule/search/sessions/report/for-group/${groupName}/${startPeriodDate}`);
+
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  // Возвращаем blob для скачивания файла
+  const blob = await response.blob();
+  return blob;
+};
 
   //{
 //   "session_number": 0,

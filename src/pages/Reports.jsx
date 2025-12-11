@@ -4,6 +4,7 @@ import Button from "../components/Button/Button";
 import GroupPlate from "../components/GroupPlate/GroupPlate";
 
 import TeachLoad from "../components/Reports/TeachLoad/TeachLoad";
+import ScheduleForGroupReport from "../components/Reports/Schedules/ShesuleForGroupReport";
 import { useState } from "react";
 
 export default function Reports() {
@@ -19,12 +20,19 @@ export default function Reports() {
     setSelectedReport("Load");
     setSelectedGroup("TeachLoad");
   };
+  const handleSchedule = () => {
+    setSelectedReport("schedule");
+    setSelectedGroup("Schedules");
+  }
 
   // render content
   const RenderContent = () => {
     if (selectedReport == null) return null;
     if (selectedGroup == "TeachLoad") {
       return <TeachLoad selectedReport={selectedReport}></TeachLoad>;
+    }
+    if (selectedGroup == "Schedules") {
+      return <ScheduleForGroupReport />
     }
   };
 
@@ -41,10 +49,18 @@ export default function Reports() {
     // </Button>,
   ];
 
+  // Schedule
+  const scheduleButtons = [
+    <Button key={"btn-schedule"} onClick={handleSchedule} size="small">
+      Сформировать расписание для группы
+    </Button>,
+  ]
+
   return (
     <main>
       <div className="reports__navigation">
         <GroupPlate groupElements={teachLoadButtons}></GroupPlate>
+        <GroupPlate groupElements={scheduleButtons}></GroupPlate>
       </div>
       <div className="reports__display">
         <RenderContent />
