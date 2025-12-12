@@ -43,16 +43,19 @@ export const getReportForGroup = async (groupName, startPeriodDate) => {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
   }
 
-  // Возвращаем blob для скачивания файла
+  // Return blob for download file
   const blob = await response.blob();
   return blob;
 };
 
-  //{
-//   "session_number": 0,
-//   "session_date": "2025-11-30",
-//   "teacher_in_plan": 0,
-//   "session_type": "string",
-//   "cabinet_number": 0,
-//   "building_number": 0
-// }
+export const getSessionsForTeacherAndDate = async (teacherId, startPeriodDate, endPeriodDate) => {
+  const response = await fetch(`${API_BASE_URL}/sessions/search/by_teacher_id/${teacherId}/${startPeriodDate}/${endPeriodDate}`);
+
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
+

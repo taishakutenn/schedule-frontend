@@ -1,92 +1,128 @@
 import ScheduleTeachersTableRowStudyDay from "./StudyDay/ScheduleTeachersTableRowStudyDay";
-import TeacherContext from "../../../../contexts/TeacherContext";
 import ScheduleTeachersTableContext from "../../../../contexts/ScheduleTeachersTableContext";
+
 import { useApiData } from "../../../../hooks/useApiData";
+
 import { getTeacherInPlanByTeacher } from "../../../../api/teachersInPlansAPI";
 import { getSubjectHoursByIds } from "../../../../api/subjectHoursAPI";
 import { getSubjectsByIds } from "../../../../api/subjectAPI";
+import { getSessionsForTeacherAndDate } from "../../../../api/scheduleAPI";
+
 import { isMonday } from "../../../../utils/scheduleTeachersTableHepl";
-import { useState, useEffect, useMemo, useContext } from "react";
+
+import { useState, useEffect, useMemo, useContext, useCallback } from "react";
 
 export default function ScheduleTeachersTableRow({
   selectedDate,
   teacherInfo,
 }) {
-  // FIXED USE_API_DATA AND REWRITE THIS CODE
-  // ===================================================================
-  // Get teacher in plan datas for current teacher
-  const [teachersInPlanData, setTeacherInPlanData] = useState([]);
-  const [teacherSubjects, setSubjects] = useState([]);
-  const [subjectHoursData, setSubjectHours] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // First request
-        const result = await getTeacherInPlanByTeacher(teacherInfo?.id);
-        setTeacherInPlanData(result);
+  // Before reading this code blog, it is highly recommended to study the database tables:
+  // teacher_in_plan, subject_in_cycle, subject_in_cycle_hours
 
-        // Second request
-
-        // Get subject_in_cycle_hours_ids
-        const subjectHoursIds = result.map(
-          (plan) => plan.subject_in_cycle_hours_id
-        );
-        // If we have subjectsHoursIds get subjectHours data
-        if (subjectHoursIds.length > 0) {
-          const subjectsHoursData = await getSubjectHoursByIds(subjectHoursIds);
-          setSubjectHours(subjectsHoursData);
-
-          // Get subject ids
-          const subjectIds = subjectsHoursData.map(
-            (subjectHour) => subjectHour.subject_in_cycle_id
-          );
-          // If we have subjectIds get subjects data
-          if (subjectIds.length > 0) {
-            const subjects = await getSubjectsByIds(subjectIds);
-            setSubjects(subjects);
-          }
-        }
-      } catch (err) {
-        setTeacherInPlanData([]);
-        console.error("Ошибка загрузки:", err);
-      }
-    };
-
-    fetchData();
-  }, [selectedDate]);
-  // ===================================================================
-
-  // Get groups for current teacher
-  const teacherGroups = teachersInPlanData.map((plan) => plan.group_name);
-  // Get subjects in cycle hours id for current teacher
-  const teacherSubjectsInCycleHours = teachersInPlanData.map(
-    (plan) => plan.subject_in_cycle_hours_id
+  // 1.
+  // By teacher ID we get all teacher records in the plan
+  const teachersInPlanCall = useCallback(
+    // We use callback to avoid an infinite number of API requests
+    () => getTeacherInPlanByTeacher(teacherInfo.id),
+    [teacherInfo.id]
   );
+  const {
+    data: teacherInPlanData,
+    loading: teacherInPlanLoading,
+    error: teacherInPlanError,
+  } = useApiData(teachersInPlanCall, [selectedDate]);
 
-  // Create context
-  const teacherContext = {
-    teacherInfo: teacherInfo,
-    teacherGroups: teacherGroups,
-    teacherSubjectsInCycleHours: teacherSubjectsInCycleHours,
-    teacherSubjects: teacherSubjects,
-    teachersInPlanData: teachersInPlanData,
-    subjectHoursData: subjectHoursData,
-  };
+  // 2.
+  // Get subject in cycle hours IDs from teacher in plan data
+  const teacherSubjectsInCyclesHoursIds = useMemo(() => {
+    // We use memo, because Map create recreate this array and so that there is no endless API call
+    return (
+      teacherInPlanData?.map((item) => item.subject_in_cycle_hours_id) || []
+    );
+  }, [teacherInPlanData]);
 
-  // console.log(`Инфо препод:`, teacherInfo);
-  // console.log(`Группы препод:`, teacherGroups);
-  // console.log(`Препод в цикле:`, teacherSubjectsInCycleHours);
-  // console.log(`Учителя предметы:`, teacherSubjects);
+  // Using the received subject in cycle hours IDs, we obtain the item records subject in cycle hours
+  const subjectsInCycleHoursCall = useCallback(() => {
+    if (teacherSubjectsInCyclesHoursIds.length == 0) {
+      return Promise.resolve([]); // <--To avoid sending an empty array to the API
+    }
+    return getSubjectHoursByIds(teacherSubjectsInCyclesHoursIds);
+  }, [teacherSubjectsInCyclesHoursIds]);
+
+  const {
+    data: subjectInCycleHoursData,
+    loading: subjectInCycleHoursLoading,
+    error: subjectInCycleHoursError,
+  } = useApiData(subjectsInCycleHoursCall, []);
+
+  // 3.
+  // In the received data of the clock of objects in the cycle,
+  // we obtain the ID of all objects in the cycle
+  const subjectsInCycleIds = useMemo(() => {
+    return (
+      subjectInCycleHoursData?.map((item) => item.subject_in_cycle_id) || []
+    );
+  }, [subjectInCycleHoursData]);
+
+  // Using the received subject in cycle IDs, we obtain the item records subject in cycle
+  const subjectsInCycleCall = useCallback(() => {
+    if (subjectsInCycleIds.length == 0) {
+      return Promise.resolve([]);
+    }
+    return getSubjectsByIds(subjectsInCycleIds);
+  }, [subjectsInCycleIds]);
+
+  const {
+    data: subjectInCycleData,
+    loading: subjectInCycleLoading,
+    error: subjectInCycleError,
+  } = useApiData(subjectsInCycleCall, []);
+
+  // 4.
+  // Separately, for convenience, we generate data for context
+  const groups = [...new Set(teacherInPlanData.map((item) => item.group_name))];
+
+  // 5.
+  // Get sessions for this teacher and for current week
+  const startPeriodDate = selectedDate;
+  const endPeriodDate = new Date(selectedDate);
+  endPeriodDate.setDate(endPeriodDate.getDate() + 5);
+
+  // Function for formating date
+  const formatDate = (date) => date.toISOString().split("T")[0];
+
+  const startPeriodDateStr = formatDate(startPeriodDate);
+  const endPeriodDateStr = formatDate(endPeriodDate);
+
+  const teacherSessionsCall = useCallback(() => {
+    return getSessionsForTeacherAndDate(
+      teacherInfo?.id,
+      startPeriodDateStr,
+      endPeriodDateStr
+    );
+  }, [teacherInfo]);
+
+  const {
+    data: teacherSessions,
+    loading: teacherSessionsLoading,
+    error: teacherSessionsError,
+  } = useApiData(teacherSessionsCall, [selectedDate]);
 
   // Get context with cabinets and add data in this context
   const scheduleTeachersTableContext = useContext(ScheduleTeachersTableContext);
   const updatedScheduleTeachersTableContext = useMemo(() => {
     return {
       ...scheduleTeachersTableContext,
-      teacherId: teacherInfo?.id,
-      teacherName: teacherInfo?.name,
+      teacherInfo: teacherInfo,
+      teacherInPlanData: teacherInPlanData || false,
+      subjectInCycleHoursData: subjectInCycleHoursData || false,
+      subjectInCycleData: subjectInCycleData || false,
+      groups: groups || false,
+      teacherSessions: teacherSessions || false,
     };
   }, [scheduleTeachersTableContext, teacherInfo]);
+
+  console.log(teacherSessions);
 
   return (
     <tr>
@@ -97,18 +133,16 @@ export default function ScheduleTeachersTableRow({
             )}. ${teacherInfo.fathername.charAt(0)}.`
           : `${teacherInfo.surname} ${teacherInfo.name.charAt(0)}.`}
       </td>
-      <TeacherContext.Provider value={teacherContext}>
-        <ScheduleTeachersTableContext.Provider
-          value={updatedScheduleTeachersTableContext}
-        >
-          <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={0} />
-          {/* <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
+      <ScheduleTeachersTableContext.Provider
+        value={updatedScheduleTeachersTableContext}
+      >
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={0} />
+        {/* <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
           <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={2} />
           <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={3} />
           <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={4} />
           <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={5} /> */}
-        </ScheduleTeachersTableContext.Provider>
-      </TeacherContext.Provider>
+      </ScheduleTeachersTableContext.Provider>
     </tr>
   );
 }

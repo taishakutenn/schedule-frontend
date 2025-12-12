@@ -93,9 +93,9 @@ td.far-left {
 }
 
 .type-select {
-  width: 45px;
-  max-width: 45px;
-  min-width: 45px;
+  max-width: 65px;
+  min-width: 65px;
+  width: 100%;
   padding: 2px 4px;
   text-align: center;
   flex: 0 0 45px;

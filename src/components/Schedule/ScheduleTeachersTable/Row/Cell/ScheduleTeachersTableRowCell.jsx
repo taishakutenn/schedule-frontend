@@ -1,5 +1,4 @@
 import { useContext, useState, useEffect } from "react";
-import TeacherContext from "../../../../../contexts/TeacherContext";
 import ScheduleTeachersTableContext from "../../../../../contexts/ScheduleTeachersTableContext";
 import { createNewSession } from "../../../../../api/scheduleAPI";
 import Modal from "../../../../Modal/Modal";
@@ -10,11 +9,19 @@ export default function ScheduleTeachersTableCell({
   sessionNumber,
 }) {
   const [currentGroup, setCurrentGroup] = useState([]);
-  const teacher = useContext(TeacherContext);
-  const teacherGroups = teacher.teacherGroups;
-  const teacherSubjects = teacher.teacherSubjects;
 
+  // Get data from context
   const scheduleTeachersTableContext = useContext(ScheduleTeachersTableContext);
+  const {
+    cabinets,
+    sessionsTypes,
+    teacherInfo,
+    teacherInPlanData,
+    subjectInCycleHoursData,
+    subjectInCycleData,
+    groups,
+    teacherSessions,
+  } = scheduleTeachersTableContext;
 
   const [sessionData, setSessionData] = useState({
     sessionNumber: sessionNumber,
@@ -100,7 +107,7 @@ export default function ScheduleTeachersTableCell({
     };
 
     fetchSubjectHours();
-  }, [sessionData, teacher]);
+  }, [sessionData]);
 
   useEffect(() => {
     setSessionData((prev) => ({
@@ -116,6 +123,7 @@ export default function ScheduleTeachersTableCell({
       <td className={classCell}>
         <div className="teachers-table__select-container">
           <div className="teachers-table__group-subject-container">
+            {/* Groups select */}
             <select
               className={
                 "teachers-table__select " +
@@ -128,13 +136,14 @@ export default function ScheduleTeachersTableCell({
               <option value="" disabled className="option--placeholder">
                 Группа
               </option>
-              {teacherGroups.map((group) => (
+              {groups.map((group) => (
                 <option value={group} key={group} className="select__option">
                   {group}
                 </option>
               ))}
             </select>
 
+            {/* Subject select */}
             <select
               className={
                 "teachers-table__select " +
@@ -147,7 +156,7 @@ export default function ScheduleTeachersTableCell({
               <option value="" disabled className="option--placeholder">
                 Предмет
               </option>
-              {teacherSubjects?.map((subject) => (
+              {subjectInCycleData?.map((subject) => (
                 <option
                   value={subject.id}
                   key={subject.id}
@@ -160,6 +169,7 @@ export default function ScheduleTeachersTableCell({
           </div>
 
           <div className="teachers-table__session-type-container">
+            {/* SessioType select */}
             <select
               className={
                 "type-select " +
@@ -173,14 +183,43 @@ export default function ScheduleTeachersTableCell({
                 Пара
               </option>
 
-              {scheduleTeachersTableContext.sessionsTypes.map((type) => {
-                <option
-                  value={type.name}
-                  key={type.name}
-                  className="select__option"
-                >
-                  {type.name}
-                </option>;
+              {sessionsTypes.map((type) => {
+                return (
+                  <option
+                    value={type.name}
+                    key={type.name}
+                    className="select__option"
+                  >
+                    {type.name}
+                  </option>
+                );
+              })}
+            </select>
+
+            {/* Cabinets select */}
+            <select
+              className={
+                "type-select " +
+                (sessionData.sessionType === "" ? "select--placeholder" : "")
+              }
+              name="sessionType"
+              onChange={updateSession}
+              value={sessionData.sessionType}
+            >
+              <option value="" disabled className="option--placeholder">
+                Кабинет
+              </option>
+
+              {cabinets.map((cabinet) => {
+                return (
+                  <option
+                    value={cabinet.name}
+                    key={cabinet.name}
+                    className="select__option"
+                  >
+                    {`${cabinet.building_number}-${cabinet.cabinet_number}`}
+                  </option>
+                );
               })}
             </select>
           </div>

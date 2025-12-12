@@ -1,6 +1,7 @@
 import "./scheduleTeachersTable.css";
 
 import { useEffect, useState } from "react";
+import { Oval } from "react-loader-spinner";
 
 import ScheduleTeachersTableRow from "./Row/ScheduleTeachersTableRow";
 import ScheduleTeachersTableHeader from "./Header/ScheduleTeachersTableHeader";
@@ -43,7 +44,17 @@ export default function SchedulteTeachersTable() {
 
   // Checking if the data loads
   if (teachersLoading || cabinetsLoading || sessionsTypesLoading) {
-    return <div>Загрузка данных...</div>;
+    return (
+      <Oval
+        visible={true}
+        height="50"
+        width="50"
+        color="#4caf50"
+        ariaLabel="oval-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+      />
+    );
   }
 
   // Errors
