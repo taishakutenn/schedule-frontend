@@ -1,0 +1,17 @@
+.cell-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  display: flex;
+  border: 1px solid var(--shedule-table-cell-border-nothing);
+  border-radius: 5px;
+  isolation: isolate;
+}
+
+.cell-container__column {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
