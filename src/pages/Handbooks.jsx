@@ -16,7 +16,7 @@ import { API_BASE_URL } from "../api/apiURL";
 import GroupPlate from "../components/GroupPlate/GroupPlate";
 import { displayFieldConfig } from "../utils/tableConfig";
 
-import "./Handbook.css";
+import "./handbook.css";
 
 const headerInfo = [
   {

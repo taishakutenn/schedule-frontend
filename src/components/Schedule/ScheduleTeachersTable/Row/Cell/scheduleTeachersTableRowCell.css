@@ -1,12 +1,56 @@
 .cell-container {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   height: auto;
   display: flex;
   border: 1px solid var(--shedule-table-cell-border-nothing);
   border-radius: 5px;
   isolation: isolate;
+  transition: border-color 0.3s ease;
+}
+
+/* Эта надстройка css нужна для второй анимации,
+так как с 1 контейнером работают 2 анимации и нужное для них свойство должно быть одно - либо одно, либо другое */
+.cell-for-animation-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.modal-in-container {
+  display: flex;
+  align-items: center;
+  font-size: var(--main-large-font-size);
+  background-color: var(--animation-border-color);
+  border-radius: 5px;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  animation: modalContainer 1.5s ease-out forwards;
+}
+
+.cell-container::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  border-radius: 5px;
+  pointer-events: none;
+  border: 1px solid var(--animation-border-color);
+  box-sizing: border-box;
+  opacity: 0;
+
+  will-change: clip-path, opacity;
+}
+
+.cell-container--animated::before {
+  opacity: 1;
+  animation: drawBorder 2.2s cubic-bezier(.4,0,.2,1) forwards;
 }
 
 .cell-container__column {
@@ -14,4 +58,39 @@
   flex-direction: column;
   gap: 3px;
   min-width: 0;
+}
+
+/* modal in container animation */
+@keyframes modalContainer {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Border animation */
+@keyframes drawBorder {
+  0% {
+    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+  }
+
+  20% {
+    clip-path: polygon(0 0, 100% 0, 0 0, 0 0);
+  }
+
+  50% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0);
+  }
+
+  80% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
 }
