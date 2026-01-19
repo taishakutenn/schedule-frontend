@@ -24,7 +24,7 @@ export default function ScheduleTeachersTableRow({
   const teachersInPlanCall = useCallback(
     // We use callback to avoid an infinite number of API requests
     () => getTeacherInPlanByTeacher(teacherInfo.id),
-    [teacherInfo.id]
+    [teacherInfo.id],
   );
   const {
     data: teacherInPlanData,
@@ -98,7 +98,7 @@ export default function ScheduleTeachersTableRow({
     return getSessionsForTeacherAndDate(
       teacherInfo?.id,
       startPeriodDateStr,
-      endPeriodDateStr
+      endPeriodDateStr,
     );
   }, [teacherInfo]);
 
@@ -122,14 +122,12 @@ export default function ScheduleTeachersTableRow({
     };
   }, [scheduleTeachersTableContext, teacherInfo]);
 
-  console.log(teacherSessions);
-
   return (
     <tr>
       <td className="session-cell">
         {teacherInfo.fathername
           ? `${teacherInfo.surname} ${teacherInfo.name.charAt(
-              0
+              0,
             )}. ${teacherInfo.fathername.charAt(0)}.`
           : `${teacherInfo.surname} ${teacherInfo.name.charAt(0)}.`}
       </td>

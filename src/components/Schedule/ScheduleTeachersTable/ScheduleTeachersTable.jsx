@@ -73,7 +73,7 @@ export default function SchedulteTeachersTable() {
     return 0;
   });
 
-  // Add cabinets in context
+  // Add cabinets and sessionTypes in context
   const scheduleTeachersTableContext = {
     cabinets: cabinetsData,
     sessionsTypes: sessionsTypesData,
