@@ -1,56 +1,71 @@
 .react-select {
-  width: 100%;
-  min-width: 0;
+  min-width: 130px !important;
+  max-width: 200px !important;
+  width: 100% !important;
 }
 
-/* Контрол (рамка) */
+/* Control */
 .react-select__control {
-  min-height: 28px !important;
-  background-color: #1f2933 !important;
-  border-color: #3b82f6 !important;
-  box-shadow: none !important;
+  background-color: var(--main-background-panel) !important;
+  border: 1px solid var(--main-border-color) !important;
+  border-radius: 4px;
+  color: var(--main-font-color) !important;
+  cursor: pointer !important;
+  flex: auto !important;
+  font-size: var(--main-small-font-size) !important;
+  outline: none !important;
+  min-width: 100px !important;
+  transition: var(--main-border-color) 0.2s ease !important;
 }
 
-/* Ховер */
+/* Hover */
 .react-select__control:hover {
-  border-color: #60a5fa !important;
+  border-color: var(--main-accent-color) !important;
 }
 
-/* Выбранное значение */
+/* Current value */
 .react-select__single-value {
-  color: #e5e7eb !important;
+  color: var(--main-font-color) !important;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.react-select__input {
+  color: var(--main-font-color) !important;
 }
 
 /* Placeholder */
 .react-select__placeholder {
-  color: #9ca3af !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--main-placeholder-color) !important;
 }
 
-/* Стрелка */
+/* Indicator -> | */
+.react-select__indicator-separator {
+  background-color: var(--main-border-color) !important;
+}
+
+/* Arrow */
 .react-select__indicator {
-  color: #9ca3af !important;
+  color: var(--main-font-color) !important;
 }
 
-/* Меню */
+/* Menu */
 .react-select__menu {
-  background-color: #1f2933 !important;
-  z-index: 20;
+  background-color: var(--main-background-panel) !important;
 }
 
-/* Опции */
+/* Options */
 .react-select__option {
-  background-color: #1f2933 !important;
-  color: #e5e7eb !important;
+  background-color: var(--main-background-panel) !important;
+  color: var(--main-font-color) !important;
 }
 
 .react-select__option--is-focused {
-  background-color: #374151 !important;
+  background-color: var(--main-third-accent-color) !important;
 }
 
 .react-select__option--is-selected {
-  background-color: #2563eb !important;
+  background-color: var(--main-accent-color) !important;
 }

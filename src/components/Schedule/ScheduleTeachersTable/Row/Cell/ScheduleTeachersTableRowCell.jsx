@@ -25,17 +25,26 @@ export default function ScheduleTeachersTableCell({
     teacherSessions,
   } = scheduleTeachersTableContext;
 
-  console.log(groups);
   // Preparing data for selects
-  // const groupsOptions = groups.map((group) => ({
-  //   value: group.id,
-  //   label: group.name,
-  // }));
+  const groupsOptions = groups.map((group) => ({
+    value: group,
+    label: group,
+  }));
 
-  // const sessionTypesOptions = sessionsTypes.map((type) => ({
-  //   value: type.id,
-  //   label: type.name,
-  // }));
+  const subjects = [
+    { value: "Математика", label: "Математика" },
+    { value: "Физика", label: "Физика" },
+  ];
+
+  const sessionTypesOptions = sessionsTypes.map((type) => ({
+    value: `${type.id}`,
+    label: `${type.name}`,
+  }));
+
+  const cabinetsOptions = cabinets.map((cabinet) => ({
+    value: `${cabinet.building_number}-${cabinet.cabinet_number}`,
+    label: `${cabinet.building_number}-${cabinet.cabinet_number}`,
+  }));
 
   const [isAnimating, setIsAnimating] = useState(false);
   const [isModalAnimating, setIsModalAnimating] = useState(false);
@@ -84,43 +93,13 @@ export default function ScheduleTeachersTableCell({
 
           {/* Содержимое ячейки */}
           <div className="cell-container__column left-column">
-            <select className="cell-container__left-select">
-              {groups.map((group) => (
-                <option key={group} value={group}>
-                  {group}
-                </option>
-              ))}
-            </select>
-
-            {/* Groups */}
-            {/* <SyncSelect options={groupsOptions} /> */}
-
-            <select
-              className="cell-container__left-select"
-              // onChange={() => handleSelectChange("update")}
-            >
-              <option>Предмет</option>
-              <option>Предмет2</option>
-            </select>
+            <SyncSelect options={groupsOptions} placeholder="Группа" />
+            <SyncSelect options={subjects} placeholder="Предмет" />
           </div>
 
           <div className="cell-container__column right-column">
-            <select className="cell-container__right-select">
-              {sessionsTypes.map((type) => (
-                <option key={type.id}>{type.name}</option>
-              ))}
-            </select>
-            {/* <SyncSelect options={sessionTypesOptions} /> */}
-
-            <select className="cell-container__right-select">
-              {cabinets.map((cabinet) => (
-                <option
-                  key={`${cabinet.building_number}-${cabinet.cabinet_number}`}
-                >
-                  {`${cabinet.building_number}-${cabinet.cabinet_number}`}
-                </option>
-              ))}
-            </select>
+            <SyncSelect options={sessionTypesOptions} placeholder="Тип пары" />
+            <SyncSelect options={cabinetsOptions} placeholder="Кабинет" />
           </div>
         </div>
       </div>

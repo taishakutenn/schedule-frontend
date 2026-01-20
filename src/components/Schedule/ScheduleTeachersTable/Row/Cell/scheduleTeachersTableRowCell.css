@@ -6,7 +6,6 @@
   display: flex;
   border: 1px solid var(--shedule-table-cell-border-nothing);
   border-radius: 5px;
-  isolation: isolate;
   transition: border-color 0.3s ease;
 }
 
@@ -14,7 +13,7 @@
 так как с 1 контейнером работают 2 анимации и нужное для них свойство должно быть одно - либо одно, либо другое */
 .cell-for-animation-container {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   height: 100%;
   display: flex;
