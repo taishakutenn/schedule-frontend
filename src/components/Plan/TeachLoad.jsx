@@ -126,6 +126,7 @@ export default function TeachLoad() {
       >
         <AssignLoad onClose={handleCloseModal} />
       </Modal>
+      {/* {console.log("Загруженные данные", loadData)} */}
     </div>
   );
 }
