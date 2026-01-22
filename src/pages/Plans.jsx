@@ -5,7 +5,6 @@ import PlanLoader from "../components/Plan/PlanLoader";
 import TeachLoad from "../components/Plan/TeachLoad";
 
 import "./Plan.css";
-import Sidebar from "../components/Sidebar/Sidebar";
 
 const plansInfo = [
   {
@@ -43,7 +42,6 @@ export default function Plans() {
         <Button onClick={handleTeachLoad}>Учебная нагрузка</Button>
       </div>
       <div>{Content()}</div>
-      <Sidebar></Sidebar>
     </main>
   );
 }

@@ -5,6 +5,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import ControlLine from "./ControlLine/ControlLine";
 import Modal from "../../components/Modal/Modal";
 import AssignLoad from "./AssignLoad/AssignLoad";
+import Sidebar from "../Sidebar/Sidebar";
 
 const teachLoadHeaderInfo = [
   {
@@ -25,7 +26,7 @@ export default function TeachLoad() {
     try {
       const data = await fetchTeachLoadData();
       setLoadData(data);
-      // console.log("TeachLoad: Data loaded successfully:", data);
+      console.log("TeachLoad: Data loaded successfully:", data);
     } catch (err) {
       console.error("TeachLoad: Error loading data:", err);
       setError(err.message);
@@ -102,6 +103,42 @@ export default function TeachLoad() {
     });
   }, [loadData, filters]);
 
+  const aggregatedTeacherHours = useMemo(() => {
+    if (!filteredData || !Array.isArray(filteredData)) {
+      return [];
+    }
+
+    const hoursMap = new Map();
+
+    filteredData.forEach((item) => {
+      const teacherId = item.teacher_id;
+      const teacherName = item.teacher_name;
+      const budgetHours = parseFloat(item.budget_hours) || 0;
+      const extraBudgetHours = parseFloat(item.extrabudget_hours) || 0;
+      const totalHoursForItem = budgetHours + extraBudgetHours;
+
+      if (hoursMap.has(teacherId)) {
+        const existing = hoursMap.get(teacherId);
+        hoursMap.set(teacherId, {
+          ...existing,
+          totalHours: existing.totalHours + totalHoursForItem,
+        });
+      } else {
+        hoursMap.set(teacherId, {
+          teacher_id: teacherId,
+          teacher_name: teacherName,
+          totalHours: totalHoursForItem,
+        });
+      }
+    });
+
+    return Array.from(hoursMap.values()).sort((a, b) =>
+      a.teacher_name.localeCompare(b.teacher_name, "ru-RU", {
+        sensitivity: "base",
+      }),
+    );
+  }, [filteredData]);
+
   if (loading) {
     return <div>Загрузка данных о нагрузке...</div>;
   }
@@ -116,8 +153,24 @@ export default function TeachLoad() {
         onFilterChange={handleFilterChange}
         onEditClick={handleEditClick}
       />
-      <p>Количество отфильтрованных записей: {filteredData.length}</p>
+      <p>Количество записей: {filteredData.length}</p>
       <LoadTable loadData={filteredData} />
+
+      <Sidebar title="Нагрузка по преподавателям">
+        {aggregatedTeacherHours.length === 0 ? (
+          <p>Нет данных о нагрузке преподавателей.</p>
+        ) : (
+          <ul>
+            {aggregatedTeacherHours.map((entry) => (
+              <li key={entry.teacher_id} style={{ marginBottom: "4px" }}>
+                <span style={{ fontWeight: "bold" }}>{entry.teacher_name}</span>
+                : <span>{entry.totalHours}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Sidebar>
+
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
