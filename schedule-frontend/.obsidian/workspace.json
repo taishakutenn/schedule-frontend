@@ -65,6 +65,19 @@
               "icon": "lucide-search",
               "title": "Search"
             }
+<<<<<<< HEAD
+=======
+          },
+          {
+            "id": "74cb1ab60cdf1fd7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+>>>>>>> 8746b40ade68caf39e14936b2318da77d91ee09b
           }
         ]
       }
@@ -156,9 +169,25 @@
               "icon": "lucide-list",
               "title": "Outline of Kanban"
             }
+<<<<<<< HEAD
           }
         ],
         "currentTab": 4
+=======
+          },
+          {
+            "id": "e24ac89f52ed8c1b",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          }
+        ],
+        "currentTab": 5
+>>>>>>> 8746b40ade68caf39e14936b2318da77d91ee09b
       }
     ],
     "direction": "horizontal",

@@ -10,6 +10,7 @@
   "footnotes": false,
   "properties": true,
   "page-preview": true,
+<<<<<<< HEAD
   "daily-notes": false,
   "templates": true,
   "note-composer": false,
@@ -17,6 +18,15 @@
   "slash-command": false,
   "editor-status": true,
   "bookmarks": false,
+=======
+  "daily-notes": true,
+  "templates": true,
+  "note-composer": true,
+  "command-palette": true,
+  "slash-command": false,
+  "editor-status": true,
+  "bookmarks": true,
+>>>>>>> 8746b40ade68caf39e14936b2318da77d91ee09b
   "markdown-importer": false,
   "zk-prefixer": false,
   "random-note": false,
@@ -25,9 +35,16 @@
   "slides": false,
   "audio-recorder": false,
   "workspaces": false,
+<<<<<<< HEAD
   "file-recovery": false,
   "publish": false,
   "sync": false,
   "bases": false,
+=======
+  "file-recovery": true,
+  "publish": false,
+  "sync": true,
+  "bases": true,
+>>>>>>> 8746b40ade68caf39e14936b2318da77d91ee09b
   "webviewer": false
 }
