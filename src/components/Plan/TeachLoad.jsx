@@ -156,17 +156,31 @@ export default function TeachLoad() {
       <p>Количество записей: {filteredData.length}</p>
       <LoadTable loadData={filteredData} />
 
-      <Sidebar title="Нагрузка по преподавателям">
+      <Sidebar title="Текущие часы преподавателей">
         {aggregatedTeacherHours.length === 0 ? (
           <p>Нет данных о нагрузке преподавателей.</p>
         ) : (
           <ul>
-            {aggregatedTeacherHours.map((entry) => (
-              <li key={entry.teacher_id} style={{ marginBottom: "4px" }}>
-                <span style={{ fontWeight: "bold" }}>{entry.teacher_name}</span>
-                : <span>{entry.totalHours}</span>
-              </li>
-            ))}
+            {aggregatedTeacherHours.map((entry) => {
+              // Определите пороговые значения и соответствующие цвета
+              let color;
+              if (entry.totalHours < 1440) {
+                color = "#0b8000";
+              } else if (entry.totalHours == 1440) {
+                color = "#fdd10d";
+              } else {
+                color = "#d81515";
+              }
+
+              return (
+                <li key={entry.teacher_id} style={{ marginBottom: "4px" }}>
+                  <span style={{ fontWeight: "bold" }}>
+                    {entry.teacher_name}
+                  </span>
+                  : <span style={{ color }}>{entry.totalHours}</span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </Sidebar>

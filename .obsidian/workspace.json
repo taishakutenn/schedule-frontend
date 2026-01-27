@@ -1,30 +1,20 @@
 {
   "main": {
-    "id": "182266a0155d81c6",
+    "id": "483e1cb19fd006cc",
     "type": "split",
     "children": [
       {
-        "id": "b8199841ba76dd01",
+        "id": "064e610eebdb4737",
         "type": "tabs",
         "children": [
           {
-            "id": "88cde4b39fce4090",
+            "id": "7ada8ef21da83add",
             "type": "leaf",
             "state": {
-              "type": "kanban",
-              "state": {
-                "file": "Kanban.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false
-                  ]
-                }
-              },
-              "icon": "lucide-trello",
-              "title": "Kanban"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -33,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "6ee7af51541289af",
+    "id": "463f969fe3aa5b4f",
     "type": "split",
     "children": [
       {
-        "id": "3cf3a8dd50a40eba",
+        "id": "b15ee983bdb43682",
         "type": "tabs",
         "children": [
           {
-            "id": "355d696f6380a778",
+            "id": "2d53b450b8ffca8a",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -54,7 +44,7 @@
             }
           },
           {
-            "id": "833cdf1863a6165e",
+            "id": "d1f1c0e34a0e0fde",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -69,6 +59,16 @@
               "icon": "lucide-search",
               "title": "Search"
             }
+          },
+          {
+            "id": "fafd8d52bc09c008",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
           }
         ]
       }
@@ -77,20 +77,19 @@
     "width": 300
   },
   "right": {
-    "id": "2543c2fa7563f93b",
+    "id": "a3a600ca52352225",
     "type": "split",
     "children": [
       {
-        "id": "2c2af82f82df1787",
+        "id": "c3dc982c368aecdc",
         "type": "tabs",
         "children": [
           {
-            "id": "2ff76cbd280f4d27",
+            "id": "f43f3b5c926eb6d0",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Kanban.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,25 +99,24 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Kanban"
+              "title": "Backlinks"
             }
           },
           {
-            "id": "d7309456d4ad96d7",
+            "id": "7b8858043cc45291",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Kanban.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Kanban"
+              "title": "Outgoing links"
             }
           },
           {
-            "id": "b33651866e2e098c",
+            "id": "ccf6e0d778cdb765",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -133,22 +131,7 @@
             }
           },
           {
-            "id": "e8b152ae838027a3",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "Kanban.md",
-                "followCursor": false,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-list",
-              "title": "Outline of Kanban"
-            }
-          },
-          {
-            "id": "32c044ab7ca01138",
+            "id": "820d712607e7866c",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -159,6 +142,20 @@
               },
               "icon": "lucide-archive",
               "title": "All properties"
+            }
+          },
+          {
+            "id": "8c4750fa5066edd5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
             }
           }
         ]
@@ -173,14 +170,12 @@
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "obsidian-kanban:Create new board": false
+      "bases:Create new base": false
     }
   },
-  "active": "88cde4b39fce4090",
-  "lastOpenFiles": [
-    "Untitled.canvas",
-    "Kanban.md"
-  ]
+  "active": "7ada8ef21da83add",
+  "lastOpenFiles": []
 }
