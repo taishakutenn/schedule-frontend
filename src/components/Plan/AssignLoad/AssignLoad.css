@@ -49,6 +49,11 @@ select {
   font-size: var(--main-small-font-size);
 }
 
+select.teach-select-active {
+  width: 95%;
+  margin-right: 8px;
+}
+
 select:focus {
   border-color: var(--main-accent-color);
 }

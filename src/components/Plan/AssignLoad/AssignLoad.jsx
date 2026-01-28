@@ -95,24 +95,23 @@ export default function AssignLoad({ onClose }) {
       setLoadingSubjects(true);
       setError(null);
       try {
-        console.log("Fetching subjects for plan ID:", planId);
+        // console.log("Fetching subjects for plan ID:", planId);
         const subjectsInPlan = await getAllSubjectsInPlan(planId);
         const subjectsArray = Array.isArray(subjectsInPlan)
           ? subjectsInPlan
           : [];
-        console.log("Fetched subjects:", subjectsArray);
+        // console.log("Fetched subjects:", subjectsArray);
 
         const hoursMap = {};
         const hoursPromises = subjectsArray.map(async (subject) => {
           try {
-            console.log("Fetching hours for subject ID:", subject.id);
             const hours = await getSubjectHoursBySubject(subject.id);
-            console.log("Fetched hours for subject ID:", subject.id, hours);
+            // console.log("Fetched hours for subject ID:", subject.id, hours);
             hoursMap[subject.id] = hours;
           } catch (err) {
             console.error(
               `Error fetching hours for subject ID ${subject.id}:`,
-              err
+              err,
             );
             hoursMap[subject.id] = [];
           }
@@ -127,11 +126,10 @@ export default function AssignLoad({ onClose }) {
 
         const specialityCode = findSpecialityCodeByPlanId(planId);
         if (specialityCode) {
-          const groupsForSpeciality = await getGroupsBySpeciality(
-            specialityCode
-          );
+          const groupsForSpeciality =
+            await getGroupsBySpeciality(specialityCode);
           setGroups(
-            Array.isArray(groupsForSpeciality) ? groupsForSpeciality : []
+            Array.isArray(groupsForSpeciality) ? groupsForSpeciality : [],
           );
         } else {
           setGroups([]);
@@ -165,7 +163,7 @@ export default function AssignLoad({ onClose }) {
     if (calcError) {
       console.warn(
         `Ошибка вычисления семестров для группы ${selectedGroup}:`,
-        calcError
+        calcError,
       );
       setRelevantSemesters([]);
       return;
@@ -183,7 +181,7 @@ export default function AssignLoad({ onClose }) {
     });
 
     const sortedSemesters = Array.from(uniqueSemestersSet).sort(
-      (a, b) => a - b
+      (a, b) => a - b,
     );
     setRelevantSemesters(sortedSemesters);
   }, [selectedGroup, allSubjectHours]);
@@ -220,7 +218,7 @@ export default function AssignLoad({ onClose }) {
 
         assignments.forEach((assignment) => {
           const subjectId = hoursToSubjectMap.get(
-            assignment.subject_in_cycle_hours_id
+            assignment.subject_in_cycle_hours_id,
           );
 
           const subjectInPlan = subjects.find((s) => s.id === subjectId);
@@ -230,7 +228,7 @@ export default function AssignLoad({ onClose }) {
             const subjectHours = allSubjectHours[subjectId];
             if (Array.isArray(subjectHours)) {
               const hourDetails = subjectHours.find(
-                (h) => h.id === assignment.subject_in_cycle_hours_id
+                (h) => h.id === assignment.subject_in_cycle_hours_id,
               );
               if (hourDetails) {
                 semester = hourDetails.semester;
@@ -247,16 +245,16 @@ export default function AssignLoad({ onClose }) {
                 teacher_id: assignment.teacher_id.toString(),
               };
               console.log(
-                `Pre-filled assignment: Key=${assignmentKey}, DB ID=${assignment.id}, TeacherID=${assignment.teacher_id}`
+                `Pre-filled assignment: Key=${assignmentKey}, DB ID=${assignment.id}, TeacherID=${assignment.teacher_id}`,
               );
             } else {
               console.log(
-                `Assignment found for non-current semester: Group=${selectedGroup}, Semester=${semester}, SubjectID=${subjectId}, TeacherID=${assignment.teacher_id}`
+                `Assignment found for non-current semester: Group=${selectedGroup}, Semester=${semester}, SubjectID=${subjectId}, TeacherID=${assignment.teacher_id}`,
               );
             }
           } else {
             console.log(
-              `Assignment found for subject not in current plan: subject_in_cycle_hours_id=${assignment.subject_in_cycle_hours_id}, teacher_id=${assignment.teacher_id}`
+              `Assignment found for subject not in current plan: subject_in_cycle_hours_id=${assignment.subject_in_cycle_hours_id}, teacher_id=${assignment.teacher_id}`,
             );
           }
         });
@@ -289,7 +287,7 @@ export default function AssignLoad({ onClose }) {
     if (calcError) {
       console.warn(
         `useMemo: Ошибка вычисления семестров для группы ${selectedGroup}:`,
-        calcError
+        calcError,
       );
       return [];
     }
@@ -329,11 +327,11 @@ export default function AssignLoad({ onClose }) {
     subjectId,
     subjectTitle,
     group,
-    e
+    e,
   ) => {
     const selectedTeacherId = e.target.value;
     console.log(
-      `Преподаватель для группы ${group}, семестр ${semester}, предмет "${subjectTitle}" (${subjectId}) изменён на ID: ${selectedTeacherId}`
+      `Преподаватель для группы ${group}, семестр ${semester}, предмет "${subjectTitle}" (${subjectId}) изменён на ID: ${selectedTeacherId}`,
     );
 
     const assignmentKey = `${group}-${semester}-${subjectId}`;
@@ -341,17 +339,17 @@ export default function AssignLoad({ onClose }) {
     const subjectHoursForSubject = allSubjectHours[subjectId];
     if (!Array.isArray(subjectHoursForSubject)) {
       console.error(
-        `Hours for subject ${subjectId} not found or not an array.`
+        `Hours for subject ${subjectId} not found or not an array.`,
       );
       return;
     }
 
     const hourForSemester = subjectHoursForSubject.find(
-      (hour) => hour.semester === semester
+      (hour) => hour.semester === semester,
     );
     if (!hourForSemester) {
       console.error(
-        `Hours for subject ${subjectId} in semester ${semester} not found.`
+        `Hours for subject ${subjectId} in semester ${semester} not found.`,
       );
       return;
     }
@@ -390,19 +388,19 @@ export default function AssignLoad({ onClose }) {
       if (currentAssignment && currentAssignment.id) {
         console.log(
           "Attempting to update assignment with ID in body:",
-          assignmentData
+          assignmentData,
         );
         const updateResult = await updateAssignment(
           "teachers_in_plans",
           {},
-          assignmentData
+          assignmentData,
         );
         console.log("Assignment updated:", updateResult);
       } else {
         console.log("Creating new assignment:", assignmentData);
         const createResult = await createAssignment(
           "/teachers_in_plans",
-          assignmentData
+          assignmentData,
         );
         console.log("Assignment created:", createResult);
 
@@ -516,23 +514,25 @@ export default function AssignLoad({ onClose }) {
                               row.subjectId,
                               row.subjectTitle,
                               selectedGroup,
-                              e
+                              e,
                             )
                           }
+                          className={`teach-select-${assignedTeacherId !== "" ? "active" : "passive"}`}
                         >
                           <option value="">-- Выберите преподавателя --</option>
                           {teachers.map((teacher) => (
                             <option key={teacher.id} value={teacher.id}>
                               {teacher.fathername
                                 ? `${teacher.surname} ${teacher.name.charAt(
-                                    0
+                                    0,
                                   )}. ${teacher.fathername.charAt(0)}.`
                                 : `${teacher.surname} ${teacher.name.charAt(
-                                    0
+                                    0,
                                   )}.`}
                             </option>
                           ))}
                         </select>
+                        {assignedTeacherId !== "" && <button>⋮</button>}
                       </td>
                     </tr>
                   );
