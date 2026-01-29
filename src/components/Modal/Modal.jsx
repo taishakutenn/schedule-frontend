@@ -9,16 +9,18 @@ export default function Modal({
   showCloseButton = true,
   closeOnOverlayClick = true,
   closeOnEscapeClick = true,
-  size = "md", // 'sm', 'md', 'lg', 'xl', 'xxl'
+  size = "md", // sm, md, lg, xl, xxl
 }) {
+  // Реф для доступа к DOM-элементу модального окна
   const modalRef = useRef(null);
+  // Реф для доступа к DOM-элементу оверлея (фона)
   const overlayRef = useRef(null);
 
-  // Close when Esc clicked
+  // Закрытие при нажатии клавиши Escape
   useEffect(() => {
     if (!isOpen || !closeOnEscapeClick) return;
 
-    // Escape clicked
+    // Обработчик нажатия клавиши Escape
     const handleEsc = (e) => {
       if (e.key === "Escape") {
         onClose();
@@ -29,7 +31,7 @@ export default function Modal({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, onClose, closeOnEscapeClick]);
 
-  // disable background scrolling
+  // Отключение прокрутки фона при открытии модального окна
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -42,20 +44,21 @@ export default function Modal({
     };
   }, [isOpen]);
 
-  // focus on modal when opened
+  // Установка фокуса на модальное окно при его открытии
   useEffect(() => {
     if (isOpen && modalRef.current) {
       modalRef.current.focus();
     }
   }, [isOpen]);
 
-  // overlay clicked
+  // Обработчик клика по оверлею
   const handleOverlayClick = (e) => {
     if (closeOnOverlayClick && e.target === overlayRef.current) {
       onClose();
     }
   };
 
+  // Не отображать ничего, если модальное окно закрыто
   if (!isOpen) return null;
 
   return (
@@ -72,6 +75,7 @@ export default function Modal({
         aria-labelledby={title ? "modal-title" : undefined}
         tabIndex={-1}
       >
+        {/* Шапка модального окна отображается только если есть заголовок или кнопка закрытия */}
         {(title || showCloseButton) && (
           <header className="modal-header">
             {title && <h2 id="modal-title">{title}</h2>}

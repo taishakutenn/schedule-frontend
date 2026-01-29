@@ -14,6 +14,7 @@ export default function ConfirmationModal({
   cancelText = "Отменить",
   loading = false,
 }) {
+  // Генерация текста сообщения подтверждения
   const getMessage = () => {
     if (
       !rowData ||
@@ -23,6 +24,7 @@ export default function ConfirmationModal({
       return "Вы уверены, что хотите удалить эту запись?";
     }
 
+    // Формирование частей сообщения из указанных полей
     const fieldParts = displayFields.map((field) => {
       const value = rowData[field];
       return value != null ? value : "N/A";
@@ -31,6 +33,7 @@ export default function ConfirmationModal({
     return `Вы уверены, что хотите удалить ${fieldParts.join(" ")}?`;
   };
 
+  // Обработчик подтверждения действия
   const handleConfirm = () => {
     onConfirm();
   };
