@@ -31,13 +31,14 @@ export default function ScheduleTeachersTableCell({
     label: group,
   }));
 
-  const subjects = [
-    { value: "Математика", label: "Математика" },
-    { value: "Физика", label: "Физика" },
-  ];
+  const subjectsOptions =
+    subjectInCycleData.map((subject) => ({
+      value: `${subject.id}`,
+      label: `${subject.title}`,
+    })) || [];
 
   const sessionTypesOptions = sessionsTypes.map((type) => ({
-    value: `${type.id}`,
+    value: `${type.name}`,
     label: `${type.name}`,
   }));
 
@@ -91,15 +92,25 @@ export default function ScheduleTeachersTableCell({
             <div className="modal-in-container">Запись успешно добавлена</div>
           ) : null}
 
-          {/* Содержимое ячейки */}
           <div className="cell-container__column left-column">
-            <SyncSelect options={groupsOptions} placeholder="Группа" />
-            <SyncSelect options={subjects} placeholder="Предмет" />
+            <div className="select-wrapper">
+              <SyncSelect options={groupsOptions} placeholder="Группа" />
+            </div>
+            <div className="select-wrapper">
+              <SyncSelect options={subjectsOptions} placeholder="Предмет" />
+            </div>
           </div>
 
           <div className="cell-container__column right-column">
-            <SyncSelect options={sessionTypesOptions} placeholder="Тип пары" />
-            <SyncSelect options={cabinetsOptions} placeholder="Кабинет" />
+            <div className="select-wrapper">
+              <SyncSelect
+                options={sessionTypesOptions}
+                placeholder="Тип пары"
+              />
+            </div>
+            <div className="select-wrapper">
+              <SyncSelect options={cabinetsOptions} placeholder="Кабинет" />
+            </div>
           </div>
         </div>
       </div>

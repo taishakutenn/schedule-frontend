@@ -11,20 +11,6 @@
             "id": "97023fe97e07c3c9",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "templates/Страница.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Страница"
-            }
-          },
-          {
-            "id": "ce11e75c512a247b",
-            "type": "leaf",
-            "state": {
               "type": "kanban",
               "state": {
                 "file": "Kanban.md",
@@ -41,8 +27,7 @@
               "title": "Kanban"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -65,7 +50,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Файловый менеджер"
             }
           },
           {
@@ -89,7 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 215.5
   },
   "right": {
     "id": "2543c2fa7563f93b",
@@ -159,7 +144,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Kanban"
+              "title": "Структура Kanban"
             }
           },
           {
@@ -181,31 +166,31 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "obsidian-kanban:Create new board": false
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "obsidian-kanban:Создать новую доску": false
     }
   },
-  "active": "ce11e75c512a247b",
+  "active": "97023fe97e07c3c9",
   "lastOpenFiles": [
-    "Документация/Страницы/Назначение нагрузки.md",
     "templates/Страница.md",
+    "templates/Компонент.md",
+    "Kanban.md",
+    "Документация/Страницы/Назначение нагрузки.md",
     "Документация/Страницы",
     "Документация/Компоненты/Модальное окно",
     "Документация/Компоненты/Модальное окно/Модальное окно.md",
     "Документация/Компоненты/Модальное окно/Модальная форма с данными.md",
     "Документация/Компоненты/Модальное окно/Модальное окно для подтверждения действия.md",
-    "templates/Компонент.md",
     "templates",
     "Документация/Компоненты",
-    "Kanban.md",
     "Документация",
     "Untitled.canvas"
   ]
