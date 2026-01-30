@@ -40,7 +40,7 @@ export default function ScheduleTeachersTableCell({
     value: `${type.id}`,
     label: `${type.name}`,
   }));
-
+  console.log(cabinets);
   const cabinetsOptions = cabinets.map((cabinet) => ({
     value: `${cabinet.building_number}-${cabinet.cabinet_number}`,
     label: `${cabinet.building_number}-${cabinet.cabinet_number}`,
@@ -91,15 +91,25 @@ export default function ScheduleTeachersTableCell({
             <div className="modal-in-container">Запись успешно добавлена</div>
           ) : null}
 
-          {/* Содержимое ячейки */}
           <div className="cell-container__column left-column">
-            <SyncSelect options={groupsOptions} placeholder="Группа" />
-            <SyncSelect options={subjects} placeholder="Предмет" />
+            <div className="select-wrapper">
+              <SyncSelect options={groupsOptions} placeholder="Группа" />
+            </div>
+            <div className="select-wrapper">
+              <SyncSelect options={subjects} placeholder="Предмет" />
+            </div>
           </div>
 
           <div className="cell-container__column right-column">
-            <SyncSelect options={sessionTypesOptions} placeholder="Тип пары" />
-            <SyncSelect options={cabinetsOptions} placeholder="Кабинет" />
+            <div className="select-wrapper">
+              <SyncSelect
+                options={sessionTypesOptions}
+                placeholder="Тип пары"
+              />
+            </div>
+            <div className="select-wrapper">
+              <SyncSelect options={cabinetsOptions} placeholder="Кабинет" />
+            </div>
           </div>
         </div>
       </div>

@@ -72,30 +72,3 @@ td.far-left {
   display: flex;
   flex-wrap: wrap;
 }
-
-.teachers-table__select {
-  border: none;
-  border-bottom: 1px solid var(--main-second-header-footer-background-color);
-  max-width: 200px;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.select--placeholder {
-  color: var(--main-third-font-color);
-}
-
-.select__option {
-  font-size: var(--main-medium-font-size);
-}
-
-.type-select {
-  max-width: 65px;
-  min-width: 65px;
-  width: 100%;
-  padding: 2px 4px;
-  text-align: center;
-  flex: 0 0 45px;
-}

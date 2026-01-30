@@ -12,6 +12,8 @@ import { isMonday } from "../../../../utils/scheduleTeachersTableHepl";
 
 import { useState, useEffect, useMemo, useContext, useCallback } from "react";
 
+import "./scheduleTeachersTableRow.css";
+
 export default function ScheduleTeachersTableRow({
   selectedDate,
   teacherInfo,
@@ -124,13 +126,13 @@ export default function ScheduleTeachersTableRow({
 
   return (
     <tr>
-      <td className="session-cell">
+      <th className="session-cell-header">
         {teacherInfo.fathername
           ? `${teacherInfo.surname} ${teacherInfo.name.charAt(
               0,
             )}. ${teacherInfo.fathername.charAt(0)}.`
           : `${teacherInfo.surname} ${teacherInfo.name.charAt(0)}.`}
-      </td>
+      </th>
       <ScheduleTeachersTableContext.Provider
         value={updatedScheduleTeachersTableContext}
       >

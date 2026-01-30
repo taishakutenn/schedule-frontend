@@ -57,6 +57,29 @@
   flex-direction: column;
   gap: 3px;
   min-width: 0;
+  flex: 1;
+}
+
+.left-column,
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.select-wrapper {
+  flex: 1;
+  min-width: 130px;
+  max-width: 130px;
+  width: 100%;
+}
+
+.select-wrapper .react-select {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
 }
 
 /* modal in container animation */
