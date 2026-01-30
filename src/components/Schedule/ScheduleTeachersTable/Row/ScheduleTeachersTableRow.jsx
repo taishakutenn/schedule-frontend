@@ -116,13 +116,21 @@ export default function ScheduleTeachersTableRow({
     return {
       ...scheduleTeachersTableContext,
       teacherInfo: teacherInfo,
-      teacherInPlanData: teacherInPlanData || false,
-      subjectInCycleHoursData: subjectInCycleHoursData || false,
-      subjectInCycleData: subjectInCycleData || false,
-      groups: groups || false,
-      teacherSessions: teacherSessions || false,
+      teacherInPlanData: teacherInPlanData || [],
+      subjectInCycleHoursData: subjectInCycleHoursData || [],
+      subjectInCycleData: subjectInCycleData || [],
+      groups: groups || [],
+      teacherSessions: teacherSessions || [],
     };
-  }, [scheduleTeachersTableContext, teacherInfo]);
+  }, [
+    scheduleTeachersTableContext,
+    teacherInfo,
+    teacherInPlanData,
+    subjectInCycleHoursData,
+    subjectInCycleData,
+    groups,
+    teacherSessions,
+  ]);
 
   return (
     <tr>

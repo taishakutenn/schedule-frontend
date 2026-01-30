@@ -31,16 +31,17 @@ export default function ScheduleTeachersTableCell({
     label: group,
   }));
 
-  const subjects = [
-    { value: "Математика", label: "Математика" },
-    { value: "Физика", label: "Физика" },
-  ];
+  const subjectsOptions =
+    subjectInCycleData.map((subject) => ({
+      value: `${subject.id}`,
+      label: `${subject.title}`,
+    })) || [];
 
   const sessionTypesOptions = sessionsTypes.map((type) => ({
-    value: `${type.id}`,
+    value: `${type.name}`,
     label: `${type.name}`,
   }));
-  console.log(cabinets);
+
   const cabinetsOptions = cabinets.map((cabinet) => ({
     value: `${cabinet.building_number}-${cabinet.cabinet_number}`,
     label: `${cabinet.building_number}-${cabinet.cabinet_number}`,
@@ -96,7 +97,7 @@ export default function ScheduleTeachersTableCell({
               <SyncSelect options={groupsOptions} placeholder="Группа" />
             </div>
             <div className="select-wrapper">
-              <SyncSelect options={subjects} placeholder="Предмет" />
+              <SyncSelect options={subjectsOptions} placeholder="Предмет" />
             </div>
           </div>
 

@@ -69,6 +69,10 @@
   min-width: 0;
 }
 
+.right-column {
+  margin-left: 3px;
+}
+
 .select-wrapper {
   flex: 1;
   min-width: 130px;
