@@ -4,27 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "3b47279acfc6399b",
+        "id": "0e543f43c9433fa4",
         "type": "tabs",
         "children": [
           {
-            "id": "97023fe97e07c3c9",
+            "id": "17c569b021ff536f",
             "type": "leaf",
             "state": {
-              "type": "kanban",
-              "state": {
-                "file": "Kanban.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false
-                  ]
-                }
-              },
-              "icon": "lucide-trello",
-              "title": "Kanban"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -50,7 +40,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Файловый менеджер"
+              "title": "Files"
             }
           },
           {
@@ -138,13 +128,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Kanban.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Kanban"
+              "title": "Outline"
             }
           },
           {
@@ -170,19 +159,20 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Меню быстрого перехода": false,
-      "graph:Граф": false,
-      "canvas:Создать новый холст": false,
-      "templates:Вставить шаблон": false,
-      "command-palette:Открыть палитру команд": false,
-      "obsidian-kanban:Создать новую доску": false
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-kanban:Create new board": false
     }
   },
-  "active": "97023fe97e07c3c9",
+  "active": "17c569b021ff536f",
   "lastOpenFiles": [
-    "templates/Страница.md",
+    "Документация/Компоненты/Sidebar.md",
     "templates/Компонент.md",
     "Kanban.md",
+    "templates/Страница.md",
     "Документация/Страницы/Назначение нагрузки.md",
     "Документация/Страницы",
     "Документация/Компоненты/Модальное окно",

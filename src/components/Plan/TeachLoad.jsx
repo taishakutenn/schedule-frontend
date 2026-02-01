@@ -156,34 +156,148 @@ export default function TeachLoad() {
       <p>Количество записей: {filteredData.length}</p>
       <LoadTable loadData={filteredData} />
 
-      <Sidebar title="Текущие часы преподавателей">
-        {aggregatedTeacherHours.length === 0 ? (
-          <p>Нет данных о нагрузке преподавателей.</p>
-        ) : (
-          <ul>
-            {aggregatedTeacherHours.map((entry) => {
-              // Определите пороговые значения и соответствующие цвета
-              let color;
-              if (entry.totalHours < 1440) {
-                color = "#0b8000";
-              } else if (entry.totalHours == 1440) {
-                color = "#fdd10d";
-              } else {
-                color = "#d81515";
-              }
+      <Sidebar
+        title="Текущие часы преподавателей"
+        tabs={[
+          {
+            label: "Все",
+            content: (
+              <>
+                {aggregatedTeacherHours.length === 0 ? (
+                  <p>Нет данных о нагрузке преподавателей.</p>
+                ) : (
+                  <ul>
+                    {aggregatedTeacherHours.map((entry) => {
+                      let color;
+                      if (entry.totalHours < 1440 && entry.totalHours > 720) {
+                        color = "#0b8000";
+                      } else if (
+                        entry.totalHours === 1440 ||
+                        entry.totalHours < 720
+                      ) {
+                        color = "#fdd10d";
+                      } else if (entry.totalHours > 1440) {
+                        color = "#d81515";
+                      }
+
+                      return (
+                        <li
+                          key={entry.teacher_id}
+                          style={{ marginBottom: "4px" }}
+                        >
+                          <span style={{ fontWeight: "bold" }}>
+                            {entry.teacher_name}
+                          </span>
+                          : <span style={{ color }}>{entry.totalHours}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </>
+            ),
+          },
+          {
+            label: "Норма",
+            content: (() => {
+              const filteredEntries = aggregatedTeacherHours.filter(
+                (entry) => entry.totalHours < 1440 && entry.totalHours > 720,
+              );
 
               return (
-                <li key={entry.teacher_id} style={{ marginBottom: "4px" }}>
-                  <span style={{ fontWeight: "bold" }}>
-                    {entry.teacher_name}
-                  </span>
-                  : <span style={{ color }}>{entry.totalHours}</span>
-                </li>
+                <>
+                  {filteredEntries.length === 0 ? (
+                    <p>Нет данных.</p>
+                  ) : (
+                    <ul>
+                      {filteredEntries.map((entry) => (
+                        <li
+                          key={entry.teacher_id}
+                          style={{ marginBottom: "4px" }}
+                        >
+                          <span style={{ fontWeight: "bold" }}>
+                            {entry.teacher_name}
+                          </span>
+                          :{" "}
+                          <span style={{ color: "#0b8000" }}>
+                            {entry.totalHours}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
               );
-            })}
-          </ul>
-        )}
-      </Sidebar>
+            })(),
+          },
+          {
+            label: "Ниже нормы",
+            content: (() => {
+              const filteredEntries = aggregatedTeacherHours.filter(
+                (entry) => entry.totalHours === 1440 || entry.totalHours < 720,
+              );
+
+              return (
+                <>
+                  {filteredEntries.length === 0 ? (
+                    <p>Нет данных.</p>
+                  ) : (
+                    <ul>
+                      {filteredEntries.map((entry) => (
+                        <li
+                          key={entry.teacher_id}
+                          style={{ marginBottom: "4px" }}
+                        >
+                          <span style={{ fontWeight: "bold" }}>
+                            {entry.teacher_name}
+                          </span>
+                          :{" "}
+                          <span style={{ color: "#fdd10d" }}>
+                            {entry.totalHours}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              );
+            })(),
+          },
+          {
+            label: "Выше нормы",
+            content: (() => {
+              const filteredEntries = aggregatedTeacherHours.filter(
+                (entry) => entry.totalHours > 1440,
+              );
+
+              return (
+                <>
+                  {filteredEntries.length === 0 ? (
+                    <p>Нет данных.</p>
+                  ) : (
+                    <ul>
+                      {filteredEntries.map((entry) => (
+                        <li
+                          key={entry.teacher_id}
+                          style={{ marginBottom: "4px" }}
+                        >
+                          <span style={{ fontWeight: "bold" }}>
+                            {entry.teacher_name}
+                          </span>
+                          :{" "}
+                          <span style={{ color: "#d81515" }}>
+                            {entry.totalHours}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              );
+            })(),
+          },
+        ]}
+      />
 
       <Modal
         isOpen={isModalOpen}
