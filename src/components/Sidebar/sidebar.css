@@ -1,3 +1,4 @@
+/* Стили для основного сайдбара */
 .sidebar {
   position: fixed;
   top: 0;
@@ -50,4 +51,77 @@
   align-items: center;
   font-size: 1.2em;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.tab-list-vertical {
+  position: fixed;
+  top: 5px;
+  /*Смещение справа от сайдбара */
+  right: calc(20%);
+  height: 100vh;
+  width: 40px; /* Ширина под вкладки */
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  padding-top: 60px;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  /* Вкладки по умолчанию скрыты */
+  transform: translateX(2000px);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.tab-list-vertical.sidebar-open {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.tab-button {
+  padding: 10px 5px;
+  border: none;
+  background: var(--main-third-accent-color);
+  cursor: pointer;
+  outline: none;
+  text-align: center;
+  font-size: var(--main-medium-font-size);
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+
+  /* Направление текста сверху вниз */
+  writing-mode: vertical-lr;
+  /* Переворачиваем текст, чтобы он шёл снизу вверх */
+  transform: rotate(180deg);
+  /* Центрируем текст внутри кнопки */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Только у первой кнопки — левый верхний угол */
+.tab-button:first-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* Только у последней кнопки — левый нижний угол */
+.tab-button:last-child {
+  border-top-right-radius: 8px;
+}
+
+.tab-button:hover {
+  background: var(--main-border-color);
+}
+
+.tab-button.active {
+  background: var(--main-accent-secondary-color);
+}
+
+.tab-content {
+  padding: 10px;
+  height: 100%;
+  overflow-y: auto;
 }
