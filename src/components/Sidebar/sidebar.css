@@ -1,18 +1,38 @@
-/* Стили для основного сайдбара */
 .sidebar {
   position: fixed;
   top: 0;
   right: 0;
   height: 100vh;
   width: 20%;
+  min-width: 225px;
   background-color: var(--main-third-accent-color);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
-  transform: translateX(100%);
+  transform: translateX(0);
   color: var(--main-font-color);
+  overflow: hidden;
+}
+
+.sidebar.closed {
+  transform: translateX(100%);
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: transparent;
+  cursor: col-resize;
+  z-index: 1001;
+}
+
+.resizer:hover {
+  background: var(--main-accent-color);
 }
 
 .sidebar.open {
@@ -56,21 +76,16 @@
 .tab-list-vertical {
   position: fixed;
   top: 5px;
-  /*Смещение справа от сайдбара */
-  right: calc(20%);
   height: 100vh;
-  width: 40px; /* Ширина под вкладки */
+  width: 40px;
   display: flex;
   flex-direction: column;
   z-index: 999;
   padding-top: 60px;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-  /* Вкладки по умолчанию скрыты */
-  transform: translateX(2000px);
-  opacity: 0;
-  visibility: hidden;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: right 0.3s ease;
 }
 
 .tab-list-vertical.sidebar-open {

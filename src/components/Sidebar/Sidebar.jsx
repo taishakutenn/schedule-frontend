@@ -1,17 +1,49 @@
+import { useState, useRef, useEffect } from "react";
 import "./sidebar.css";
-import { useState } from "react";
 
 const Sidebar = ({ title = "Сайдбар", children, tabs = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [width, setWidth] = useState("20%");
+  const sidebarRef = useRef(null);
+  const resizerRef = useRef(null);
+  const isResizing = useRef(false);
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing.current) return;
+      const newWidth = Math.max(200, window.innerWidth - e.clientX);
+      setWidth(`${newWidth}px`);
+    };
+
+    const handleMouseUp = () => {
+      isResizing.current = false;
+      document.body.style.userSelect = "";
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+  const startResizing = () => {
+    isResizing.current = true;
+    document.body.style.userSelect = "none";
   };
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
 
   return (
     <>
-      <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
+      <div
+        ref={sidebarRef}
+        className={`sidebar ${isOpen ? "open" : "closed"}`}
+        style={{ width }}
+      >
         <div className="sidebar-header">
           <h3>{title}</h3>
           <button className="close-btn" onClick={toggleSidebar}>
@@ -24,11 +56,12 @@ const Sidebar = ({ title = "Сайдбар", children, tabs = [] }) => {
         ) : (
           <div className="content">{children}</div>
         )}
+
+        <div ref={resizerRef} className="resizer" onMouseDown={startResizing} />
       </div>
 
-      {/* Вкладки отображаются только если tabs есть и сайдбар открыт */}
-      {tabs.length > 0 && (
-        <div className={`tab-list-vertical ${isOpen ? "sidebar-open" : ""}`}>
+      {tabs.length > 0 && isOpen && (
+        <div className="tab-list-vertical" style={{ right: width }}>
           {tabs.map((tab, index) => (
             <button
               key={index}
