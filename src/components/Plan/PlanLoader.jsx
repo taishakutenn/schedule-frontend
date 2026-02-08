@@ -11,22 +11,13 @@ import { getGroupsBySpeciality } from "../../api/groupAPI";
 import { getSubjectHoursBySubject } from "../../api/subjectHoursAPI";
 import { useApiData } from "../../hooks/useApiData";
 import { uploadAndParsePlan } from "../../api/parserLoad";
+import { getAvailableReferences } from "../../api/parserLoad";
 import HandbookTable from "../HandbookTable/HandbookTable";
 
 const planLoadHeaderInfo = [
   {
     title: "Загрузка учебных планов",
     text: [],
-  },
-];
-
-const planLoadInstructionHeaderInfo = [
-  {
-    title: "Инструкция для загрузки учебного плана",
-    level: 2,
-    text: [
-      "Для успешной загрузки учебного плана выполните действия, описанные ниже",
-    ],
   },
 ];
 
@@ -49,10 +40,10 @@ export default function PlanLoader() {
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const [showPlansTable, setShowPlansTable] = useState(false);
-  const [plansTableData, setPlansTableData] = useState([]);
-  const [plansTableLoading, setPlansTableLoading] = useState(false);
-  const [plansTableError, setPlansTableError] = useState(null);
+  const [activeTable, setActiveTable] = useState(null); // 'plans' или 'references'
+  const [tableData, setTableData] = useState([]);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [tableError, setTableError] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -229,37 +220,34 @@ export default function PlanLoader() {
   const removeModule = (index) =>
     setModules(modules.filter((_, i) => i !== index));
 
-  const addSubject = () => {
-    setSubjects([...subjects, { value1: "", value2: "", value3: "" }]);
-  };
+  const toggleTable = async (tableName) => {
+    if (activeTable === tableName) {
+      setActiveTable(null);
+      setTableData([]);
+      setTableLoading(false);
+      setTableError(null);
+      return;
+    }
 
-  const updateSubject = (index, value1, value2, value3) => {
-    const newSubjects = [...subjects];
-    newSubjects[index] = { value1, value2, value3 };
-    setSubjects(newSubjects);
-  };
+    setActiveTable(tableName);
+    setTableLoading(true);
+    setTableError(null);
 
-  const removeSubject = (index) => {
-    setSubjects(subjects.filter((_, i) => i !== index));
-  };
-
-  const togglePlansTable = async () => {
-    if (showPlansTable) {
-      setShowPlansTable(false);
-    } else {
-      setPlansTableLoading(true);
-      setPlansTableError(null);
-      try {
-        const data = await getPlans();
-        setPlansTableData(data);
-        setShowPlansTable(true);
-      } catch (err) {
-        console.error("Ошибка загрузки планов для таблицы:", err);
-        setPlansTableError(err.message);
-        setShowPlansTable(true);
-      } finally {
-        setPlansTableLoading(false);
+    try {
+      let data;
+      if (tableName === 'plans') {
+        data = await getPlans();
+      } else if (tableName === 'references') {
+        const response = await getAvailableReferences(); 
+        data = response.references || []; 
       }
+      
+      setTableData(data);
+    } catch (err) {
+      console.error(`Ошибка загрузки ${tableName} для таблицы:`, err);
+      setTableError(err.message);
+    } finally {
+      setTableLoading(false);
     }
   };
 
@@ -351,23 +339,28 @@ export default function PlanLoader() {
           />
         </div>
       </div>
-      <Button size="small" onClick={togglePlansTable}>
-        {showPlansTable ? "Скрыть список планов" : "Список загруженных планов"}
-      </Button>
-      <Button
-        size="small"
-        action="load"
-        onClick={() => fileInputRef.current && fileInputRef.current.click()}
-      >
-        Загрузить файл плана
-      </Button>
-      <input
-        type="file"
-        accept=".xls, .xlsx"
-        onChange={handleFileUpload}
-        ref={fileInputRef}
-        style={{ display: "none" }}
-      />
+      <div className="buttons">
+        <Button size="small" onClick={() => toggleTable('plans')}>
+          {activeTable === 'plans' ? "Скрыть список планов" : "Список загруженных планов"}
+        </Button>
+        <Button size="small" onClick={() => toggleTable('references')}>
+          {activeTable === 'references' ? "Скрыть список шаблонов" : "Список шаблонов"}
+        </Button>
+        <Button
+          size="small"
+          action="load"
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+        >
+          Загрузить файл плана
+        </Button>
+        <input
+          type="file"
+          accept=".xls, .xlsx"
+          onChange={handleFileUpload}
+          ref={fileInputRef}
+          style={{ display: "none" }}
+        />
+      </div>
 
       {uploadStatus && (
         <div className={`upload-status upload-status--${uploadStatus}`}>
@@ -383,21 +376,21 @@ export default function PlanLoader() {
         </div>
       )}
 
-      {showPlansTable && (
-        <div className="plans-table-container">
-          {plansTableLoading && <p>Загрузка списка планов...</p>}
-          {plansTableError && (
-            <p className="error-message">Ошибка: {plansTableError}</p>
+      {activeTable && (
+        <div className="table-container">
+          {tableLoading && <p>Загрузка списка {activeTable}...</p>}
+          {tableError && (
+            <p className="error-message">Ошибка: {tableError}</p>
           )}
-          {!plansTableLoading && !plansTableError && (
-            <HandbookTable apiResponse={plansTableData} tableName="plans" />
+          {!tableLoading && !tableError && (
+            <HandbookTable 
+              apiResponse={tableData} 
+              tableName={activeTable} 
+            />
           )}
+          {/* {console.log(tableData)} */}
         </div>
       )}
-
-      {/* <div className="instruction">
-        <InfoBlock items={planLoadInstructionHeaderInfo} />
-      </div> */}
     </div>
   );
 }

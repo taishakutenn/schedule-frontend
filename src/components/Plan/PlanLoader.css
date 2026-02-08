@@ -1,10 +1,12 @@
 .dynamic-content {
   padding: 1%;
-  margin: 1%;
+  margin: auto;
   border: 2px solid;
   border-radius: 8px;
   border-color: var(--main-border-color);
   text-align: center;
+  justify-content: center;
+  max-width: 1500px;
 }
 
 .plan-structure-data-wrapper {
@@ -15,9 +17,9 @@
 
 .plan-structure-data {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 5%;
-  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  width: 90%;
   max-width: 1200px;
 }
 
@@ -64,6 +66,18 @@
   transition: width 0.3s ease;
 }
 
+.buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+}
+.buttons .btn {
+  height: fit-content;
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
 .progress-bar-fill::after {
   content: "";
   position: absolute;
@@ -93,4 +107,8 @@
 .plans-table-container {
   display: flex;
   justify-content: center;
+}
+
+.table-container {
+  margin-top: 10px;
 }

@@ -70,6 +70,14 @@ export const plansFieldsLabel = {
   speciality_code: "Код специальности",
 };
 
+// References
+export const referencesFieldsLabel = {
+  name: "Название",
+  chapters: "Разделы",
+  cycles: "Циклы", 
+  modules: "Модули",
+};
+
 // list for export, add the table here if you added it above
 export const fieldLabels = {
   teachers: teacherFieldLabels,
@@ -82,4 +90,5 @@ export const fieldLabels = {
   streams: streamFieldLabels,
   payment_forms: paymentFormFieldLabels,
   plans: plansFieldsLabel,
+  references: referencesFieldsLabel,
 };
