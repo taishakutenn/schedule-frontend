@@ -48,7 +48,7 @@ export default function PlanLoader() {
   const fileInputRef = useRef(null);
 
   const {
-    data: teachers,
+    teachers,
     loading: teachersLoading,
     error: teachersError,
   } = useApiData(getTeachers, [], true);
@@ -136,7 +136,7 @@ export default function PlanLoader() {
             } catch (err) {
               console.error(
                 `Ошибка загрузки часов для предмета ${subject.id}:`,
-                err
+                err,
               );
               data[subject.id] = [];
             }
@@ -167,7 +167,7 @@ export default function PlanLoader() {
 
           try {
             const groups = await getGroupsBySpeciality(
-              selectedPlan.speciality_code
+              selectedPlan.speciality_code,
             );
 
             const filteredGroups = groups.filter((group) => {
@@ -220,6 +220,37 @@ export default function PlanLoader() {
   const removeModule = (index) =>
     setModules(modules.filter((_, i) => i !== index));
 
+  const handleReferenceRowClick = (rowData) => {
+    console.log("Выбранная строка шаблона:", rowData);
+
+    if (rowData && typeof rowData === "object") {
+      const chaptersStr = rowData.chapters || "";
+      const cyclesStr = rowData.cycles || "";
+      const modulesStr = rowData.modules || "";
+
+      const formattedChapters = chaptersStr
+        .split(/\s+/)
+        .filter((s) => s)
+        .map((name) => ({ name }));
+      const formattedCycles = cyclesStr
+        .split(/\s+/)
+        .filter((s) => s)
+        .map((name) => ({ name }));
+      const formattedModules = modulesStr
+        .split(/\s+/)
+        .filter((s) => s)
+        .map((name) => ({ name }));
+
+      console.log("Formatted chapters:", formattedChapters);
+      console.log("Formatted cycles:", formattedCycles);
+      console.log("Formatted modules:", formattedModules);
+
+      setSections(formattedChapters);
+      setCycles(formattedCycles);
+      setModules(formattedModules);
+    }
+  };
+
   const toggleTable = async (tableName) => {
     if (activeTable === tableName) {
       setActiveTable(null);
@@ -235,13 +266,13 @@ export default function PlanLoader() {
 
     try {
       let data;
-      if (tableName === 'plans') {
+      if (tableName === "plans") {
         data = await getPlans();
-      } else if (tableName === 'references') {
-        const response = await getAvailableReferences(); 
-        data = response.references || []; 
+      } else if (tableName === "references") {
+        const response = await getAvailableReferences();
+        data = response.references || [];
       }
-      
+
       setTableData(data);
     } catch (err) {
       console.error(`Ошибка загрузки ${tableName} для таблицы:`, err);
@@ -284,14 +315,14 @@ export default function PlanLoader() {
         file,
         sectionCodes,
         cycleCodes,
-        moduleCodes
+        moduleCodes,
       );
 
       console.log("Результат загрузки:", result);
 
       setUploadStatus("success");
       setUploadMessage(
-        `Файл ${result.filename} успешно загружен и данные сохранены в БД. Номер плана: ${result.saved_plan_id}`
+        `Файл ${result.filename} успешно загружен и данные сохранены в БД. Номер плана: ${result.saved_plan_id}`,
       );
     } catch (err) {
       console.error("Ошибка загрузки файла:", err);
@@ -340,11 +371,15 @@ export default function PlanLoader() {
         </div>
       </div>
       <div className="buttons">
-        <Button size="small" onClick={() => toggleTable('plans')}>
-          {activeTable === 'plans' ? "Скрыть список планов" : "Список загруженных планов"}
+        <Button size="small" onClick={() => toggleTable("plans")}>
+          {activeTable === "plans"
+            ? "Скрыть список планов"
+            : "Список загруженных планов"}
         </Button>
-        <Button size="small" onClick={() => toggleTable('references')}>
-          {activeTable === 'references' ? "Скрыть список шаблонов" : "Список шаблонов"}
+        <Button size="small" onClick={() => toggleTable("references")}>
+          {activeTable === "references"
+            ? "Скрыть список шаблонов"
+            : "Список шаблонов"}
         </Button>
         <Button
           size="small"
@@ -379,16 +414,18 @@ export default function PlanLoader() {
       {activeTable && (
         <div className="table-container">
           {tableLoading && <p>Загрузка списка {activeTable}...</p>}
-          {tableError && (
-            <p className="error-message">Ошибка: {tableError}</p>
-          )}
+          {tableError && <p className="error-message">Ошибка: {tableError}</p>}
           {!tableLoading && !tableError && (
-            <HandbookTable 
-              apiResponse={tableData} 
-              tableName={activeTable} 
+            <HandbookTable
+              apiResponse={tableData}
+              tableName={activeTable}
+              onRowClick={
+                activeTable === "references"
+                  ? handleReferenceRowClick
+                  : undefined
+              }
             />
           )}
-          {/* {console.log(tableData)} */}
         </div>
       )}
     </div>
