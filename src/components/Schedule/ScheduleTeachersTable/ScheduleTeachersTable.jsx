@@ -15,8 +15,21 @@ import { getSessionTypes } from "../../../api/sessionTypeAPI";
 import Modal from "../../Modal/Modal";
 
 export default function SchedulteTeachersTable() {
+  // Функция для получения понедельника текущей недели (в прошлом или сегодня)
+  function getMonday(date) {
+    const d = new Date(date);
+    const day = d.getDay(); // 0 = воскресенье, 1 = понедельник, ...
+    const daysToSubtract = day === 0 ? 6 : day - 1;
+    d.setDate(d.getDate() - daysToSubtract);
+    return d;
+  }
+
+  // Расчитываем дату так, чтобы таблица грузилась с ближайшего понедельника из прошлого
+  const today = new Date();
+  const initialMonday = getMonday(today);
+
+  const [selectedDate, setSelectedDate] = useState(initialMonday);
   // Syncrhonize date from header to current component
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
   };
@@ -49,7 +62,7 @@ export default function SchedulteTeachersTable() {
         visible={true}
         height="50"
         width="50"
-        color="#4caf50"
+        color="var(--main-accent-color)"
         ariaLabel="oval-loading"
         wrapperStyle={{}}
         wrapperClass=""
