@@ -1,6 +1,6 @@
 import "./scheduleTeachersTableRowCell.css";
 
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import ScheduleTeachersTableContext from "../../../../../contexts/ScheduleTeachersTableContext";
 import { createNewSession } from "../../../../../api/scheduleAPI";
 import Modal from "../../../../Modal/Modal";
@@ -77,14 +77,69 @@ export default function ScheduleTeachersTableCell({
     }, 2600);
   };
 
-  // Функция для проверки, заполнино ли уже расписание на сегодня
-  const isScheduleForToday = () => {
-    console.log("Сессия: ", teacherSessions.sessions);
+  // Получаем занятие на текущую пару
+  const formattedDate = date.toISOString().split("T")[0];
+  const currentSession = (teacherSessions?.sessions || []).find((item) => {
+    return (
+      item.session.session_date === formattedDate &&
+      item.session.session_number === sessionNumber
+    );
+  });
+
+  // Форма для создания или редактирования занятия
+  const [form, setForm] = useState({
+    group: null,
+    subject: null,
+    sessionType: null,
+    cabinet: null,
+    isNew: false,
+  });
+
+  // Функция для изменения полей формы
+  const changeField = (field) => (value) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
+
+  // Функция для полчения объекта по значению из массива опций
+  const findOption = (options, value) =>
+    options.find((o) => o.value === String(value)) || null;
+
+  // Отслеживаем изменения с сервера
+  useEffect(() => {
+    if (!currentSession) {
+      // пары нет - форма пустая
+      setForm({
+        group: null,
+        subject: null,
+        type: null,
+        cabinet: null,
+        isNew: true,
+      });
+      return;
+    }
+
+    // пара есть - заполняем форму
+    const s = currentSession.session;
+    console.log(s);
+    console.log(teacherInPlanData);
+
+    setForm({
+      group: findOption(groupsOptions, s.group),
+      subject: findOption(subjectsOptions, s.subject_id),
+      sessionType: findOption(sessionTypesOptions, s.session_type),
+      cabinet: findOption(
+        cabinetsOptions,
+        `${s.building_number}-${s.cabinet_number}`,
+      ),
+      isNew: false,
+    });
+  }, [currentSession]);
 
   return (
     <td className={classCell}>
-      {isScheduleForToday()}
       <div
         className={`cell-container ${
           isAnimating ? "cell-container--animated" : ""
@@ -100,10 +155,18 @@ export default function ScheduleTeachersTableCell({
 
           <div className="cell-container__column left-column">
             <div className="select-wrapper">
-              <SyncSelect options={groupsOptions} placeholder="Группа" />
+              <SyncSelect
+                options={groupsOptions}
+                placeholder="Группа"
+                onChange={changeField("group")}
+              />
             </div>
             <div className="select-wrapper">
-              <SyncSelect options={subjectsOptions} placeholder="Предмет" />
+              <SyncSelect
+                options={subjectsOptions}
+                placeholder="Предмет"
+                onChange={changeField("subject")}
+              />
             </div>
           </div>
 
@@ -112,10 +175,17 @@ export default function ScheduleTeachersTableCell({
               <SyncSelect
                 options={sessionTypesOptions}
                 placeholder="Тип пары"
+                value={form.sessionType}
+                onChange={changeField("sessionType")}
               />
             </div>
             <div className="select-wrapper">
-              <SyncSelect options={cabinetsOptions} placeholder="Кабинет" />
+              <SyncSelect
+                options={cabinetsOptions}
+                placeholder="Кабинет"
+                value={form.cabinet}
+                onChange={changeField("cabinet")}
+              />
             </div>
           </div>
         </div>
