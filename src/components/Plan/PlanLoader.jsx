@@ -13,6 +13,8 @@ import { useApiData } from "../../hooks/useApiData";
 import { uploadAndParsePlan } from "../../api/parserLoad";
 import { getAvailableReferences } from "../../api/parserLoad";
 import HandbookTable from "../HandbookTable/HandbookTable";
+import ConfirmationModal from "../Modal/ConfirmModal";
+import { createReference } from "../../api/parserLoad";
 
 const planLoadHeaderInfo = [
   {
@@ -44,6 +46,11 @@ export default function PlanLoader() {
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [tableError, setTableError] = useState(null);
+
+  // Состояния для модального окна сохранения шаблона
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [templateName, setTemplateName] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -221,34 +228,22 @@ export default function PlanLoader() {
     setModules(modules.filter((_, i) => i !== index));
 
   const handleReferenceRowClick = (rowData) => {
-    console.log("Выбранная строка шаблона:", rowData);
+    if (!rowData || typeof rowData !== "object") return;
 
-    if (rowData && typeof rowData === "object") {
-      const chaptersStr = rowData.chapters || "";
-      const cyclesStr = rowData.cycles || "";
-      const modulesStr = rowData.modules || "";
+    // Разбиваем по запятой И убираем пробелы
+    const parseList = (str = "") =>
+      str
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item !== "");
 
-      const formattedChapters = chaptersStr
-        .split(/\s+/)
-        .filter((s) => s)
-        .map((name) => ({ name }));
-      const formattedCycles = cyclesStr
-        .split(/\s+/)
-        .filter((s) => s)
-        .map((name) => ({ name }));
-      const formattedModules = modulesStr
-        .split(/\s+/)
-        .filter((s) => s)
-        .map((name) => ({ name }));
+    const chapters = parseList(rowData.chapters);
+    const cycles = parseList(rowData.cycles);
+    const modules = parseList(rowData.modules);
 
-      console.log("Formatted chapters:", formattedChapters);
-      console.log("Formatted cycles:", formattedCycles);
-      console.log("Formatted modules:", formattedModules);
-
-      setSections(formattedChapters);
-      setCycles(formattedCycles);
-      setModules(formattedModules);
-    }
+    setSections(chapters.map((name) => ({ name })));
+    setCycles(cycles.map((name) => ({ name })));
+    setModules(modules.map((name) => ({ name })));
   };
 
   const toggleTable = async (tableName) => {
@@ -339,6 +334,61 @@ export default function PlanLoader() {
     }
   };
 
+  // Обработчик сохранения шаблона
+  const handleSaveTemplate = async (name) => {
+    if (!name || !name.trim()) {
+      alert("Пожалуйста, введите имя шаблона");
+      return;
+    }
+
+    setSaveLoading(true);
+
+    try {
+      // Подготовим данные для отправки
+      const sectionNames = sections
+        .map((s) => s.name)
+        .filter((n) => n.trim() !== "");
+      const cycleNames = cycles
+        .map((c) => c.name)
+        .filter((n) => n.trim() !== "");
+      const moduleNames = modules
+        .map((m) => m.name)
+        .filter((n) => n.trim() !== "");
+
+      const result = await createReference(
+        name,
+        sectionNames,
+        cycleNames,
+        moduleNames,
+      );
+
+      console.log("Шаблон успешно создан:", result);
+
+      alert(`Шаблон "${name}" успешно сохранен!`);
+
+      // Очищаем состояние модального окна
+      setTemplateName("");
+      setIsSaveModalOpen(false);
+    } catch (error) {
+      console.error("Ошибка при сохранении шаблона:", error);
+      alert(`Ошибка при сохранении шаблона: ${error.message}`);
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  // Обработчик открытия модального окна сохранения
+  const handleOpenSaveModal = () => {
+    setTemplateName(""); // сбрасываем имя перед открытием
+    setIsSaveModalOpen(true);
+  };
+
+  // Обработчик закрытия модального окна
+  const handleCloseSaveModal = () => {
+    setIsSaveModalOpen(false);
+    setTemplateName("");
+  };
+
   return (
     <div className="dynamic-content">
       <InfoBlock items={planLoadHeaderInfo} />
@@ -369,6 +419,9 @@ export default function PlanLoader() {
             placeholder="Название модуля"
           />
         </div>
+        <Button size="small" onClick={handleOpenSaveModal}>
+          Save
+        </Button>
       </div>
       <div className="buttons">
         <Button size="small" onClick={() => toggleTable("plans")}>
@@ -428,6 +481,42 @@ export default function PlanLoader() {
           )}
         </div>
       )}
+
+      {/* Модальное окно для ввода имени шаблона */}
+      <ConfirmationModal
+        isOpen={isSaveModalOpen}
+        onClose={handleCloseSaveModal}
+        onConfirm={() => handleSaveTemplate(templateName)}
+        title="Сохранить шаблон"
+        confirmText="Сохранить"
+        cancelText="Отменить"
+        loading={saveLoading}
+        confirmDisabled={!templateName.trim()}
+        message="Вы уверены, что хотите сохранить этот шаблон?" // ← Кастомное сообщение
+      >
+        <div className="template-name-input">
+          <label htmlFor="templateName">Имя шаблона:</label>
+          <input
+            id="templateName"
+            type="text"
+            value={templateName}
+            onChange={(e) => setTemplateName(e.target.value)}
+            placeholder="Введите имя шаблона"
+            autoFocus
+            disabled={saveLoading}
+            style={{
+              width: "100%",
+              padding: "8px 12px",
+              border: "1px solid var(--main-border-color)",
+              borderRadius: "4px",
+              fontSize: "14px",
+              marginTop: "4px",
+              backgroundColor: "var(--main-background-color)",
+              color: "var(--main-font-color)",
+            }}
+          />
+        </div>
+      </ConfirmationModal>
     </div>
   );
 }
