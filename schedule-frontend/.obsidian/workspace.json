@@ -16,11 +16,7 @@
                 "file": "Kanban.md",
                 "kanbanViewState": {
                   "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false
-                  ]
+                  "list-collapse": [false, false, false]
                 }
               },
               "icon": "lucide-trello",
@@ -50,7 +46,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "Файловый менеджер"
             }
           },
           {
@@ -144,7 +140,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Kanban"
+              "title": "Структура Kanban"
             }
           },
           {
@@ -170,12 +166,12 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "obsidian-kanban:Create new board": false
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "obsidian-kanban:Создать новую доску": false
     }
   },
   "active": "17c569b021ff536f",

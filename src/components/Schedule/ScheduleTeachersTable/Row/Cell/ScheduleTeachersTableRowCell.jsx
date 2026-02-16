@@ -77,8 +77,14 @@ export default function ScheduleTeachersTableCell({
     }, 2600);
   };
 
+  // Функция для проверки, заполнино ли уже расписание на сегодня
+  const isScheduleForToday = () => {
+    console.log("Сессия: ", teacherSessions.sessions);
+  };
+
   return (
     <td className={classCell}>
+      {isScheduleForToday()}
       <div
         className={`cell-container ${
           isAnimating ? "cell-container--animated" : ""
