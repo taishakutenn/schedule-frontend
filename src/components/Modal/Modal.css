@@ -20,9 +20,10 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   outline: none;
   max-height: 90vh;
-  overflow: auto;
+  overflow: hidden; /* Изменяем на hidden, чтобы управлять скроллом внутри body */
   display: flex;
   flex-direction: column;
+  min-height: 200px; /* Минимальная высота для корректного отображения */
 }
 
 .modal-sm {
@@ -53,6 +54,7 @@
   padding: 16px;
   border-bottom: 1px solid var(--main-border-color);
   font-size: var(--main-large-font-size);
+  flex-shrink: 0; /* Предотвращаем сжатие шапки */
 }
 
 .modal-close-button {
@@ -79,4 +81,15 @@
   padding: 16px;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-footer {
+  padding: 16px;
+  border-top: 1px solid var(--main-border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
 }

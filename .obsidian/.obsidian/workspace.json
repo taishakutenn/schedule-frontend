@@ -1,30 +1,20 @@
 {
   "main": {
-    "id": "182266a0155d81c6",
+    "id": "6979203f0af1f62b",
     "type": "split",
     "children": [
       {
-        "id": "0e543f43c9433fa4",
+        "id": "7dfe9335242f3f2b",
         "type": "tabs",
         "children": [
           {
-            "id": "17c569b021ff536f",
+            "id": "f20d36aee44aadf1",
             "type": "leaf",
             "state": {
-              "type": "kanban",
-              "state": {
-                "file": "Kanban.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false
-                  ]
-                }
-              },
-              "icon": "lucide-trello",
-              "title": "Kanban"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -33,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "6ee7af51541289af",
+    "id": "27c656722506e18f",
     "type": "split",
     "children": [
       {
-        "id": "3cf3a8dd50a40eba",
+        "id": "d702084fac4bfa29",
         "type": "tabs",
         "children": [
           {
-            "id": "355d696f6380a778",
+            "id": "ff3eb766b5767fdf",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -54,7 +44,7 @@
             }
           },
           {
-            "id": "833cdf1863a6165e",
+            "id": "9c48c4900dd77fe5",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -69,28 +59,37 @@
               "icon": "lucide-search",
               "title": "Search"
             }
+          },
+          {
+            "id": "5f78ec84e581efc1",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 215.5
+    "width": 300
   },
   "right": {
-    "id": "2543c2fa7563f93b",
+    "id": "0c3e00816d505765",
     "type": "split",
     "children": [
       {
-        "id": "2c2af82f82df1787",
+        "id": "5f7236d82f9720ad",
         "type": "tabs",
         "children": [
           {
-            "id": "2ff76cbd280f4d27",
+            "id": "ca3c55ffbd8005e6",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Документация/Страницы/Назначение нагрузки.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,25 +99,24 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Назначение нагрузки"
+              "title": "Backlinks"
             }
           },
           {
-            "id": "d7309456d4ad96d7",
+            "id": "e71de63135df9ed0",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Документация/Страницы/Назначение нагрузки.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Назначение нагрузки"
+              "title": "Outgoing links"
             }
           },
           {
-            "id": "b33651866e2e098c",
+            "id": "567487e3876e20a2",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -133,22 +131,7 @@
             }
           },
           {
-            "id": "e8b152ae838027a3",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "Kanban.md",
-                "followCursor": false,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-list",
-              "title": "Outline of Kanban"
-            }
-          },
-          {
-            "id": "32c044ab7ca01138",
+            "id": "ddb9b72c0bc0461f",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -160,39 +143,39 @@
               "icon": "lucide-archive",
               "title": "All properties"
             }
+          },
+          {
+            "id": "801b54608d755c7f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "obsidian-kanban:Create new board": false
+      "bases:Create new base": false
     }
   },
-  "active": "17c569b021ff536f",
-  "lastOpenFiles": [
-    "Документация/Компоненты/Sidebar.md",
-    "templates/Компонент.md",
-    "Kanban.md",
-    "templates/Страница.md",
-    "Документация/Страницы/Назначение нагрузки.md",
-    "Документация/Страницы",
-    "Документация/Компоненты/Модальное окно",
-    "Документация/Компоненты/Модальное окно/Модальное окно.md",
-    "Документация/Компоненты/Модальное окно/Модальная форма с данными.md",
-    "Документация/Компоненты/Модальное окно/Модальное окно для подтверждения действия.md",
-    "templates",
-    "Документация/Компоненты",
-    "Документация",
-    "Untitled.canvas"
-  ]
+  "active": "f20d36aee44aadf1",
+  "lastOpenFiles": []
 }

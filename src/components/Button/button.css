@@ -37,6 +37,7 @@
 .btn--small {
   padding: 4px 10px;
   font-size: var(--main-small-font-size);
+  height: fit-content;
 }
 
 .btn--medium {

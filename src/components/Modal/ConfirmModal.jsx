@@ -1,3 +1,4 @@
+// ConfirmationModal.jsx
 import Modal from "./Modal";
 import Button from "../Button/Button";
 
@@ -13,9 +14,17 @@ export default function ConfirmationModal({
   confirmText = "Удалить",
   cancelText = "Отменить",
   loading = false,
+  children,
+  confirmDisabled = false,
+  message, // ← Новый пропс: кастомное сообщение
 }) {
-  // Генерация текста сообщения подтверждения
   const getMessage = () => {
+    // Если передано кастомное сообщение — используем его
+    if (message !== undefined) {
+      return message;
+    }
+
+    // Иначе — стандартная логика удаления
     if (
       !rowData ||
       !Array.isArray(displayFields) ||
@@ -24,7 +33,6 @@ export default function ConfirmationModal({
       return "Вы уверены, что хотите удалить эту запись?";
     }
 
-    // Формирование частей сообщения из указанных полей
     const fieldParts = displayFields.map((field) => {
       const value = rowData[field];
       return value != null ? value : "N/A";
@@ -33,7 +41,6 @@ export default function ConfirmationModal({
     return `Вы уверены, что хотите удалить ${fieldParts.join(" ")}?`;
   };
 
-  // Обработчик подтверждения действия
   const handleConfirm = () => {
     onConfirm();
   };
@@ -42,6 +49,11 @@ export default function ConfirmationModal({
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="md">
       <div className="confirmation-modal-body">
         <p>{getMessage()}</p>
+
+        {children && (
+          <div className="confirmation-modal-content">{children}</div>
+        )}
+
         <div className="confirmation-modal-actions">
           <Button
             variant="secondary"
@@ -49,15 +61,15 @@ export default function ConfirmationModal({
             onClick={onClose}
             disabled={loading}
           >
-            {loading ? "Удаление..." : cancelText}
+            {cancelText}
           </Button>
           <Button
-            variant="danger"
+            variant="primary"
             size="small"
             onClick={handleConfirm}
-            disabled={loading}
+            disabled={loading || confirmDisabled}
           >
-            {confirmText}
+            {loading ? "Обработка..." : confirmText}
           </Button>
         </div>
       </div>

@@ -1,9 +1,9 @@
 .dynamic-content {
   padding: 1%;
   margin: auto;
-  border: 2px solid;
+  /* border: 2px solid; */
   border-radius: 8px;
-  border-color: var(--main-border-color);
+  /* border-color: var(--main-border-color); */
   text-align: center;
   justify-content: center;
   max-width: 1500px;
@@ -13,6 +13,8 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  align-items: end;
+  gap: 5px;
 }
 
 .plan-structure-data {
@@ -111,4 +113,35 @@
 
 .table-container {
   margin-top: 10px;
+}
+
+.template-name-input {
+  margin: 16px 0;
+}
+
+.template-name-input label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--main-font-color);
+}
+
+.template-name-input input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--main-border-color);
+  border-radius: 4px;
+  background-color: var(--main-background-color);
+  color: var(--main-font-color);
+  font-size: var(--main-medium-font-size);
+}
+
+.template-name-input input:focus {
+  outline: none;
+  border-color: var(--main-accent-color);
+}
+
+.template-name-input input:disabled {
+  background-color: var(--main-header-footer-background-color);
+  cursor: not-allowed;
 }
