@@ -25,6 +25,17 @@ export default function ScheduleTeachersTableCell({
     teacherSessions,
   } = scheduleTeachersTableContext;
 
+  // // Logging context data
+  // console.log("scheduleTeachersTableContext:", scheduleTeachersTableContext);
+  // console.log("cabinets:", cabinets);
+  // console.log("sessionsTypes:", sessionsTypes);
+  // console.log("teacherInfo:", teacherInfo);
+  // console.log("teacherInPlanData:", teacherInPlanData);
+  // console.log("subjectInCycleHoursData:", subjectInCycleHoursData);
+  // console.log("subjectInCycleData:", subjectInCycleData);
+  // console.log("groups:", groups);
+  // console.log("teacherSessions:", teacherSessions);
+
   // Preparing data for selects
   const groupsOptions = groups.map((group) => ({
     value: group,
@@ -121,14 +132,29 @@ export default function ScheduleTeachersTableCell({
       return;
     }
 
-    // пара есть - заполняем форму
+    // Пара есть - заполняем форму
     const s = currentSession.session;
-    console.log(s);
-    console.log(teacherInPlanData);
+
+    // Группу берём из teacher in plan data по id teacher in plan из сессии
+    const teacherInPlan = (teacherInPlanData || []).find(
+      (tip) => tip.id === s.teacher_in_plan,
+    );
+    const group = teacherInPlan?.group_name || null;
+
+    // Предмет берём по такой цепочке:
+    // 1) в teacher in plan id часов предмета (subject_in_cycle_hours_id)
+    // 2) в часах предмета айди предмета (subject_in_cycle_id)
+    // 3) по айди предмета в subjectInCycleData находим данные
+    const subjectInCycleHours = (subjectInCycleHoursData || []).find(
+      (sch) => sch.id === teacherInPlan?.subject_in_cycle_hours_id,
+    );
+    const subjectInCycle = (subjectInCycleData || []).find(
+      (sic) => sic.id === subjectInCycleHours?.subject_in_cycle_id,
+    );
 
     setForm({
-      group: findOption(groupsOptions, s.group),
-      subject: findOption(subjectsOptions, s.subject_id),
+      group: findOption(groupsOptions, group),
+      subject: findOption(subjectsOptions, subjectInCycle?.id),
       sessionType: findOption(sessionTypesOptions, s.session_type),
       cabinet: findOption(
         cabinetsOptions,
@@ -136,7 +162,16 @@ export default function ScheduleTeachersTableCell({
       ),
       isNew: false,
     });
-  }, [currentSession]);
+
+    // Включаем анимацию и задаём ей цвет
+    handleSelectChange("error");
+    setIsAnimating(true);
+  }, [
+    currentSession,
+    teacherInPlanData,
+    subjectInCycleHoursData,
+    subjectInCycleData,
+  ]);
 
   return (
     <td className={classCell}>
@@ -150,7 +185,7 @@ export default function ScheduleTeachersTableCell({
       >
         <div className="cell-for-animation-container">
           {isModalAnimating ? (
-            <div className="modal-in-container">Запись успешно добавлена</div>
+            <div className="modal-in-container">Обновлённая запись</div>
           ) : null}
 
           <div className="cell-container__column left-column">
@@ -158,6 +193,7 @@ export default function ScheduleTeachersTableCell({
               <SyncSelect
                 options={groupsOptions}
                 placeholder="Группа"
+                value={form.group}
                 onChange={changeField("group")}
               />
             </div>
@@ -165,6 +201,7 @@ export default function ScheduleTeachersTableCell({
               <SyncSelect
                 options={subjectsOptions}
                 placeholder="Предмет"
+                value={form.subject}
                 onChange={changeField("subject")}
               />
             </div>
