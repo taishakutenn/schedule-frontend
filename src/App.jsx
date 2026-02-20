@@ -8,6 +8,7 @@ import Plans from "./pages/Plans";
 import Schedule from "./pages/Schedule";
 import Handbooks from "./pages/Handbooks";
 import Reports from "./pages/Reports";
+import Auth from "./pages/Auth";
 
 import { ThemeProvider } from "./components/Header/ThemeContext";
 
@@ -23,6 +24,7 @@ function App() {
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/handbooks" element={<Handbooks />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/auth" element={<Auth />} />
           </Routes>
           <Footer />
         </div>

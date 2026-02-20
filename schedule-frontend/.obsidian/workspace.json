@@ -16,7 +16,11 @@
                 "file": "Kanban.md",
                 "kanbanViewState": {
                   "kanban-plugin": "board",
-                  "list-collapse": [false, false, false]
+                  "list-collapse": [
+                    false,
+                    false,
+                    false
+                  ]
                 }
               },
               "icon": "lucide-trello",

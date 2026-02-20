@@ -23,8 +23,12 @@ export default function Header() {
           <Navigation items={navItems} />
           <div className="header__account-container">
             <ThemeSwitcher></ThemeSwitcher>
-            <Button>Вход</Button>
-            <Button>Регистрация</Button>
+            <Link to="/auth?mode=login">
+              <Button>Вход</Button>
+            </Link>
+            <Link to="/auth?mode=register">
+              <Button>Регистрация</Button>
+            </Link>
           </div>
         </div>
       </div>
