@@ -1,4 +1,5 @@
 import "./HandbookTable.css";
+import { useMemo } from "react";
 import { fieldLabels } from "../../utils/fieldsLabel";
 
 export default function HandbookTable({
@@ -7,64 +8,74 @@ export default function HandbookTable({
   onRowClick,
   selectedRow = null,
 }) {
-  // Select fieldsLabel
+  // Получаем перевод заголовков для таблицы
   const labels = fieldLabels[tableName] || {};
 
-  // Function to determine table headers from an API response
-  function findHeaders(data) {
-    const headers = new Set();
-    if (data && Array.isArray(data)) {
-      data.forEach((item) => {
-        Object.keys(item).forEach((key) => {
-          headers.add(key);
-        });
-      });
+  // Мемоизируем заголовки для оптимизации
+  const headers = useMemo(() => {
+    if (!apiResponse || !Array.isArray(apiResponse) || apiResponse.length === 0) {
+      return [];
     }
-    return Array.from(headers);
-  }
 
-  // Function to find id in data
-  function findIdInData(data) {
-    if (data && Array.isArray(data) && data.length > 0) {
-      const firstItem = data[0];
-      let firstKey = Object.keys(firstItem)[0];
-      return firstKey;
+    const headersSet = new Set();
+    apiResponse.forEach((item) => {
+      Object.keys(item).forEach((key) => headersSet.add(key));
+    });
+    return Array.from(headersSet);
+  }, [apiResponse]);
+
+  // Определяем поле идентификатора (первое поле, обычно id)
+  const idField = useMemo(() => {
+    if (!apiResponse || !Array.isArray(apiResponse) || apiResponse.length === 0) {
+      return null;
     }
-    return null;
+    // Приоритет: id, затем первое поле
+    const firstItem = apiResponse[0];
+    if ("id" in firstItem) return "id";
+    return Object.keys(firstItem)[0];
+  }, [apiResponse]);
+
+  // Показываем сообщение, если нет данных
+  if (!apiResponse || !Array.isArray(apiResponse) || apiResponse.length === 0) {
+    return (
+      <div className="data-table-empty">
+        <p>Нет данных для отображения</p>
+      </div>
+    );
   }
 
-  // Get handlers
-  const headers = findHeaders(apiResponse);
-  const dataId = findIdInData(apiResponse);
-
-  if (!apiResponse || !Array.isArray(apiResponse)) {
-    return <div>Нет данных для отображения.</div>;
-  }
+  const hasRowClick = typeof onRowClick === "function";
 
   return (
-    <table className="data-table">
-      {/* Fill table headers */}
-      <thead>
-        <tr>
-          {headers.map((header) => (
-            <th key={header}>{labels[header] || header}</th>
-          ))}
-        </tr>
-      </thead>
-      {/* Fill table cells */}
-      <tbody>
-        {apiResponse.map((item) => (
-          <tr
-            key={item[dataId]}
-            onClick={() => onRowClick && onRowClick(item)}
-            className={selectedRow?.[dataId] === item[dataId] ? "selected" : ""}
-          >
+    <div className="data-table-wrapper">
+      <table className="data-table">
+        <thead>
+          <tr>
             {headers.map((header) => (
-              <td key={header}>{item[header]}</td>
+              <th key={header}>{labels[header] || header}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {apiResponse.map((item) => {
+            const itemId = idField ? item[idField] : undefined;
+            const isSelected = selectedRow && itemId !== undefined && 
+              selectedRow[idField] === itemId;
+
+            return (
+              <tr
+                key={itemId !== undefined ? itemId : JSON.stringify(item)}
+                onClick={() => hasRowClick && onRowClick(item)}
+                className={`${hasRowClick ? "clickable" : ""} ${isSelected ? "selected" : ""}`}
+              >
+                {headers.map((header) => (
+                  <td key={header}>{item[header]}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

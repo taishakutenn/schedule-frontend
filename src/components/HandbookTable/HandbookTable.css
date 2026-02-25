@@ -5,17 +5,24 @@
   justify-content: center;
 }
 
+/* Обёртка таблицы для горизонтальной прокрутки */
+.data-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .data-table {
-  width: max-content;
-  max-width: 95%;
-  /* border-collapse: collapse; */
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
   background-color: var(--main-background-panel);
   color: var(--main-font-color);
   font-family: var(--main-font-family);
   font-size: 13px;
   border: 1px solid var(--main-border-color);
   border-radius: 8px;
-  /* overflow: hidden; */
 }
 
 .data-table th,
@@ -23,6 +30,7 @@
   padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid var(--main-border-color);
+  white-space: nowrap;
 }
 
 .data-table th {
@@ -31,16 +39,85 @@
   font-weight: 800;
   text-align: center;
   text-transform: initial;
+  position: sticky;
+  top: 0;
 }
 
 .data-table tbody tr {
   transition: background-color 0.2s ease;
 }
 
+.data-table tbody tr.clickable {
+  cursor: pointer;
+}
+
+.data-table tbody tr.clickable:hover {
+  background-color: var(--main-background-color);
+}
+
 .data-table tbody tr.selected {
   background-color: var(--main-header-footer-background-color);
 }
 
-.data-table tbody tr:hover {
-  background-color: var(--main-background-color);
+.data-table-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  color: var(--main-font-color);
+  font-size: var(--main-medium-font-size);
+  background-color: var(--main-background-panel);
+  border: 1px solid var(--main-border-color);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Адаптация для экранов меньше 1078px */
+@media (max-width: 1078px) {
+  .data-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    min-width: 700px;
+    font-size: 12px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+  }
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+  .data-table {
+    min-width: 800px;
+    font-size: 11px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 10px;
+  }
+}
+
+/* Кастомизация скроллбара */
+.data-table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-track {
+  background: var(--main-background-color);
+  border-radius: 4px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--main-border-color);
+  border-radius: 4px;
+}
+
+.data-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--main-font-color);
 }

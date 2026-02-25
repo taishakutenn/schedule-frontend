@@ -101,7 +101,7 @@ export default function Handbooks() {
     error: updateError,
   } = useUpdate();
   // const for delete requests
-  const { del, loading: deleteLoading, error: deleteError } = useDelete();
+  const { del, loading: deleteLoading } = useDelete();
 
   // clear selected row
   useEffect(() => {
@@ -204,7 +204,9 @@ export default function Handbooks() {
           let errorText = `HTTP error! status: ${response.status}`;
           try {
             errorText = await response.text();
-          } catch (e) {}
+          } catch (e) {
+            console.warn("Не удалось прочитать текст ошибки:", e);
+          }
           throw new Error(errorText);
         }
 

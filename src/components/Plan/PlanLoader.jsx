@@ -316,7 +316,7 @@ export default function PlanLoader() {
         cancelText="Отменить"
         loading={saveLoading}
         confirmDisabled={!templateName.trim()}
-        message="Вы уверены, что хотите сохранить этот шаблон?" // ← Кастомное сообщение
+        message="Вы уверены, что хотите сохранить этот шаблон?" // Кастомное сообщение
       >
         <div className="template-name-input">
           <label htmlFor="templateName">Имя шаблона:</label>
