@@ -1,11 +1,15 @@
 import "./PlanLoader.css";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import InfoBlock from "../InfoBlock/InfoBlock";
 import Button from "../Button/Button";
 import DynamicInputList from "../DynamicList/DynamicInputList";
 import { getPlans } from "../../api/plansAPI";
-import { uploadAndParsePlan, getAvailableReferences, createReference } from "../../api/parserLoad";
+import {
+  getAvailableReferences,
+  createReference,
+  uploadAndParsePlan,
+} from "../../api/parserLoad";
 import HandbookTable from "../HandbookTable/HandbookTable";
 import ConfirmationModal from "../Modal/ConfirmModal";
 
@@ -16,89 +20,81 @@ const planLoadHeaderInfo = [
   },
 ];
 
-// Хук для управления списками (разделы, циклы, модули)
-function useItemList(initialState = []) {
-  const [items, setItems] = useState(initialState);
-
-  const add = useCallback(() => {
-    setItems((prev) => [...prev, { name: "" }]);
-  }, []);
-
-  const update = useCallback((index, value) => {
-    setItems((prev) => {
-      const newItems = [...prev];
-      newItems[index].name = value;
-      return newItems;
-    });
-  }, []);
-
-  const remove = useCallback((index) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
-  }, []);
-
-  const set = useCallback((newItems) => {
-    setItems(newItems);
-  }, []);
-
-  const clear = useCallback(() => {
-    setItems([]);
-  }, []);
-
-  return { items, add, update, remove, set, clear };
-}
-
 export default function PlanLoader() {
-  // Списки разделов, циклов, модулей
-  const sections = useItemList();
-  const cycles = useItemList();
-  const modules = useItemList();
+  const [sections, setSections] = useState([]);
+  const [cycles, setCycles] = useState([]);
+  const [modules, setModules] = useState([]);
 
-  // Статус загрузки файла
   const [uploadStatus, setUploadStatus] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Таблицы (планы и шаблоны)
   const [activeTable, setActiveTable] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
-  const [tableError, setTableError] = useState(null);
 
-  // Модальное окно сохранения шаблона
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [saveLoading, setSaveLoading] = useState(false);
 
   const fileInputRef = useRef(null);
 
-  // Обработчик клика по строке шаблона
-  const handleReferenceRowClick = useCallback((rowData) => {
+  const addSection = () => setSections([...sections, { name: "" }]);
+  const updateSection = (index, value) => {
+    const newSections = [...sections];
+    newSections[index].name = value;
+    setSections(newSections);
+  };
+  const removeSection = (index) =>
+    setSections(sections.filter((_, i) => i !== index));
+
+  const addCycle = () => setCycles([...cycles, { name: "" }]);
+  const updateCycle = (index, value) => {
+    const newCycles = [...cycles];
+    newCycles[index].name = value;
+    setCycles(newCycles);
+  };
+  const removeCycle = (index) =>
+    setCycles(cycles.filter((_, i) => i !== index));
+
+  const addModule = () => setModules([...modules, { name: "" }]);
+  const updateModule = (index, value) => {
+    const newModules = [...modules];
+    newModules[index].name = value;
+    setModules(newModules);
+  };
+  const removeModule = (index) =>
+    setModules(modules.filter((_, i) => i !== index));
+
+  const handleReferenceRowClick = (rowData) => {
     if (!rowData || typeof rowData !== "object") return;
 
+    // Разбиваем по запятой И убираем пробелы
     const parseList = (str = "") =>
       str
         .split(",")
         .map((item) => item.trim())
         .filter((item) => item !== "");
 
-    sections.set(parseList(rowData.chapters).map((name) => ({ name })));
-    cycles.set(parseList(rowData.cycles).map((name) => ({ name })));
-    modules.set(parseList(rowData.modules).map((name) => ({ name })));
-  }, [sections, cycles, modules]);
+    const chapters = parseList(rowData.chapters);
+    const cycles = parseList(rowData.cycles);
+    const modules = parseList(rowData.modules);
 
-  // Переключение таблиц
+    setSections(chapters.map((name) => ({ name })));
+    setCycles(cycles.map((name) => ({ name })));
+    setModules(modules.map((name) => ({ name })));
+  };
+
   const toggleTable = async (tableName) => {
     if (activeTable === tableName) {
       setActiveTable(null);
       setTableData([]);
       setTableLoading(false);
-      setTableError(null);
       return;
     }
 
     setActiveTable(tableName);
     setTableLoading(true);
-    setTableError(null);
 
     try {
       let data;
@@ -111,14 +107,12 @@ export default function PlanLoader() {
 
       setTableData(data);
     } catch (err) {
-      console.error(`Ошибка загрузки ${tableName} для таблицы:`, err);
-      setTableError(err.message);
+      // Обработка ошибки
     } finally {
       setTableLoading(false);
     }
   };
 
-  // Загрузка файла плана
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -134,13 +128,13 @@ export default function PlanLoader() {
     setUploadProgress(0);
 
     try {
-      const sectionCodes = sections.items
+      const sectionCodes = sections
         .map((s) => s.name)
         .filter((n) => n.trim() !== "");
-      const cycleCodes = cycles.items
+      const cycleCodes = cycles
         .map((c) => c.name)
         .filter((n) => n.trim() !== "");
-      const moduleCodes = modules.items
+      const moduleCodes = modules
         .map((m) => m.name)
         .filter((n) => n.trim() !== "");
 
@@ -156,7 +150,6 @@ export default function PlanLoader() {
         `Файл ${result.filename} успешно загружен и данные сохранены в БД. Номер плана: ${result.saved_plan_id}`,
       );
     } catch (err) {
-      console.error("Ошибка загрузки файла:", err);
       setUploadStatus("error");
       setUploadMessage(`Ошибка загрузки: ${err.message}`);
     } finally {
@@ -170,7 +163,6 @@ export default function PlanLoader() {
     }
   };
 
-  // Сохранение шаблона
   const handleSaveTemplate = async (name) => {
     if (!name || !name.trim()) {
       alert("Пожалуйста, введите имя шаблона");
@@ -180,23 +172,28 @@ export default function PlanLoader() {
     setSaveLoading(true);
 
     try {
-      const sectionNames = sections.items
+      const sectionNames = sections
         .map((s) => s.name)
         .filter((n) => n.trim() !== "");
-      const cycleNames = cycles.items
+      const cycleNames = cycles
         .map((c) => c.name)
         .filter((n) => n.trim() !== "");
-      const moduleNames = modules.items
+      const moduleNames = modules
         .map((m) => m.name)
         .filter((n) => n.trim() !== "");
 
-      await createReference(name, sectionNames, cycleNames, moduleNames);
+      const result = await createReference(
+        name,
+        sectionNames,
+        cycleNames,
+        moduleNames,
+      );
 
       alert(`Шаблон "${name}" успешно сохранен!`);
+
       setTemplateName("");
       setIsSaveModalOpen(false);
     } catch (error) {
-      console.error("Ошибка при сохранении шаблона:", error);
       alert(`Ошибка при сохранении шаблона: ${error.message}`);
     } finally {
       setSaveLoading(false);
@@ -220,26 +217,26 @@ export default function PlanLoader() {
         <div className="plan-structure-data">
           <DynamicInputList
             title="Разделы"
-            items={sections.items}
-            onAdd={sections.add}
-            onRemove={sections.remove}
-            onUpdate={sections.update}
+            items={sections}
+            onAdd={addSection}
+            onRemove={removeSection}
+            onUpdate={updateSection}
             placeholder="Название раздела"
           />
           <DynamicInputList
             title="Циклы"
-            items={cycles.items}
-            onAdd={cycles.add}
-            onRemove={cycles.remove}
-            onUpdate={cycles.update}
+            items={cycles}
+            onAdd={addCycle}
+            onRemove={removeCycle}
+            onUpdate={updateCycle}
             placeholder="Название цикла"
           />
           <DynamicInputList
             title="Модули"
-            items={modules.items}
-            onAdd={modules.add}
-            onRemove={modules.remove}
-            onUpdate={modules.update}
+            items={modules}
+            onAdd={addModule}
+            onRemove={removeModule}
+            onUpdate={updateModule}
             placeholder="Название модуля"
           />
         </div>
@@ -291,8 +288,7 @@ export default function PlanLoader() {
       {activeTable && (
         <div className="table-container">
           {tableLoading && <p>Загрузка списка {activeTable}...</p>}
-          {tableError && <p className="error-message">Ошибка: {tableError}</p>}
-          {!tableLoading && !tableError && (
+          {!tableLoading && (
             <HandbookTable
               apiResponse={tableData}
               tableName={activeTable}
@@ -316,7 +312,7 @@ export default function PlanLoader() {
         cancelText="Отменить"
         loading={saveLoading}
         confirmDisabled={!templateName.trim()}
-        message="Вы уверены, что хотите сохранить этот шаблон?" // Кастомное сообщение
+        message="Вы уверены, что хотите сохранить этот шаблон?" // ← Кастомное сообщение
       >
         <div className="template-name-input">
           <label htmlFor="templateName">Имя шаблона:</label>
