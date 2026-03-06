@@ -29,7 +29,6 @@ export default function HandbookTable({
     if (!apiResponse || !Array.isArray(apiResponse) || apiResponse.length === 0) {
       return null;
     }
-    // Приоритет: id, затем первое поле
     const firstItem = apiResponse[0];
     if ("id" in firstItem) return "id";
     return Object.keys(firstItem)[0];

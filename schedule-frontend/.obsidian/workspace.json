@@ -139,13 +139,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Kanban.md",
+                "file": "Документация/Условия тестирования.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Kanban"
+              "title": "Outline of Условия тестирования"
             }
           },
           {
@@ -179,11 +179,12 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "17c569b021ff536f",
+  "active": "355d696f6380a778",
   "lastOpenFiles": [
+    "Kanban.md",
+    "Документация/Условия тестирования.md",
     "Документация/Компоненты/HandbookTable.md",
     "Документация/Компоненты/PlanLoader.md",
-    "Kanban.md",
     "Документация/Компоненты/Sidebar.md",
     "templates/Компонент.md",
     "templates/Страница.md",
