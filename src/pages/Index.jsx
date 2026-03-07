@@ -1,4 +1,5 @@
 import InfoBlock from "../components/InfoBlock/InfoBlock";
+import InfoButton from "../components/InfoButton/InfoButton";
 
 const infoItems = [
   {
@@ -12,6 +13,7 @@ const infoItems = [
 export default function Index() {
   return (
     <main>
+      <InfoButton textName="default" />
       <InfoBlock items={infoItems} />
     </main>
   );

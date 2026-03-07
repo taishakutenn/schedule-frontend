@@ -1,0 +1,27 @@
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-content h2 {
+  margin: 0;
+  font-size: var(--main-font-size);
+  color: var(--main-font-color);
+}
+
+.info-content p {
+  margin: 0;
+  font-size: var(--main-medium-font-size);
+  color: var(--main-second-font-color);
+  line-height: 1.6;
+}
+
+.info-content code {
+  background-color: var(--main-header-footer-background-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: var(--main-small-font-size);
+  color: var(--main-accent-secondary-color);
+}

@@ -106,11 +106,6 @@
   }
 }
 
-.plans-table-container {
-  display: flex;
-  justify-content: center;
-}
-
 .table-container {
   margin-top: 10px;
 }

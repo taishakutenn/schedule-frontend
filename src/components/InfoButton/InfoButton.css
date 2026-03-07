@@ -1,0 +1,41 @@
+@import "../../css/variables.css";
+
+.info-button {
+  position: fixed;
+  top: 95px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--main-accent-color);
+  color: var(--main-font-color);
+  border: 2px solid var(--main-border-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.info-button:hover {
+  background-color: var(--main-accent-secondary-color);
+  transform: scale(1.05);
+}
+
+.info-button:active {
+  transform: scale(0.95);
+}
+
+.info-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.info-text {
+  white-space: pre-line;
+  font-size: var(--main-medium-font-size);
+  color: var(--main-second-font-color);
+  line-height: 1.6;
+}

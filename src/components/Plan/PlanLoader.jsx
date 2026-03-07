@@ -1,20 +1,17 @@
 import "./PlanLoader.css";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import InfoBlock from "../InfoBlock/InfoBlock";
 import Button from "../Button/Button";
 import DynamicInputList from "../DynamicList/DynamicInputList";
-import { getTeachers } from "../../api/teachersAPI";
 import { getPlans } from "../../api/plansAPI";
-import { getAllSubjectsInPlan } from "../../api/subjectAPI";
-import { getGroupsBySpeciality } from "../../api/groupAPI";
-import { getSubjectHoursBySubject } from "../../api/subjectHoursAPI";
-import { useApiData } from "../../hooks/useApiData";
-import { uploadAndParsePlan } from "../../api/parserLoad";
-import { getAvailableReferences } from "../../api/parserLoad";
+import {
+  getAvailableReferences,
+  createReference,
+  uploadAndParsePlan,
+} from "../../api/parserLoad";
 import HandbookTable from "../HandbookTable/HandbookTable";
 import ConfirmationModal from "../Modal/ConfirmModal";
-import { createReference } from "../../api/parserLoad";
 
 const planLoadHeaderInfo = [
   {
@@ -28,177 +25,19 @@ export default function PlanLoader() {
   const [cycles, setCycles] = useState([]);
   const [modules, setModules] = useState([]);
 
-  const [plan, setPlan] = useState("");
-  const [group, setGroup] = useState("");
-  const [subjects, setSubjects] = useState([]);
-  const [allSubjectsInPlan, setAllSubjectsInPlan] = useState([]);
-  const [allGroupsInSpeciality, setAllGroupsInSpeciality] = useState([]);
-  const [teacher, setTeacher] = useState("");
-
-  const [subjectHoursData, setSubjectHoursData] = useState({}); // { subjectId: [hours] }
-  const [loadingHours, setLoadingHours] = useState({}); // { subjectId: true/false }
-
-  const [uploadStatus, setUploadStatus] = useState(null); // 'idle', 'loading', 'success', 'error'
+  const [uploadStatus, setUploadStatus] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const [activeTable, setActiveTable] = useState(null); // 'plans' или 'references'
+  const [activeTable, setActiveTable] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
-  const [tableError, setTableError] = useState(null);
 
-  // Состояния для модального окна сохранения шаблона
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [saveLoading, setSaveLoading] = useState(false);
 
   const fileInputRef = useRef(null);
-
-  const {
-    teachers,
-    loading: teachersLoading,
-    error: teachersError,
-  } = useApiData(getTeachers, [], true);
-
-  const {
-    data: plans,
-    loading: plansLoading,
-    error: plansError,
-  } = useApiData(getPlans, [], true);
-
-  const [groupsLoading, setGroupsLoading] = useState(false);
-  const [groupsError, setGroupsError] = useState(null);
-
-  const loadSubjectHours = async (subjectId) => {
-    if (loadingHours[subjectId]) return;
-
-    setLoadingHours((prev) => ({ ...prev, [subjectId]: true }));
-
-    try {
-      const hours = await getSubjectHoursBySubject(subjectId);
-      setSubjectHoursData((prev) => ({
-        ...prev,
-        [subjectId]: hours,
-      }));
-    } catch (err) {
-      console.error(`Ошибка загрузки часов для предмета ${subjectId}:`, err);
-
-      setSubjectHoursData((prev) => ({
-        ...prev,
-        [subjectId]: [],
-      }));
-    } finally {
-      setLoadingHours((prev) => {
-        const newState = { ...prev };
-        delete newState[subjectId];
-        return newState;
-      });
-    }
-  };
-
-  const getSemestersBySubject = (subjectId) => {
-    if (!subjectId) return [];
-    const hours = subjectHoursData[subjectId];
-    if (hours) {
-      const semesters = hours.map((h) => h.semester);
-      return [...new Set(semesters)].sort((a, b) => a - b);
-    }
-
-    loadSubjectHours(subjectId);
-    return [];
-  };
-
-  const getClassTypesBySemester = (subjectId, semester) => {
-    if (!subjectId || !semester) return [];
-    const hours = subjectHoursData[subjectId];
-    if (!hours) {
-      loadSubjectHours(subjectId);
-      return [];
-    }
-    const semesterData = hours.find((h) => h.semester === parseInt(semester));
-    if (!semesterData) return [];
-
-    const types = [];
-    if (semesterData.lectures_hours > 0) types.push("Лекция");
-    if (semesterData.laboratory_hours > 0) types.push("Лабораторная");
-    if (semesterData.practical_hours > 0) types.push("Практика");
-    if (semesterData.course_project_hours > 0) types.push("Курсовой проект");
-
-    return types;
-  };
-
-  // load subjects
-  useEffect(() => {
-    if (plan) {
-      const fetchSubjects = async () => {
-        try {
-          const subjects = await getAllSubjectsInPlan(plan);
-          setAllSubjectsInPlan(subjects);
-
-          const data = {};
-          for (const subject of subjects) {
-            try {
-              const hours = await getSubjectHoursBySubject(subject.id);
-              data[subject.id] = hours;
-            } catch (err) {
-              console.error(
-                `Ошибка загрузки часов для предмета ${subject.id}:`,
-                err,
-              );
-              data[subject.id] = [];
-            }
-          }
-          setSubjectHoursData(data);
-        } catch (err) {
-          console.error("Ошибка загрузки предметов:", err);
-          setAllSubjectsInPlan([]);
-          setSubjectHoursData({});
-        }
-      };
-
-      fetchSubjects();
-    } else {
-      setAllSubjectsInPlan([]);
-      setSubjectHoursData({});
-    }
-  }, [plan]);
-
-  // load groups
-  useEffect(() => {
-    if (plan) {
-      const selectedPlan = plans?.find((p) => p.id === parseInt(plan));
-      if (selectedPlan) {
-        const fetchGroups = async () => {
-          setGroupsLoading(true);
-          setGroupsError(null);
-
-          try {
-            const groups = await getGroupsBySpeciality(
-              selectedPlan.speciality_code,
-            );
-
-            const filteredGroups = groups.filter((group) => {
-              const groupPrefix = group.group_name.slice(0, 2);
-              const yearSuffix = selectedPlan.year.toString().slice(-2);
-              return groupPrefix === yearSuffix;
-            });
-
-            setAllGroupsInSpeciality(filteredGroups);
-          } catch (err) {
-            console.error("Ошибка загрузки групп:", err);
-            setGroupsError(err.message);
-            setAllGroupsInSpeciality([]);
-          } finally {
-            setGroupsLoading(false);
-          }
-        };
-
-        fetchGroups();
-      }
-    } else {
-      setAllGroupsInSpeciality([]);
-    }
-  }, [plan, plans]);
 
   const addSection = () => setSections([...sections, { name: "" }]);
   const updateSection = (index, value) => {
@@ -251,13 +90,11 @@ export default function PlanLoader() {
       setActiveTable(null);
       setTableData([]);
       setTableLoading(false);
-      setTableError(null);
       return;
     }
 
     setActiveTable(tableName);
     setTableLoading(true);
-    setTableError(null);
 
     try {
       let data;
@@ -270,8 +107,7 @@ export default function PlanLoader() {
 
       setTableData(data);
     } catch (err) {
-      console.error(`Ошибка загрузки ${tableName} для таблицы:`, err);
-      setTableError(err.message);
+      // Обработка ошибки
     } finally {
       setTableLoading(false);
     }
@@ -302,10 +138,6 @@ export default function PlanLoader() {
         .map((m) => m.name)
         .filter((n) => n.trim() !== "");
 
-      console.log("Коды разделов:", sectionCodes);
-      console.log("Коды циклов:", cycleCodes);
-      console.log("Коды модулей:", moduleCodes);
-
       const result = await uploadAndParsePlan(
         file,
         sectionCodes,
@@ -313,14 +145,11 @@ export default function PlanLoader() {
         moduleCodes,
       );
 
-      console.log("Результат загрузки:", result);
-
       setUploadStatus("success");
       setUploadMessage(
         `Файл ${result.filename} успешно загружен и данные сохранены в БД. Номер плана: ${result.saved_plan_id}`,
       );
     } catch (err) {
-      console.error("Ошибка загрузки файла:", err);
       setUploadStatus("error");
       setUploadMessage(`Ошибка загрузки: ${err.message}`);
     } finally {
@@ -334,7 +163,6 @@ export default function PlanLoader() {
     }
   };
 
-  // Обработчик сохранения шаблона
   const handleSaveTemplate = async (name) => {
     if (!name || !name.trim()) {
       alert("Пожалуйста, введите имя шаблона");
@@ -344,7 +172,6 @@ export default function PlanLoader() {
     setSaveLoading(true);
 
     try {
-      // Подготовим данные для отправки
       const sectionNames = sections
         .map((s) => s.name)
         .filter((n) => n.trim() !== "");
@@ -362,28 +189,22 @@ export default function PlanLoader() {
         moduleNames,
       );
 
-      console.log("Шаблон успешно создан:", result);
-
       alert(`Шаблон "${name}" успешно сохранен!`);
 
-      // Очищаем состояние модального окна
       setTemplateName("");
       setIsSaveModalOpen(false);
     } catch (error) {
-      console.error("Ошибка при сохранении шаблона:", error);
       alert(`Ошибка при сохранении шаблона: ${error.message}`);
     } finally {
       setSaveLoading(false);
     }
   };
 
-  // Обработчик открытия модального окна сохранения
   const handleOpenSaveModal = () => {
-    setTemplateName(""); // сбрасываем имя перед открытием
+    setTemplateName("");
     setIsSaveModalOpen(true);
   };
 
-  // Обработчик закрытия модального окна
   const handleCloseSaveModal = () => {
     setIsSaveModalOpen(false);
     setTemplateName("");
@@ -467,8 +288,7 @@ export default function PlanLoader() {
       {activeTable && (
         <div className="table-container">
           {tableLoading && <p>Загрузка списка {activeTable}...</p>}
-          {tableError && <p className="error-message">Ошибка: {tableError}</p>}
-          {!tableLoading && !tableError && (
+          {!tableLoading && (
             <HandbookTable
               apiResponse={tableData}
               tableName={activeTable}
