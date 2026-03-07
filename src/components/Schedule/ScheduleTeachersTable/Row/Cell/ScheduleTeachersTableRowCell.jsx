@@ -7,6 +7,10 @@ import Modal from "../../../../Modal/Modal";
 
 import SyncSelect from "../../../../CustomSelect/syncSelect";
 
+function ModalMessage({ text }) {
+  return <div className="modal-in-container">{text}</div>;
+}
+
 export default function ScheduleTeachersTableCell({
   classCell,
   date,
@@ -60,6 +64,7 @@ export default function ScheduleTeachersTableCell({
 
   const [isAnimating, setIsAnimating] = useState(false);
   const [isModalAnimating, setIsModalAnimating] = useState(false);
+  const [textInModal, setTextInModal] = useState("Успешно сохранено");
   const [currentBorder, setCurrentBorder] = useState(
     "--shedule-table-cell-border-nothing",
   );
@@ -75,10 +80,13 @@ export default function ScheduleTeachersTableCell({
 
     if (type === "create") {
       setCurrentBorder("--shedule-table-cell-border-success-create");
+      setTextInModal("Пара успешно сохранена");
     } else if (type === "update") {
       setCurrentBorder("--shedule-table-cell-border-success-update");
+      setTextInModal("Пара успешно обновлена");
     } else if (type === "error") {
       setCurrentBorder("--shedule-table-cell-border-error");
+      setTextInModal("Произошла ошибка");
     } else {
       setCurrentBorder("--shedule-table-cell-border-nothing");
     }
@@ -105,6 +113,64 @@ export default function ScheduleTeachersTableCell({
     cabinet: null,
     isNew: false,
   });
+
+  // Отслеживаем заполненность формы для создания новой пары
+  useEffect(() => {
+    const submitForm = async () => {
+      if (
+        form.isNew &&
+        form.group &&
+        form.subject &&
+        form.sessionType &&
+        form.cabinet
+      ) {
+        try {
+          // Находим teacher_in_plan_id по группе и предмету
+          const teacherInPlan = teacherInPlanData.find((tip) => {
+            const hasGroup = tip.group_name === form.group.value;
+            const hasSubject = subjectInCycleHoursData.some(
+              (sch) =>
+                sch.id === tip.subject_in_cycle_hours_id &&
+                sch.subject_in_cycle_id === parseInt(form.subject.value),
+            );
+            return hasGroup && hasSubject;
+          });
+
+          if (!teacherInPlan) {
+            console.error("Не найдено teacher_in_plan для выбранных данных");
+            handleSelectChange("error");
+            return;
+          }
+
+          // Разбираем cabinet на building и cabinet number
+          const [building, cabinet] = form.cabinet.value.split("-");
+
+          // Отправляем данные на сервер
+          await createNewSession(
+            sessionNumber,
+            date,
+            teacherInPlan.id,
+            form.sessionType.value,
+            cabinet,
+            building,
+          );
+
+          // Делаем пару не новой
+          setForm((prev) => ({
+            ...prev,
+            isNew: false,
+          }));
+
+          handleSelectChange("create");
+        } catch (error) {
+          console.error("Ошибка при отправке:", error);
+          handleSelectChange("error");
+        }
+      }
+    };
+
+    submitForm();
+  }, [form]);
 
   // Функция для изменения полей формы
   const changeField = (field) => (value) => {
@@ -163,8 +229,9 @@ export default function ScheduleTeachersTableCell({
       isNew: false,
     });
 
-    // Включаем анимацию и задаём ей цвет
+    // Включаем анимацию и задаём ей текст и цвет
     handleSelectChange("error");
+    setTextInModal("Загружено из базы данных");
     setIsAnimating(true);
   }, [
     currentSession,
@@ -184,9 +251,7 @@ export default function ScheduleTeachersTableCell({
         }}
       >
         <div className="cell-for-animation-container">
-          {isModalAnimating ? (
-            <div className="modal-in-container">Обновлённая запись</div>
-          ) : null}
+          {isModalAnimating ? <ModalMessage text={textInModal} /> : null}
 
           <div className="cell-container__column left-column">
             <div className="select-wrapper">

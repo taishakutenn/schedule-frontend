@@ -10,7 +10,7 @@ export const getInfoForCreateSchedule = async (group_name, semester) => {
   return data;
 };
 
-export const createNewSession = async (sessionNumber, sessionDate, teacherInPlanId, sessionType) => {
+export const createNewSession = async (sessionNumber, sessionDate, teacherInPlanId, sessionType, cabinet, building) => {
   const formattedDate = sessionDate.toISOString().slice(0, 10);
 
   const response = await fetch(`${API_BASE_URL}/sessions/create`, {
@@ -23,8 +23,8 @@ export const createNewSession = async (sessionNumber, sessionDate, teacherInPlan
       session_date: formattedDate,
       teacher_in_plan: teacherInPlanId,
       session_type: sessionType,
-      cabinet_number: "210",
-      building_number: "2"
+      cabinet_number: cabinet,
+      building_number: building
     })
   })
 
