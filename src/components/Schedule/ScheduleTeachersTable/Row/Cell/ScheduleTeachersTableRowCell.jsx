@@ -86,7 +86,7 @@ export default function ScheduleTeachersTableCell({
       setTextInModal("Пара успешно обновлена");
     } else if (type === "error") {
       setCurrentBorder("--shedule-table-cell-border-error");
-      setTextInModal("Произошла ошибка");
+      // setTextInModal("Произошла ошибка");
     } else {
       setCurrentBorder("--shedule-table-cell-border-nothing");
     }
@@ -163,7 +163,7 @@ export default function ScheduleTeachersTableCell({
 
           handleSelectChange("create");
         } catch (error) {
-          console.error("Ошибка при отправке:", error);
+          setTextInModal(error.data.detail);
           handleSelectChange("error");
         }
       }
@@ -180,7 +180,7 @@ export default function ScheduleTeachersTableCell({
     }));
   };
 
-  // Функция для полчения объекта по значению из массива опций
+  // Функция для получения объекта по значению из массива опций
   const findOption = (options, value) =>
     options.find((o) => o.value === String(value)) || null;
 

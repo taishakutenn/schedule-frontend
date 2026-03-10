@@ -29,7 +29,10 @@ export const createNewSession = async (sessionNumber, sessionDate, teacherInPlan
   })
 
   if (!response.ok) {
-    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+    const error = new Error(`Ошибка: ${response.status} ${response.statusText}`);
+    error.status = response.status;
+    error.data = await response.json();
+    throw error;
   }
 
   const data = await response.json();
