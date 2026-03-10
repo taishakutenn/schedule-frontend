@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import "./GroupPlate.css";
 
 export default function GroupPlate({ groupElements }) {
@@ -5,7 +6,9 @@ export default function GroupPlate({ groupElements }) {
     <div className="group-plate">
       {groupElements &&
         Array.isArray(groupElements) &&
-        groupElements.map((Element, index) => Element)}
+        groupElements.map((Element, index) => (
+          <Fragment key={index}>{Element}</Fragment>
+        ))}
     </div>
   );
 }
