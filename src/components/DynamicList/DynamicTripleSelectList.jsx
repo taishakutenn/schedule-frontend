@@ -1,15 +1,17 @@
 import Button from "../Button/Button";
 import "./DynamicList.css";
 
+const EMPTY_ITEMS = [];
+
 export default function DynamicTripleSelectList({
   title,
   items,
   onAdd,
   onRemove,
   onUpdate,
-  options1 = [],
-  getOptions2 = () => [],
-  getOptions3 = () => [],
+  options1 = EMPTY_ITEMS,
+  getOptions2 = () => EMPTY_ITEMS,
+  getOptions3 = () => EMPTY_ITEMS,
   placeholder1 = "Выберите значение 1",
   placeholder2 = "Выберите значение 2",
   placeholder3 = "Выберите значение 3",

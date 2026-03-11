@@ -1,13 +1,15 @@
 import Button from "../Button/Button";
 import "./DynamicList.css";
 
+const EMPTY_ITEMS = [];
+
 export default function DynamicSelectList({
   title,
   items,
   onAdd,
   onRemove,
   onUpdate,
-  options = [],
+  options = EMPTY_ITEMS,
   placeholder = "Выберите значение",
   label = "Элемент",
 }) {

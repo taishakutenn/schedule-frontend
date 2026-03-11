@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import "./sidebar.css";
 
-const Sidebar = ({ title = "Сайдбар", children, tabs = [] }) => {
+const EMPTY_ITEMS = [];
+
+const Sidebar = ({ title = "Сайдбар", children, tabs = EMPTY_ITEMS }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [width, setWidth] = useState("20%");
