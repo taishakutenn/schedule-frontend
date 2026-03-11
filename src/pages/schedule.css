@@ -1,0 +1,54 @@
+.copy-schedule-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.copy-schedule-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 3px solid var(--main-border-color);
+    padding: 15px;
+}
+
+.copy-schedule--title {
+    align-self: flex-start;
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--main-font-color);
+}
+
+.copy-schedule--label {
+    margin: 10px 0;
+    color: var(--main-second-font-color);
+    font-size: 14px;
+}
+
+.copy-schedule-option input {
+    width: 100%;
+    max-width: 250px;
+    padding: 10px 12px;
+    margin: 8px 0;
+    background-color: var(--main-background-panel);
+    border: 1px solid var(--main-border-color);
+    border-radius: 6px;
+    color: var(--main-font-color);
+    font-size: 14px;
+    font-family: var(--main-font-family);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.copy-schedule-option .count-days {
+    width: 100%;
+    max-width: 75px;
+}
+
+.copy-schedule-option input:focus {
+    border-color: var(--main-accent-secondary-color);
+}
+
+.copy-schedule-option input::placeholder {
+    color: var(--main-placeholder-color);
+}

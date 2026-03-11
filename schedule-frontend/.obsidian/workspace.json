@@ -19,6 +19,7 @@
                   "list-collapse": [
                     false,
                     false,
+                    false,
                     false
                   ]
                 }
@@ -180,12 +181,12 @@
   },
   "active": "17c569b021ff536f",
   "lastOpenFiles": [
+    "Документация/Компоненты/Sidebar.md",
+    "Kanban.md",
     "Документация/Компоненты/PlanLoader.md",
     "Документация/Компоненты/HandbookTable.md",
     "Документация/Компоненты/DynamicSelect.md",
-    "Документация/Компоненты/Sidebar.md",
     "templates/Компонент.md",
-    "Kanban.md",
     "templates/Страница.md",
     "Документация/Страницы/Назначение нагрузки.md",
     "Документация/Страницы",
