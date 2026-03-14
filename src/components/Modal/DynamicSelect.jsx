@@ -1,20 +1,46 @@
 import { useApiData } from "../../hooks/useApiData";
+import { useEffect, useState, useCallback } from "react";
 
 /**
  * Выпадающий список с динамической загрузкой опций из API.
  * Используется в ModalForm для полей, данные которых получаются из внешних источников.
+ * Поддерживает зависимость от другого поля формы через параметр dependsOnField.
  */
 export default function DynamicSelect({
   fieldConfig,
   value,
   onChange,
   disabled,
+  formData,
 }) {
   // Извлекаем настройки из конфигурации поля
-  const { apiFunction, labelField, valueField } = fieldConfig;
+  const { apiFunction, labelField, valueField, dependsOnField } = fieldConfig;
+
+  // Состояние для хранения зависимого значения
+  const [dependentValue, setDependentValue] = useState(null);
+
+  // Обновляем зависимое значение при изменении formData
+  useEffect(() => {
+    if (dependsOnField && formData) {
+      setDependentValue(formData[dependsOnField]);
+    }
+  }, [dependsOnField, formData]);
+
+  // Функция для вызова API с параметром - мемоизируем
+  const fetchWithParam = useCallback(async () => {
+    if (!dependentValue) return [];
+    if (apiFunction) {
+      return await apiFunction(dependentValue);
+    }
+    return [];
+  }, [dependentValue, apiFunction]);
 
   // Загружаем данные из API через кастомный хук
-  const { data, loading, error } = useApiData(apiFunction, [], true);
+  const { data, loading, error } = useApiData(
+    dependsOnField ? fetchWithParam : apiFunction,
+    dependsOnField ? [dependentValue] : [],
+    true,
+  );
 
   // Показываем ошибку, если загрузка не удалась
   if (error) {
@@ -43,10 +69,14 @@ export default function DynamicSelect({
       value={value}
       onChange={onChange}
       required={fieldConfig.required}
-      disabled={disabled || loading}
+      disabled={disabled || loading || (dependsOnField && !dependentValue)}
     >
       <option value="" disabled>
-        {loading ? "Загрузка..." : fieldConfig.placeholder || "Выберите..."}
+        {loading
+          ? "Загрузка..."
+          : dependsOnField && !dependentValue
+            ? "Сначала выберите группу"
+            : fieldConfig.placeholder || "Выберите..."}
       </option>
       {data?.map((item) => (
         <option key={item[valueField]} value={item[valueField]}>

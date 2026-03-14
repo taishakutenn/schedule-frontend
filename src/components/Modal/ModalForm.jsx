@@ -67,13 +67,13 @@ export default function ModalForm({
                   updateData[fieldConfig.newNameForUpdate] = value;
                 } else {
                   console.warn(
-                    `Поле ${key} отмечено как ключ, но newNameForUpdate не указано.`
+                    `Поле ${key} отмечено как ключ, но newNameForUpdate не указано.`,
                   );
                   updateData[key] = value;
                 }
               } else {
                 console.log(
-                  `Ключевое поле ${key} не изменилось, пропускаем: ${value}`
+                  `Ключевое поле ${key} не изменилось, пропускаем: ${value}`,
                 );
               }
               // Сохраняем старое значение для идентификации записи
@@ -133,6 +133,7 @@ export default function ModalForm({
             value={value}
             onChange={handleChange}
             disabled={loading}
+            formData={formData}
           />
         );
       }

@@ -1,7 +1,7 @@
 import { getTeachers } from "../api/teachersAPI";
 import { getTeachersCategory } from "../api/teacherCategoryAPI";
 import { getSpecialities } from "../api/specialityAPI";
-import { getGroups } from "../api/groupAPI";
+import { getGroups, getSubjectsByGroupName } from "../api/groupAPI";
 import { getBuildings } from "../api/buildingAPI";
 import { getSubjects } from "../api/subjectAPI";
 import { getPaymentForms } from "../api/paymentAPI";
@@ -17,7 +17,8 @@ const createField = (
   dynamicOptions = false,
   apiFunction = null,
   labelField = null,
-  valueField = null
+  valueField = null,
+  dependsOnField = null,
 ) => ({
   name,
   type,
@@ -30,6 +31,7 @@ const createField = (
   apiFunction,
   labelField,
   valueField,
+  dependsOnField,
 });
 
 export const formConfig = {
@@ -52,7 +54,7 @@ export const formConfig = {
         getTeachersCategory,
         "teacher_category",
         "teacher_category",
-        false
+        false,
       ),
     ],
   },
@@ -64,7 +66,7 @@ export const formConfig = {
         "Номер корпуса",
         true,
         true,
-        "new_building_number"
+        "new_building_number",
       ),
       createField("city", "text", "Город", true, false),
       createField("building_address", "text", "Адрес корпуса", true, false),
@@ -78,7 +80,7 @@ export const formConfig = {
         "Название категории",
         true,
         true,
-        "new_teacher_category"
+        "new_teacher_category",
       ),
     ],
   },
@@ -90,7 +92,7 @@ export const formConfig = {
         "Код специальности",
         true,
         true,
-        "new_speciality_code"
+        "new_speciality_code",
       ),
     ],
   },
@@ -102,7 +104,7 @@ export const formConfig = {
         "Номер кабинета",
         false,
         true,
-        "new_cabinet_number"
+        "new_cabinet_number",
       ),
       createField(
         "building_number",
@@ -115,7 +117,7 @@ export const formConfig = {
         true,
         getBuildings,
         "building_number",
-        "building_number"
+        "building_number",
       ),
       createField("capacity", "text", "Вместимость", false, false),
       createField("cabinet_state", "text", "Тип кабинета", true, false),
@@ -134,7 +136,7 @@ export const formConfig = {
         "Название группы",
         true,
         true,
-        "new_group_name"
+        "new_group_name",
       ),
       createField(
         "speciality_code",
@@ -147,7 +149,7 @@ export const formConfig = {
         true,
         getSpecialities,
         "speciality_code",
-        "speciality_code"
+        "speciality_code",
       ),
       createField(
         "payment_form",
@@ -160,14 +162,14 @@ export const formConfig = {
         true,
         getPaymentForms,
         "payment_name",
-        "payment_name"
+        "payment_name",
       ),
       createField(
         "quantity_students",
         "text",
         "Количество студентов",
         true,
-        false
+        false,
       ),
       createField(
         "group_advisor_id",
@@ -180,7 +182,7 @@ export const formConfig = {
         true,
         getTeachers,
         ["fathername", "name", "surname"],
-        "id"
+        "id",
       ),
     ],
   },
@@ -192,22 +194,27 @@ export const formConfig = {
         "select",
         "Название группы",
         true,
+        false,
+        null,
         null,
         true,
         getGroups,
         "group_name",
-        "group_name"
+        "group_name",
       ),
       createField(
         "subject_id",
         "select",
         "Предмет",
         true,
+        false,
+        null,
         null,
         true,
-        getSubjects,
-        "title",
-        "id"
+        getSubjectsByGroupName,
+        ["code", "title"],
+        "id",
+        "group_name",
       ),
     ],
   },
@@ -219,7 +226,7 @@ export const formConfig = {
         "Название",
         true,
         true,
-        "new_payment_name"
+        "new_payment_name",
       ),
     ],
   },
