@@ -62,3 +62,18 @@ export const getSessionsForTeacherAndDate = async (teacherId, startPeriodDate, e
   return data;
 }
 
+export const copyScheduleInRange = async (startCopyPeriodDate, startInsertPeriodDate, copyCountDays) => {
+  const formatedStartCopyPeriodDate = startCopyPeriodDate.toISOString().slice(0, 10);
+  const formatedStartInsertPeriodDate = startInsertPeriodDate.toISOString().slice(0, 10);
+
+  const response = await fetch(`${API_BASE_URL}/schedule/copy/${formatedStartCopyPeriodDate}/${formatedStartInsertPeriodDate}/${copyCountDays}`, {
+    method: "POST"
+  })
+
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  return true;
+}
+
