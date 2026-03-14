@@ -4,13 +4,15 @@ import Button from "../Button/Button";
 
 import "./Modal.css";
 
+const EMPTY_ITEMS = [];
+
 export default function ConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
   title = "Подтвердите действие",
   rowData = null,
-  displayFields = [],
+  displayFields = EMPTY_ITEMS,
   confirmText = "Удалить",
   cancelText = "Отменить",
   loading = false,

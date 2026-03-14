@@ -1,33 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export const useApiData = (apiFunction, dependencies = [], enabled = true) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  // Мемоизируем функцию выполнения запроса
+  const fetchData = useCallback(async () => {
     if (!enabled || typeof apiFunction !== "function") {
       return;
     }
 
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const result = await apiFunction();
-        setData(result);
-      } catch (err) {
-        setError(err.message);
-        setData([]);
-        console.error("Ошибка загрузки:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const result = await apiFunction();
+      setData(result);
+    } catch (err) {
+      setError(err.message);
+      setData([]);
+      console.error("Ошибка загрузки:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiFunction, enabled]);
 
+  useEffect(() => {
     fetchData();
-  }, [apiFunction, enabled, ...dependencies]);
+  }, [...dependencies]); // Убрали apiFunction и enabled из зависимостей
 
   return { data, loading, error };
 };

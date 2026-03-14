@@ -15,7 +15,7 @@ export const getGroups = async () => {
 
 export const getGroupsBySpeciality = async (speciality_code) => {
   const response = await fetch(
-    `${API_BASE_URL}/groups/search/by_speciality/${speciality_code}`
+    `${API_BASE_URL}/groups/search/by_speciality/${speciality_code}`,
   );
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
@@ -27,7 +27,7 @@ export const getGroupsBySpeciality = async (speciality_code) => {
 
 export const getGroupByName = async (groupName) => {
   const response = await fetch(
-    `${API_BASE_URL}/groups/search/by_group_name/${groupName}`
+    `${API_BASE_URL}/groups/search/by_group_name/${groupName}`,
   );
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
@@ -49,7 +49,7 @@ export const getSubjectsByGroupAndSemesters = async (groupName) => {
 
   // Get all subject in this plan
   const subjects = await getAllSubjectsInPlan(planId);
-  const subjectsIds = subjects.map((subject) => subject.id); // create array subjects ids 
+  const subjectsIds = subjects.map((subject) => subject.id); // create array subjects ids
 
   // In cycle get all subject hours
   const subjectHours = [];
@@ -58,16 +58,18 @@ export const getSubjectsByGroupAndSemesters = async (groupName) => {
       const subjectHour = await getSubjectHoursBySubject(id);
       subjectHours.push(subjectHour);
     } catch (err) {
-      console.log(`Не удалось получить часы для предмета с id: ${id}. Ошибка: ${err}`);
+      console.log(
+        `Не удалось получить часы для предмета с id: ${id}. Ошибка: ${err}`,
+      );
     }
   }
-  
+
   // ОТЛАДКА
   console.log("Отладочный вывод");
-  subjectHours.forEach(subjectHour => {
-    subjectHour.forEach(array => {
+  subjectHours.forEach((subjectHour) => {
+    subjectHour.forEach((array) => {
       console.log(array);
-    })
+    });
   });
   console.log("ПРЕДМЕТЫ");
   console.log(subjects);
@@ -93,4 +95,21 @@ export const getGroupsByNames = async (names) => {
 
   const data = await response.json();
   return data.groups.map((item) => item.group);
+};
+
+export const getSubjectsByGroupName = async (groupName) => {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupName}/subjects`);
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const subjects = data.subjects || data;
+
+  // Возвращаем id (число), code и title
+  return subjects.map((subject) => ({
+    id: subject.id,
+    code: subject.code,
+    title: subject.title,
+  }));
 };
