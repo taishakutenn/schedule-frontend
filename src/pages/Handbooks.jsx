@@ -27,7 +27,7 @@ const headerInfo = [
 
 const ControlContainer = (
   { handbook, onAdd, onEdit, onDelete, search, onSearchChange },
-  ref
+  ref,
 ) => {
   if (!handbook) return null;
 
@@ -73,6 +73,9 @@ export default function Handbooks() {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+  // Хранение оригинальных данных групп для редактирования
+  const [originalGroupsData, setOriginalGroupsData] = useState({});
+
   // Ref for table
   const tableRef = useRef(null);
   const controlContainerRef = useRef(null);
@@ -82,7 +85,7 @@ export default function Handbooks() {
   const { data, loading, error } = useApiData(
     currentTableConfig?.apiFunction || (() => []),
     [handbook, refreshTrigger],
-    !!currentTableConfig
+    !!currentTableConfig,
   );
 
   // load teachers for group table
@@ -90,7 +93,7 @@ export default function Handbooks() {
     data: teachersData,
     loading: teachersLoading,
     error: teachersError,
-  } = useApiData(getTeachers, [], handbook === "groups");
+  } = useApiData(getTeachers, [handbook], handbook === "groups");
 
   // consts for post requests
   const { post, loading: postLoading, error: postError } = usePost();
@@ -102,6 +105,23 @@ export default function Handbooks() {
   } = useUpdate();
   // const for delete requests
   const { del, loading: deleteLoading } = useDelete();
+
+  // Сохраняем оригинальные данные групп для редактирования
+  useEffect(() => {
+    if (
+      handbook === "groups" &&
+      data &&
+      !teachersLoading &&
+      !teachersError &&
+      teachersData
+    ) {
+      const originalData = {};
+      data.forEach((group) => {
+        originalData[group.group_name] = group;
+      });
+      setOriginalGroupsData(originalData);
+    }
+  }, [handbook, data, teachersLoading, teachersError, teachersData]);
 
   // clear selected row
   useEffect(() => {
@@ -177,7 +197,7 @@ export default function Handbooks() {
   const handleSaveEdit = async (
     updateDataOrFormData,
     idDataOrIdValues,
-    onReset
+    onReset,
   ) => {
     if (
       typeof idDataOrIdValues === "object" &&
@@ -261,7 +281,7 @@ export default function Handbooks() {
 
     if (!idFields || !Array.isArray(idFields) || idFields.length === 0) {
       console.error(
-        `Неизвестная или некорректная конфигурация ID для таблицы: ${handbook}`
+        `Неизвестная или некорректная конфигурация ID для таблицы: ${handbook}`,
       );
       setIsConfirmModalOpen(false);
       return;
@@ -309,26 +329,38 @@ export default function Handbooks() {
     ) {
       const teacherMap = {};
       teachersData.forEach((teacher) => {
-        teacherMap[teacher.id] =
+        teacherMap[String(teacher.id)] =
           `${teacher.surname} ${teacher.name} ${teacher.fathername}`.trim();
       });
 
       processedData = data.map((group) => ({
         ...group,
         group_advisor_id:
-          teacherMap[group.group_advisor_id] || "Неизвестный преподаватель",
+          teacherMap[String(group.group_advisor_id)] ||
+          "Неизвестный преподаватель",
       }));
     }
 
     const filteredData = Array.isArray(data)
       ? getFilteredData(processedData, search)
       : [];
+
+    // Обработчик клика по строке - для групп используем оригинальные данные
+    const handleRowClick = (rowData) => {
+      if (handbook === "groups" && rowData.group_name) {
+        const originalData = originalGroupsData[rowData.group_name];
+        setSelectedRowData(originalData || rowData);
+      } else {
+        setSelectedRowData(rowData);
+      }
+    };
+
     return (
       <div ref={tableRef}>
         <HandbookTable
           apiResponse={filteredData}
           tableName={handbook}
-          onRowClick={setSelectedRowData}
+          onRowClick={handleRowClick}
           selectedRow={selectedRowData}
         />
       </div>
@@ -372,6 +404,19 @@ export default function Handbooks() {
     </Button>,
   ];
 
+  // Названия справочников для отображения
+  const handbookTitles = {
+    teachers: "Преподаватели",
+    teacher_category: "Категории преподавателей",
+    specialities: "Специальности",
+    groups: "Группы",
+    payment_forms: "Формы оплаты",
+    buildings: "Здания",
+    cabinets: "Кабинеты",
+    session_type: "Типы занятий",
+    streams: "Потоки занятий",
+  };
+
   return (
     <main>
       <InfoBlock items={headerInfo} />
@@ -381,6 +426,11 @@ export default function Handbooks() {
         <GroupPlate groupElements={tabButtonsCabinet} />
         <GroupPlate groupElements={tabButtonsSession} />
       </div>
+      {handbook && (
+        <div className="handbook-title">
+          <h2>{handbookTitles[handbook] || handbook}</h2>
+        </div>
+      )}
       <ControlContainer
         ref={controlContainerRef}
         handbook={handbook}

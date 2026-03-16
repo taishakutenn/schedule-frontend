@@ -8,6 +8,17 @@
   flex-wrap: wrap;
 }
 
+.handbook-title {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.handbook-title h2 {
+  font-size: var(--main-large-font-size);
+  color: var(--main-font-color);
+  font-weight: 600;
+}
+
 .control-container {
   display: flex;
   gap: 5px;
