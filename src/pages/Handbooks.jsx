@@ -72,6 +72,7 @@ export default function Handbooks() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isFinalConfirmModalOpen, setIsFinalConfirmModalOpen] = useState(false);
 
   // Хранение оригинальных данных групп для редактирования
   const [originalGroupsData, setOriginalGroupsData] = useState({});
@@ -270,10 +271,15 @@ export default function Handbooks() {
       setIsConfirmModalOpen(true);
     }
   };
-  // Function confirm delete
-  const handleConfirmDelete = async () => {
+  // Function confirm delete - opens final confirmation modal
+  const handleConfirmDelete = () => {
+    setIsConfirmModalOpen(false);
+    setIsFinalConfirmModalOpen(true);
+  };
+  // Function final confirm delete - performs actual deletion
+  const handleFinalConfirmDelete = async () => {
     if (!selectedRowData || !handbook) {
-      setIsConfirmModalOpen(false);
+      setIsFinalConfirmModalOpen(false);
       return;
     }
 
@@ -283,7 +289,7 @@ export default function Handbooks() {
       console.error(
         `Неизвестная или некорректная конфигурация ID для таблицы: ${handbook}`,
       );
-      setIsConfirmModalOpen(false);
+      setIsFinalConfirmModalOpen(false);
       return;
     }
 
@@ -295,7 +301,7 @@ export default function Handbooks() {
       console.log("Успешно удалено");
       console.log("ID для удаления:", idValue);
       setRefreshTrigger((prev) => prev + 1);
-      setIsConfirmModalOpen(false);
+      setIsFinalConfirmModalOpen(false);
       setSelectedRowData(null);
     } catch (err) {
       console.error("Ошибка удаления:", err);
@@ -471,6 +477,19 @@ export default function Handbooks() {
         displayFields={displayFieldConfig[handbook] || []}
         confirmText="Удалить"
         cancelText="Отмена"
+        loading={deleteLoading}
+      />
+
+      <ConfirmModal
+        isOpen={isFinalConfirmModalOpen}
+        onClose={() => setIsFinalConfirmModalOpen(false)}
+        onConfirm={handleFinalConfirmDelete}
+        title="Подтвердите удаление ещё раз."
+        message="Подтвердите удаление ещё раз, просто на всякий случай."
+        rowData={selectedRowData}
+        displayFields={displayFieldConfig[handbook] || []}
+        confirmText="Да, удалить"
+        cancelText="Нет, отмена"
         loading={deleteLoading}
       />
     </main>

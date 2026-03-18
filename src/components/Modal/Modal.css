@@ -93,3 +93,25 @@
   gap: 8px;
   flex-shrink: 0;
 }
+
+/* Стили для модального окна подтверждения */
+.confirmation-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.confirmation-modal-body p {
+  margin: 0;
+  font-size: var(--main-medium-font-size);
+  line-height: 1.5;
+}
+
+.confirmation-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--main-border-color);
+}
