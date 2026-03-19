@@ -25,7 +25,7 @@ export default function StaffingSchedule({ selectedReport }) {
         }
 
         const validPlans = plans.filter(
-          (plan) => typeof plan.year === "number" && plan.year > 0
+          (plan) => typeof plan.year === "number" && plan.year > 0,
         );
         if (validPlans.length === 0) {
           setAvailableYears([]);
@@ -46,7 +46,7 @@ export default function StaffingSchedule({ selectedReport }) {
         const effectiveMaxYear = Math.min(maxEndYear, currentYear);
         console.log(
           "Максимальный эффективный год (ограничен текущим):",
-          effectiveMaxYear
+          effectiveMaxYear,
         );
 
         const yearsSet = new Set();
@@ -124,25 +124,26 @@ export default function StaffingSchedule({ selectedReport }) {
         </select>
       </div>
       <div className="table-container">
-        <table className="report-table">
-          <thead>
-            <tr>
-              <th>Преподаватель</th>
-              <th>Общее количество часов</th>
-              <th>Количество ставок</th>
-            </tr>
-          </thead>
-          <tbody>
-            {staffingData.map((entry) => (
-              <tr key={entry.teacherId}>
-                <td>{entry.teacherName}</td>
-                <td>{entry.totalHours}</td>
-                <td>{entry.fte}</td>
+        {staffingData.length > 0 ? (
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>Преподаватель</th>
+                <th>Общее количество часов</th>
+                <th>Количество ставок</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {staffingData.length === 0 && (
+            </thead>
+            <tbody>
+              {staffingData.map((entry) => (
+                <tr key={entry.teacherId}>
+                  <td>{entry.teacherName}</td>
+                  <td>{entry.totalHours}</td>
+                  <td>{entry.fte}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
           <p>Нет данных для отображения на {selectedYear} год.</p>
         )}
       </div>
