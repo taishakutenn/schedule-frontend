@@ -87,8 +87,8 @@ export const updateSession = async (
   building = null) => {
   const formattedDate = sessionDate.toISOString().slice(0, 10);
 
-  const response = await fetch(`${API_BASE_URL}/sessions/create`, {
-    method: "POST",
+  const response = await fetch(`${API_BASE_URL}/sessions/update`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },

@@ -93,12 +93,16 @@ export default function SchedulteTeachersTable() {
   };
 
   // Обработчик нажатия на Item в контекстном меню
-  const handleDeleteSession = ({ props }) => {
+  const handleUpdateSession = ({ props }) => {
     // Обработчик открытия меню находится в компоненте TableCell
-    // При нажатии - этот обработчик передаёт в props callback функции удаления из Cell компонента
-    // так мы удаляем данные внутри cell, имея возможность вызвать анимации
+    // При нажатии - этот обработчик передаёт в props callback функции из Cell компонента
+    // так мы обновляем/удаляем данные внутри cell, имея возможность вызвать анимации
     // И при этом компонент menu у нас всего один
-    props.handleFunctionCallback();
+    props.handleFunctionCallback("update");
+  };
+
+  const handleDeleteSession = ({ props }) => {
+    props.handleFunctionCallback("delete");
   };
 
   return (
@@ -128,6 +132,7 @@ export default function SchedulteTeachersTable() {
         </tbody>
       </table>
       <Menu id="teacher-menu" theme="scheduleTable">
+        <Item onClick={handleUpdateSession}>Обновить</Item>
         <Item onClick={handleDeleteSession}>Удалить</Item>
       </Menu>
     </div>

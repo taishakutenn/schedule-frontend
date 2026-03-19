@@ -92,6 +92,7 @@ export default function ScheduleTeachersTableCell({
     cabinet: null,
     isNew: true,
     isDelete: false,
+    isUpdate: false,
   });
 
   // Функция для сброса формы к начальному состоянию
@@ -104,6 +105,7 @@ export default function ScheduleTeachersTableCell({
       cabinet: null,
       isNew: true,
       isDelete: false,
+      isUpdate: false,
     });
   };
 
@@ -154,15 +156,19 @@ export default function ScheduleTeachersTableCell({
         event: e,
         props: {
           sessionId: form.id,
-          handleFunctionCallback: handleDeleteSession,
+          handleFunctionCallback: handleMenuAction,
         },
       });
     }
   };
 
-  // Обработчик нажатия на Item в контекстном меню
-  const handleDeleteSession = () => {
-    setFormField("isDelete", true);
+  // Обработчик действий из контекстного меню
+  const handleMenuAction = (actionType) => {
+    if (actionType === "update") {
+      setFormField("isUpdate", true);
+    } else if (actionType === "delete") {
+      setFormField("isDelete", true);
+    }
   };
 
   // ============================================
@@ -196,6 +202,7 @@ export default function ScheduleTeachersTableCell({
       // Если создаём пару
       if (
         form.isNew &&
+        !form.id &&
         form.group &&
         form.subject &&
         form.sessionType &&
@@ -225,7 +232,9 @@ export default function ScheduleTeachersTableCell({
 
           handleSelectChange("create");
         } catch (error) {
-          setTextInModal(error.data.detail);
+          setTextInModal(
+            error.data?.detail?.msg || "Произошла ошибка при создании",
+          );
           handleSelectChange("error");
         }
       } else if (
@@ -236,7 +245,7 @@ export default function ScheduleTeachersTableCell({
         form.subject &&
         form.sessionType &&
         form.cabinet &&
-        1 == 2
+        form.isUpdate
       ) {
         try {
           const payload = getSessionPayload();
@@ -245,8 +254,9 @@ export default function ScheduleTeachersTableCell({
             handleSelectChange("error");
             return;
           }
-
-          await updateSession(
+          
+          // Обновляем пару
+          const updatedSession = await updateSession(
             form.id,
             sessionNumber,
             date,
@@ -256,10 +266,15 @@ export default function ScheduleTeachersTableCell({
             payload.building,
           );
 
+          // Сбрасываем флаг обновления
+          setFormField("isUpdate", false);
+
           handleSelectChange("update");
           setTextInModal("Пара успешно обновлена");
         } catch (error) {
-          setTextInModal(error.data.detail);
+          setTextInModal(
+            error.data?.detail?.msg || "Произошла ошибка при обновлении",
+          );
           handleSelectChange("error");
         }
       } else if (
@@ -281,7 +296,9 @@ export default function ScheduleTeachersTableCell({
           handleSelectChange("create");
           setTextInModal("Пара успешно удалена");
         } catch (error) {
-          setTextInModal(error.data.detail);
+          setTextInModal(
+            error.data?.detail?.msg || "Произошла ошибка при удалении",
+          );
           handleSelectChange("error");
         }
       }
