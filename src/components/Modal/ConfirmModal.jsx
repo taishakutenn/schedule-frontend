@@ -32,7 +32,7 @@ export default function ConfirmationModal({
       !Array.isArray(displayFields) ||
       displayFields.length === 0
     ) {
-      return "Вы уверены, что хотите удалить эту запись?";
+      return "Вы точно уверены, что хотите удалить эту запись? Удаление записи может повлечь ошибки в работе приложения.";
     }
 
     const fieldParts = displayFields.map((field) => {
@@ -40,7 +40,7 @@ export default function ConfirmationModal({
       return value != null ? value : "N/A";
     });
 
-    return `Вы уверены, что хотите удалить ${fieldParts.join(" ")}?`;
+    return `Вы точно уверены, что хотите удалить ${fieldParts.join(" ")}? Удаление записи может повлечь ошибки в работе приложения.`;
   };
 
   const handleConfirm = () => {

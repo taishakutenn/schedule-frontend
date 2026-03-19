@@ -66,7 +66,7 @@ export default function DynamicSelect({
   return (
     <select
       name={fieldConfig.name}
-      value={value}
+      value={value ?? ""}
       onChange={onChange}
       required={fieldConfig.required}
       disabled={disabled || loading || (dependsOnField && !dependentValue)}

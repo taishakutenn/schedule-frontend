@@ -188,7 +188,14 @@ export const formConfig = {
   },
   streams: {
     fields: [
-      createField("stream_id", "text", "Номер потока", true, true),
+      createField(
+        "stream_id",
+        "text",
+        "Номер потока",
+        true,
+        true,
+        "new_stream_id",
+      ),
       createField(
         "group_name",
         "select",
