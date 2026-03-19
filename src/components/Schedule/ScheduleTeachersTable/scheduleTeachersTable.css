@@ -72,3 +72,21 @@ td.far-left {
   display: flex;
   flex-wrap: wrap;
 }
+
+/* Стиль для контекстного меню */
+.contexify_theme-scheduleTable {
+  --contexify-menu-bgColor: var(--main-header-footer-background-color);
+  --contexify-separator-color: var(--main-border-color);
+  --contexify-item-color: var(--main-font-color);
+  --contexify-activeItem-color: var(--main-font-color);
+  --contexify-activeItem-bgColor: var(--main-accent-color);
+  --contexify-menu-minWidth: auto;
+  --contexify-menu-shadow: none;
+}
+
+.contexify_item {
+  font-weight: 400;
+  font-size: 16px;
+  max-width: 100px;
+  width: auto;
+}

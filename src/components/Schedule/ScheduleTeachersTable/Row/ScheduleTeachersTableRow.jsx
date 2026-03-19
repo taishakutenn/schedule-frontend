@@ -55,7 +55,7 @@ export default function ScheduleTeachersTableRow({
     data: subjectInCycleHoursData,
     loading: subjectInCycleHoursLoading,
     error: subjectInCycleHoursError,
-  } = useApiData(subjectsInCycleHoursCall, []);
+  } = useApiData(subjectsInCycleHoursCall, [teacherSubjectsInCyclesHoursIds]);
 
   // 3.
   // In the received data of the clock of objects in the cycle,
@@ -78,7 +78,7 @@ export default function ScheduleTeachersTableRow({
     data: subjectInCycleData,
     loading: subjectInCycleLoading,
     error: subjectInCycleError,
-  } = useApiData(subjectsInCycleCall, []);
+  } = useApiData(subjectsInCycleCall, [subjectsInCycleIds]);
 
   // 4.
   // Separately, for convenience, we generate data for context

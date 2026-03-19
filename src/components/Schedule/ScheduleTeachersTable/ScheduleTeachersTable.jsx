@@ -1,7 +1,9 @@
 import "./scheduleTeachersTable.css";
+import "react-contexify/ReactContexify.css";
 
 import { useEffect, useState } from "react";
 import { Oval } from "react-loader-spinner";
+import { Menu, Item } from "react-contexify";
 
 import ScheduleTeachersTableRow from "./Row/ScheduleTeachersTableRow";
 import ScheduleTeachersTableHeader from "./Header/ScheduleTeachersTableHeader";
@@ -11,8 +13,6 @@ import { useApiData } from "../../../hooks/useApiData";
 import { getTeachers } from "../../../api/teachersAPI";
 import { getCabinets } from "../../../api/cabinetAPI";
 import { getSessionTypes } from "../../../api/sessionTypeAPI";
-
-import Modal from "../../Modal/Modal";
 
 export default function SchedulteTeachersTable() {
   // Функция для получения понедельника текущей недели (в прошлом или сегодня)
@@ -29,33 +29,33 @@ export default function SchedulteTeachersTable() {
   const initialMonday = getMonday(today);
 
   const [selectedDate, setSelectedDate] = useState(initialMonday);
-  // Syncrhonize date from header to current component
+  // Синхронизация даты из заголовка с текущим компонент
   const handleDateChange = (newDate) => {
     setSelectedDate(newDate);
   };
 
-  // Get teahcers
+  // Получаем преподавателей
   const {
     data: teachersData,
     loading: teachersLoading,
     error: teachersError,
-  } = useApiData(getTeachers, [selectedDate]); // Сomponent will re-render every time the date changes
+  } = useApiData(getTeachers, [selectedDate]); // Компонент будет перерисовываться при каждом изменении даты
 
-  // Get cabinets
+  // Получаем кабинеты
   const {
     data: cabinetsData,
     loading: cabinetsLoading,
     error: cabinetsError,
   } = useApiData(getCabinets);
 
-  // Get sessions types
+  // Получаем типы занятий
   const {
     data: sessionsTypesData,
     loading: sessionsTypesLoading,
     error: sessionsTypesError,
   } = useApiData(getSessionTypes);
 
-  // Checking if the data loads
+  // Проверка загрузки данных
   if (teachersLoading || cabinetsLoading || sessionsTypesLoading) {
     return (
       <Oval
@@ -70,7 +70,7 @@ export default function SchedulteTeachersTable() {
     );
   }
 
-  // Errors
+  // Ошибки
   if (teachersError) {
     return <div>Произошла ошибка: {teachersError}</div>;
   } else if (cabinetsError) {
@@ -79,17 +79,26 @@ export default function SchedulteTeachersTable() {
     return <div>Произошла ошибка: {sessionsTypesError}</div>;
   }
 
-  // Sort teachers
+  // Сортируем преподавателей
   const sortedTeachersData = [...teachersData].sort((a, b) => {
     if (a.surname < b.surname) return -1;
     if (a.surname > b.surname) return 1;
     return 0;
   });
 
-  // Add cabinets and sessionTypes in context
+  // Добавляем кабинеты и типы занятий в контекст
   const scheduleTeachersTableContext = {
     cabinets: cabinetsData,
     sessionsTypes: sessionsTypesData,
+  };
+
+  // Обработчик нажатия на Item в контекстном меню
+  const handleDeleteSession = ({ props }) => {
+    // Обработчик открытия меню находится в компоненте TableCell
+    // При нажатии - этот обработчик передаёт в props callback функции удаления из Cell компонента
+    // так мы удаляем данные внутри cell, имея возможность вызвать анимации
+    // И при этом компонент menu у нас всего один
+    props.handleFunctionCallback();
   };
 
   return (
@@ -102,7 +111,7 @@ export default function SchedulteTeachersTable() {
           />
         </thead>
         <tbody>
-          {/* Add context with cabinets for all rows in table */}
+          {/* Добавляем контекст с кабинетами для всех строк в таблице */}
           <ScheduleTeachersTableContext.Provider
             value={scheduleTeachersTableContext}
           >
@@ -118,6 +127,9 @@ export default function SchedulteTeachersTable() {
           </ScheduleTeachersTableContext.Provider>
         </tbody>
       </table>
+      <Menu id="teacher-menu" theme="scheduleTable">
+        <Item onClick={handleDeleteSession}>Удалить</Item>
+      </Menu>
     </div>
   );
 }

@@ -77,3 +77,55 @@ export const copyScheduleInRange = async (startCopyPeriodDate, startInsertPeriod
   return true;
 }
 
+export const updateSession = async (
+  sessionId,
+  sessionNumber = null,
+  sessionDate = null,
+  teacherInPlanId = null,
+  sessionType = null,
+  cabinet = null,
+  building = null) => {
+  const formattedDate = sessionDate.toISOString().slice(0, 10);
+
+  const response = await fetch(`${API_BASE_URL}/sessions/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      session_id: sessionId,
+      new_session_number: sessionNumber,
+      new_session_date: formattedDate,
+      new_teacher_in_plan: teacherInPlanId,
+      new_session_type: sessionType,
+      new_cabinet_number: cabinet,
+      new_building_number: building
+    })
+  })
+
+  if (!response.ok) {
+    const error = new Error(`Ошибка: ${response.status} ${response.statusText}`);
+    error.status = response.status;
+    error.data = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+export const deleteSession = async (sessionId) => {
+  const response = await fetch(`${API_BASE_URL}/sessions/delete/by_id/${sessionId}`, {
+    method: "DELETE"
+  })
+
+  if (!response.ok) {
+    const error = new Error(`Ошибка: ${response.status} ${response.statusText}`);
+    error.status = response.status;
+    error.data = await response.json();
+    throw error;
+  }
+
+  const data = await response.json();
+  return data;
+}

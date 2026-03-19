@@ -71,6 +71,7 @@
   flex-direction: column;
   gap: 3px;
   min-width: 0;
+  padding: 1px
 }
 
 .right-column {

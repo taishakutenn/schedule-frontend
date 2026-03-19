@@ -1,9 +1,14 @@
 import "./scheduleTeachersTableRowCell.css";
+import "react-contexify/ReactContexify.css";
 
 import { useContext, useState, useEffect } from "react";
+import { useContextMenu } from "react-contexify";
 import ScheduleTeachersTableContext from "../../../../../contexts/ScheduleTeachersTableContext";
-import { createNewSession } from "../../../../../api/scheduleAPI";
-import Modal from "../../../../Modal/Modal";
+import {
+  createNewSession,
+  updateSession,
+  deleteSession,
+} from "../../../../../api/scheduleAPI";
 
 import SyncSelect from "../../../../CustomSelect/syncSelect";
 
@@ -16,7 +21,9 @@ export default function ScheduleTeachersTableCell({
   date,
   sessionNumber,
 }) {
-  // Get data from context
+  // ============================================
+  // Контекст
+  // ============================================
   const scheduleTeachersTableContext = useContext(ScheduleTeachersTableContext);
   const {
     cabinets,
@@ -40,7 +47,9 @@ export default function ScheduleTeachersTableCell({
   // console.log("groups:", groups);
   // console.log("teacherSessions:", teacherSessions);
 
-  // Preparing data for selects
+  // ============================================
+  // Подготовка данных для селектов
+  // ============================================
   const groupsOptions = groups.map((group) => ({
     value: group,
     label: group,
@@ -62,6 +71,11 @@ export default function ScheduleTeachersTableCell({
     label: `${cabinet.building_number}-${cabinet.cabinet_number}`,
   }));
 
+  // ============================================
+  // Состояния (states)
+  // ============================================
+
+  // Состояния для анимаций
   const [isAnimating, setIsAnimating] = useState(false);
   const [isModalAnimating, setIsModalAnimating] = useState(false);
   const [textInModal, setTextInModal] = useState("Успешно сохранено");
@@ -69,6 +83,33 @@ export default function ScheduleTeachersTableCell({
     "--shedule-table-cell-border-nothing",
   );
 
+  // Состояние формы
+  const [form, setForm] = useState({
+    id: null,
+    group: null,
+    subject: null,
+    sessionType: null,
+    cabinet: null,
+    isNew: true,
+    isDelete: false,
+  });
+
+  // Функция для сброса формы к начальному состоянию
+  const resetForm = () => {
+    setForm({
+      id: null,
+      group: null,
+      subject: null,
+      sessionType: null,
+      cabinet: null,
+      isNew: true,
+      isDelete: false,
+    });
+  };
+
+  // ============================================
+  // Анимации
+  // ============================================
   const handleSelectChange = (type) => {
     setIsAnimating(false);
 
@@ -96,27 +137,63 @@ export default function ScheduleTeachersTableCell({
     }, 2600);
   };
 
-  // Получаем занятие на текущую пару
-  const formattedDate = date.toISOString().split("T")[0];
-  const currentSession = (teacherSessions?.sessions || []).find((item) => {
-    return (
-      item.session.session_date === formattedDate &&
-      item.session.session_number === sessionNumber
-    );
+  // ============================================
+  // Контекстное меню
+  // ============================================
+
+  // Инициализация контекстного меню
+  const { show } = useContextMenu({
+    id: "teacher-menu",
   });
 
-  // Форма для создания или редактирования занятия
-  const [form, setForm] = useState({
-    group: null,
-    subject: null,
-    sessionType: null,
-    cabinet: null,
-    isNew: false,
-  });
+  // Обработчик нажатия на правую кнопку мыши
+  const handleRightClick = (e) => {
+    if (!form.isNew) {
+      e.preventDefault();
+      show({
+        event: e,
+        props: {
+          sessionId: form.id,
+          handleFunctionCallback: handleDeleteSession,
+        },
+      });
+    }
+  };
 
-  // Отслеживаем заполненность формы для создания новой пары
+  // Обработчик нажатия на Item в контекстном меню
+  const handleDeleteSession = () => {
+    setFormField("isDelete", true);
+  };
+
+  // ============================================
+  // Обработчики изменений формы
+  // ============================================
+
+  // Функция для изменения полей формы
+  const changeField = (field) => (value) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  // Функция для быстрой установки одного поля формы
+  const setFormField = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Функция для получения объекта по значению из массива опций
+  const findOption = (options, value) =>
+    options.find((o) => o.value === String(value)) || null;
+
+  // ============================================
+  // Функции с парой
+  // ============================================
+
+  // Отслеживаем заполненность формы для создания, редактирования или удаления пары
   useEffect(() => {
     const submitForm = async () => {
+      // Если создаём пару
       if (
         form.isNew &&
         form.group &&
@@ -125,43 +202,84 @@ export default function ScheduleTeachersTableCell({
         form.cabinet
       ) {
         try {
-          // Находим teacher_in_plan_id по группе и предмету
-          const teacherInPlan = teacherInPlanData.find((tip) => {
-            const hasGroup = tip.group_name === form.group.value;
-            const hasSubject = subjectInCycleHoursData.some(
-              (sch) =>
-                sch.id === tip.subject_in_cycle_hours_id &&
-                sch.subject_in_cycle_id === parseInt(form.subject.value),
-            );
-            return hasGroup && hasSubject;
-          });
+          const payload = getSessionPayload();
 
-          if (!teacherInPlan) {
-            console.error("Не найдено teacher_in_plan для выбранных данных");
+          if (!payload) {
             handleSelectChange("error");
             return;
           }
 
-          // Разбираем cabinet на building и cabinet number
-          const [building, cabinet] = form.cabinet.value.split("-");
-
           // Отправляем данные на сервер
-          await createNewSession(
+          const newSession = await createNewSession(
             sessionNumber,
             date,
-            teacherInPlan.id,
-            form.sessionType.value,
-            cabinet,
-            building,
+            payload.teacherInPlanId,
+            payload.sessionType,
+            payload.cabinet,
+            payload.building,
           );
 
-          // Делаем пару не новой
-          setForm((prev) => ({
-            ...prev,
-            isNew: false,
-          }));
+          // Делаем пару не новой и присваиваем ей id
+          setFormField("id", newSession.session.id);
+          setFormField("isNew", false);
 
           handleSelectChange("create");
+        } catch (error) {
+          setTextInModal(error.data.detail);
+          handleSelectChange("error");
+        }
+      } else if (
+        // Если обновляем пару
+        !form.isNew &&
+        form.id &&
+        form.group &&
+        form.subject &&
+        form.sessionType &&
+        form.cabinet &&
+        1 == 2
+      ) {
+        try {
+          const payload = getSessionPayload();
+
+          if (!payload) {
+            handleSelectChange("error");
+            return;
+          }
+
+          await updateSession(
+            form.id,
+            sessionNumber,
+            date,
+            payload.teacherInPlanId,
+            payload.sessionType,
+            payload.cabinet,
+            payload.building,
+          );
+
+          handleSelectChange("update");
+          setTextInModal("Пара успешно обновлена");
+        } catch (error) {
+          setTextInModal(error.data.detail);
+          handleSelectChange("error");
+        }
+      } else if (
+        // Если удаляем пару
+        !form.isNew &&
+        form.id &&
+        form.isDelete
+      ) {
+        try {
+          // Отправляем запрос на удаление
+          await deleteSession(form.id);
+
+          // Сбрасываем флаг удаления
+          setFormField("isDelete", false);
+
+          // Сбрасываем форму
+          resetForm();
+
+          handleSelectChange("create");
+          setTextInModal("Пара успешно удалена");
         } catch (error) {
           setTextInModal(error.data.detail);
           handleSelectChange("error");
@@ -172,29 +290,53 @@ export default function ScheduleTeachersTableCell({
     submitForm();
   }, [form]);
 
-  // Функция для изменения полей формы
-  const changeField = (field) => (value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  // Функция для получения данных сессии для отправки на сервер
+  const getSessionPayload = () => {
+    // Находим teacher_in_plan по группе и предмету
+    const teacherInPlan = teacherInPlanData.find((tip) => {
+      const hasGroup = tip.group_name === form.group.value;
+      const hasSubject = subjectInCycleHoursData.some(
+        (sch) =>
+          sch.id === tip.subject_in_cycle_hours_id &&
+          sch.subject_in_cycle_id === parseInt(form.subject.value),
+      );
+      return hasGroup && hasSubject;
+    });
+
+    if (!teacherInPlan) {
+      console.error("Не найдено teacher_in_plan для выбранных данных");
+      return null;
+    }
+
+    // Разбираем cabinet на building и cabinet number
+    const [building, cabinet] = form.cabinet.value.split("-");
+
+    return {
+      teacherInPlanId: teacherInPlan.id,
+      sessionType: form.sessionType.value,
+      cabinet,
+      building,
+    };
   };
 
-  // Функция для получения объекта по значению из массива опций
-  const findOption = (options, value) =>
-    options.find((o) => o.value === String(value)) || null;
+  // ============================================
+  // Подгрузка пар
+  // ============================================
+
+  // Получаем занятие на текущую пару
+  const formattedDate = date.toISOString().split("T")[0];
+  const currentSession = (teacherSessions?.sessions || []).find((item) => {
+    return (
+      item.session.session_date === formattedDate &&
+      item.session.session_number === sessionNumber
+    );
+  });
 
   // Отслеживаем изменения с сервера
   useEffect(() => {
     if (!currentSession) {
       // пары нет - форма пустая
-      setForm({
-        group: null,
-        subject: null,
-        type: null,
-        cabinet: null,
-        isNew: true,
-      });
+      resetForm();
       return;
     }
 
@@ -219,6 +361,7 @@ export default function ScheduleTeachersTableCell({
     );
 
     setForm({
+      id: s.id,
       group: findOption(groupsOptions, group),
       subject: findOption(subjectsOptions, subjectInCycle?.id),
       sessionType: findOption(sessionTypesOptions, s.session_type),
@@ -254,7 +397,7 @@ export default function ScheduleTeachersTableCell({
           {isModalAnimating ? <ModalMessage text={textInModal} /> : null}
 
           <div className="cell-container__column left-column">
-            <div className="select-wrapper">
+            <div className="select-wrapper" onContextMenu={handleRightClick}>
               <SyncSelect
                 options={groupsOptions}
                 placeholder="Группа"
@@ -262,7 +405,7 @@ export default function ScheduleTeachersTableCell({
                 onChange={changeField("group")}
               />
             </div>
-            <div className="select-wrapper">
+            <div className="select-wrapper" onContextMenu={handleRightClick}>
               <SyncSelect
                 options={subjectsOptions}
                 placeholder="Предмет"
@@ -273,7 +416,7 @@ export default function ScheduleTeachersTableCell({
           </div>
 
           <div className="cell-container__column right-column">
-            <div className="select-wrapper">
+            <div className="select-wrapper" onContextMenu={handleRightClick}>
               <SyncSelect
                 options={sessionTypesOptions}
                 placeholder="Тип пары"
@@ -281,7 +424,7 @@ export default function ScheduleTeachersTableCell({
                 onChange={changeField("sessionType")}
               />
             </div>
-            <div className="select-wrapper">
+            <div className="select-wrapper" onContextMenu={handleRightClick}>
               <SyncSelect
                 options={cabinetsOptions}
                 placeholder="Кабинет"
