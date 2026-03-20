@@ -2,6 +2,9 @@ import "./HandbookTable.css";
 import { useMemo } from "react";
 import { fieldLabels } from "../../utils/fieldsLabel";
 
+// Поля, которые не нужно отображать в таблице, но нужны для идентификации
+const HIDDEN_FIELDS = ["subject_id"];
+
 export default function HandbookTable({
   apiResponse,
   tableName,
@@ -13,20 +16,33 @@ export default function HandbookTable({
 
   // Мемоизируем заголовки для оптимизации
   const headers = useMemo(() => {
-    if (!apiResponse || !Array.isArray(apiResponse) || apiResponse.length === 0) {
+    if (
+      !apiResponse ||
+      !Array.isArray(apiResponse) ||
+      apiResponse.length === 0
+    ) {
       return [];
     }
 
     const headersSet = new Set();
     apiResponse.forEach((item) => {
-      Object.keys(item).forEach((key) => headersSet.add(key));
+      Object.keys(item).forEach((key) => {
+        // Скрываем поля, которые не нужно отображать
+        if (!HIDDEN_FIELDS.includes(key)) {
+          headersSet.add(key);
+        }
+      });
     });
     return Array.from(headersSet);
   }, [apiResponse]);
 
   // Определяем поле идентификатора (первое поле, обычно id)
   const idField = useMemo(() => {
-    if (!apiResponse || !Array.isArray(apiResponse) || apiResponse.length === 0) {
+    if (
+      !apiResponse ||
+      !Array.isArray(apiResponse) ||
+      apiResponse.length === 0
+    ) {
       return null;
     }
     const firstItem = apiResponse[0];
@@ -58,7 +74,9 @@ export default function HandbookTable({
         <tbody>
           {apiResponse.map((item) => {
             const itemId = idField ? item[idField] : undefined;
-            const isSelected = selectedRow && itemId !== undefined && 
+            const isSelected =
+              selectedRow &&
+              itemId !== undefined &&
               selectedRow[idField] === itemId;
 
             return (

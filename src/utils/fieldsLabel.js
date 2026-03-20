@@ -56,6 +56,7 @@ export const streamFieldLabels = {
   stream_id: "Номер потока",
   group_name: "Название группы",
   subject_id: "Номер предмета",
+  subject_title: "Предмет",
 };
 
 // Payments
@@ -74,7 +75,7 @@ export const plansFieldsLabel = {
 export const referencesFieldsLabel = {
   name: "Название",
   chapters: "Разделы",
-  cycles: "Циклы", 
+  cycles: "Циклы",
   modules: "Модули",
 };
 
