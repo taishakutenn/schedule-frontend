@@ -7,6 +7,7 @@ export default function SyncSelect(props) {
       {...props}
       className="react-select"
       classNamePrefix="react-select"
+      menuPlacement="auto"
       menuPortalTarget={document.body}
       styles={{
         container: (base) => ({

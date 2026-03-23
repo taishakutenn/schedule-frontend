@@ -1,10 +1,11 @@
-import ScheduleTable from "../components/Schedule/ScheduleTable/ScheduleTable";
 import ScheduleTeachersTable from "../components/Schedule/ScheduleTeachersTable/ScheduleTeachersTable";
 import Button from "../components/Button/Button";
 import Sidebar from "../components/Sidebar/Sidebar";
+
 import DatePicker from "react-datepicker";
 import { useState } from "react";
-import { useApiData } from "../hooks/useApiData";
+import OvalLoader from "../components/CustomLoader/CustomLoader";
+
 import { copyScheduleInRange } from "../api/scheduleAPI";
 
 import "./schedule.css";
@@ -17,8 +18,9 @@ export default function Schedule() {
     startPeriodDate: new Date(), // Дата, начиная с которой вставляем скопированное
   });
 
-  // Триггер для отправки данных на сервер
-  const [copyTrigger, setCopyTrigger] = useState(0);
+  // Состояние загрузки и ошибки для полного копирования
+  const [isFullCopying, setIsFullCopying] = useState(false);
+  const [error, setError] = useState(null);
 
   // Общий обработчик изменений для дат формы копирования
   const handleFormChange = (field, value, formName, formSetFunc) => {
@@ -28,14 +30,10 @@ export default function Schedule() {
     });
   };
 
-  // Функция для отправки данных на сервер
-  const handleCopySchedule = () => {
-    setCopyTrigger((prev) => prev + 1);
-  };
-
-  // Функция для копирования расписания через
-  const copySchedule = async () => {
-    if (copyTrigger === 0) return null;
+  // Функция для копирования расписания
+  const handleCopySchedule = async () => {
+    setIsFullCopying(true);
+    setError(null);
 
     try {
       // Рассчитываем разницу в днях между началом и концом копирования
@@ -45,25 +43,18 @@ export default function Schedule() {
           (1000 * 3600 * 24),
       );
 
-      console.log("Дней для копирования:", countDays);
-
       // Отправляем данные на сервер
-      return await copyScheduleInRange(
+      await copyScheduleInRange(
         copyScheduleAllForm.startCopyPeriodDate,
         copyScheduleAllForm.startPeriodDate,
         countDays,
       );
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setCopyTrigger(0);
+      setIsFullCopying(false);
     }
   };
-
-  // Хук для отправки данных на сервер через useApiData
-  const { data, loading, error } = useApiData(
-    copySchedule,
-    [copyTrigger],
-    copyTrigger > 0,
-  );
 
   // Вкладки сайдбара
   const tabs = [
@@ -119,8 +110,8 @@ export default function Schedule() {
               dateFormat="dd-MM-yyyy"
               locale="ru"
             />
-            <Button onClick={handleCopySchedule} disabled={loading}>
-              {loading ? "Копирование..." : "Скопировать расписание"}
+            <Button onClick={handleCopySchedule} disabled={isFullCopying}>
+              {isFullCopying ? <OvalLoader /> : "Скопировать расписание"}
             </Button>
             {error && <p className="error-message">Ошибка: {error}</p>}
           </div>

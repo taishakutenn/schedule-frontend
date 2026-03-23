@@ -16,10 +16,9 @@
   --main-accent-secondary-color: #4d82b8;
   --main-accent-success-color: #4caf50;
 
-  --shedule-table-cell-border-success-create: #4caf50;
-  --shedule-table-cell-border-success-update: #8bc34a;
-  --shedule-table-cell-border-error: #ff9800;
-  --shedule-table-cell-border-nothing: #9e9e9e;
+  --schedule-cell-border--default: #9e9e9e;
+  --schedule-cell-border--success: #4caf50;
+  --schedule-cell-border--error: #ff9800;
 
   --main-placeholder-color: #9ca3af;
 
@@ -50,12 +49,11 @@
   --main-accent-secondary-color: #7baaf7;
   --main-accent-success-color: #34a853;
 
-  --main-placeholder-color: #9ca3af;
+  --schedule-cell-border--default: #9e9e9e;
+  --schedule-cell-border--success: #34a853;
+  --schedule-cell-border--error: #ff9800;
 
-  --shedule-table-cell-border-success-create: #4caf50;
-  --shedule-table-cell-border-success-update: #8bc34a;
-  --shedule-table-cell-border-error: #ff9800;
-  --shedule-table-cell-border-nothing: #9e9e9e;
+  --main-placeholder-color: #9ca3af;
 
   --main-font-weight: 418;
   --main-biggest-font-size: 22px; /* h1 */

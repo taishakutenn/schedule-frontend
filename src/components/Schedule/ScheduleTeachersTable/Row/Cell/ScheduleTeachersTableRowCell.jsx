@@ -80,7 +80,7 @@ export default function ScheduleTeachersTableCell({
   const [isModalAnimating, setIsModalAnimating] = useState(false);
   const [textInModal, setTextInModal] = useState("Успешно сохранено");
   const [currentBorder, setCurrentBorder] = useState(
-    "--shedule-table-cell-border-nothing",
+    "--schedule-cell-border--default",
   );
 
   // Состояние формы
@@ -121,17 +121,13 @@ export default function ScheduleTeachersTableCell({
 
     setIsModalAnimating(true);
 
-    if (type === "create") {
-      setCurrentBorder("--shedule-table-cell-border-success-create");
+    if (type === "create" || type === "update") {
+      setCurrentBorder("--schedule-cell-border--success");
       setTextInModal("Пара успешно сохранена");
-    } else if (type === "update") {
-      setCurrentBorder("--shedule-table-cell-border-success-update");
-      setTextInModal("Пара успешно обновлена");
     } else if (type === "error") {
-      setCurrentBorder("--shedule-table-cell-border-error");
-      // setTextInModal("Произошла ошибка");
+      setCurrentBorder("--schedule-cell-border--error");
     } else {
-      setCurrentBorder("--shedule-table-cell-border-nothing");
+      setCurrentBorder("--schedule-cell-border--default");
     }
 
     setTimeout(() => {
@@ -254,7 +250,7 @@ export default function ScheduleTeachersTableCell({
             handleSelectChange("error");
             return;
           }
-          
+
           // Обновляем пару
           const updatedSession = await updateSession(
             form.id,
@@ -293,8 +289,14 @@ export default function ScheduleTeachersTableCell({
           // Сбрасываем форму
           resetForm();
 
-          handleSelectChange("create");
+          // Показываем анимацию
           setTextInModal("Пара успешно удалена");
+          handleSelectChange("create");
+
+          // Сбрасываем бордер
+          setTimeout(() => {
+            setCurrentBorder("--schedule-cell-border--default");
+          }, 2600);
         } catch (error) {
           setTextInModal(
             error.data?.detail?.msg || "Произошла ошибка при удалении",
@@ -389,9 +391,9 @@ export default function ScheduleTeachersTableCell({
       isNew: false,
     });
 
-    // Включаем анимацию и задаём ей текст и цвет
-    handleSelectChange("error");
-    setTextInModal("Загружено из базы данных");
+    // Включаем анимацию бордера и задаём ей цвет
+    handleSelectChange();
+    setIsModalAnimating(false);
     setIsAnimating(true);
   }, [
     currentSession,

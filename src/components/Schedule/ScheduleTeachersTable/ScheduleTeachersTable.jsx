@@ -2,7 +2,7 @@ import "./scheduleTeachersTable.css";
 import "react-contexify/ReactContexify.css";
 
 import { useEffect, useState } from "react";
-import { Oval } from "react-loader-spinner";
+import OvalLoader from "../../CustomLoader/CustomLoader";
 import { Menu, Item } from "react-contexify";
 
 import ScheduleTeachersTableRow from "./Row/ScheduleTeachersTableRow";
@@ -57,17 +57,7 @@ export default function SchedulteTeachersTable() {
 
   // Проверка загрузки данных
   if (teachersLoading || cabinetsLoading || sessionsTypesLoading) {
-    return (
-      <Oval
-        visible={true}
-        height="50"
-        width="50"
-        color="var(--main-accent-color)"
-        ariaLabel="oval-loading"
-        wrapperStyle={{}}
-        wrapperClass=""
-      />
-    );
+    return <OvalLoader className="loader" />;
   }
 
   // Ошибки
