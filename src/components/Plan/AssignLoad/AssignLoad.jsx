@@ -1,7 +1,7 @@
 import "./AssignLoad.css";
 import { useState, useEffect, useMemo } from "react";
 import { getPlans } from "../../../api/plansAPI";
-import { getGroupsBySpeciality } from "../../../api/groupAPI";
+import { getGroupsBySpeciality, getGroupByName } from "../../../api/groupAPI";
 import { getAllSubjectsInPlan } from "../../../api/subjectAPI";
 import { getSubjectHoursBySubject } from "../../../api/subjectHoursAPI";
 import { getTeachers } from "../../../api/teachersAPI";
@@ -9,6 +9,7 @@ import { getTeacherInPlanByGroup } from "../../../api/teachersInPlansAPI";
 import { calculateCurrentSemestersForGroup } from "../../../utils/calculateCurrentSemestersForGroup";
 import { usePost } from "../../../hooks/usePost";
 import { useUpdate } from "../../../hooks/useUpdate";
+import { useDelete } from "../../../hooks/useDelete";
 import Button from "../../Button/Button";
 
 export default function AssignLoad({ onClose }) {
@@ -30,9 +31,12 @@ export default function AssignLoad({ onClose }) {
   const [error, setError] = useState(null);
 
   const [assignedTeachers, setAssignedTeachers] = useState({});
+  const [duplicating, setDuplicationg] = useState(false);
+  const [duplicateSuccess, setDuplicateSuccess] = useState(false);
 
   const { post: createAssignment, loading: loadingCreate } = usePost();
   const { update: updateAssignment, loading: loadingUpdate } = useUpdate();
+  const { del: deleteAssignment, loading: loadingDelete } = useDelete();
 
   const findSpecialityCodeByPlanId = (planId) => {
     if (!planId || !plans) return null;
@@ -435,13 +439,182 @@ export default function AssignLoad({ onClose }) {
     setSelectedGroup(e.target.value);
   };
 
+  const handleDuplicateToAllGroups = async () => {
+    if (!selectedPlanId || !selectedGroup) {
+      setError("Выберите план и группу для дублирования");
+      return;
+    }
+
+    if (Object.keys(assignedTeachers).length === 0) {
+      setError("Нет назначений для дублирования");
+      return;
+    }
+
+    setDuplicationg(true);
+    setError(null);
+    setDuplicateSuccess(false);
+
+    try {
+      // Получаем speciality_code для выбранного плана
+      const plan = plans.find((p) => p.id === Number(selectedPlanId));
+      console.log("Selected Plan ID:", selectedPlanId);
+      console.log("Plans:", plans);
+      console.log("Found plan:", plan);
+      if (!plan) {
+        throw new Error("План не найден. Проверьте выбранный план.");
+      }
+
+      const specialityCode = plan.speciality_code;
+      console.log("Speciality code:", specialityCode);
+
+      // Получаем все группы этой специальности
+      const allGroups = await getGroupsBySpeciality(specialityCode);
+      console.log("All groups from API:", allGroups);
+
+      // Фильтруем текущую группу
+      const targetGroups = allGroups.filter((g) => {
+        console.log("Checking group:", g, "group_name:", g?.group_name);
+        return g?.group_name !== selectedGroup;
+      });
+
+      if (targetGroups.length === 0) {
+        setError("Нет других групп для дублирования");
+        setDuplicationg(false);
+        return;
+      }
+
+      console.log(
+        `Дублирование нагрузки из группы ${selectedGroup} в группы:`,
+        targetGroups.map((g) => g.group_name),
+      );
+
+      // Для каждой целевой группы
+      for (const targetGroup of targetGroups) {
+        const targetGroupName = targetGroup.group_name;
+
+        // Получаем текущие назначения для целевой группы
+        const existingAssignments =
+          await getTeacherInPlanByGroup(targetGroupName);
+
+        // Создаём map существующих назначений по ключу group-semester-subjectId
+        const existingAssignmentsMap = new Map();
+        const hoursToSubjectMap = new Map();
+
+        Object.entries(allSubjectHours).forEach(([subjectId, hoursArray]) => {
+          if (Array.isArray(hoursArray)) {
+            hoursArray.forEach((hour) => {
+              hoursToSubjectMap.set(hour.id, parseInt(subjectId));
+            });
+          }
+        });
+
+        existingAssignments.forEach((assignment) => {
+          const subjectId = hoursToSubjectMap.get(
+            assignment.subject_in_cycle_hours_id,
+          );
+          const subjectInPlan = subjects.find((s) => s.id === subjectId);
+
+          if (subjectInPlan) {
+            let semester = null;
+            const subjectHours = allSubjectHours[subjectId];
+            if (Array.isArray(subjectHours)) {
+              const hourDetails = subjectHours.find(
+                (h) => h.id === assignment.subject_in_cycle_hours_id,
+              );
+              if (hourDetails) {
+                semester = hourDetails.semester;
+              }
+            }
+
+            const { relevantSemesters: currentRelevantSemesters } =
+              calculateCurrentSemestersForGroup(targetGroupName);
+
+            if (currentRelevantSemesters.includes(semester)) {
+              const key = `${targetGroupName}-${semester}-${subjectId}`;
+              existingAssignmentsMap.set(key, assignment);
+            }
+          }
+        });
+
+        // Копируем назначения из исходной группы в целевую
+        for (const [key, assignmentInfo] of Object.entries(assignedTeachers)) {
+          if (!assignmentInfo.teacher_id) continue;
+
+          // Разбираем ключ: group-semester-subjectId
+          const [, semester, subjectId] = key.split("-");
+          const sourceKey = `${selectedGroup}-${semester}-${subjectId}`;
+
+          // Получаем subject_in_cycle_hours_id для целевой группы
+          const subjectHoursForSubject = allSubjectHours[subjectId];
+          if (!Array.isArray(subjectHoursForSubject)) continue;
+
+          const hourForSemester = subjectHoursForSubject.find(
+            (hour) => hour.semester === parseInt(semester),
+          );
+          if (!hourForSemester) continue;
+
+          const subjectInCycleHoursId = hourForSemester.id;
+          const targetKey = `${targetGroupName}-${semester}-${subjectId}`;
+          const existingAssignment = existingAssignmentsMap.get(targetKey);
+
+          const assignmentData = {
+            subject_in_cycle_hours_id: subjectInCycleHoursId,
+            teacher_id: parseInt(assignmentInfo.teacher_id),
+            group_name: targetGroupName,
+            session_type: null,
+          };
+
+          try {
+            if (existingAssignment && existingAssignment.id) {
+              // Обновляем существующее назначение
+              await updateAssignment(
+                "teachers_in_plans",
+                {},
+                {
+                  ...assignmentData,
+                  teacher_in_plan_id: existingAssignment.id,
+                },
+              );
+              console.log(
+                `Обновлено назначение для ${targetGroupName}, предмет ${subjectId}, семестр ${semester}`,
+              );
+            } else {
+              // Создаём новое назначение
+              await createAssignment("/teachers_in_plans", assignmentData);
+              console.log(
+                `Создано назначение для ${targetGroupName}, предмет ${subjectId}, семестр ${semester}`,
+              );
+            }
+          } catch (err) {
+            console.error(
+              `Ошибка при дублировании для ${targetGroupName}:`,
+              err,
+            );
+          }
+        }
+      }
+
+      setDuplicateSuccess(true);
+      setTimeout(() => setDuplicateSuccess(false), 3000);
+
+      // Обновляем данные после дублирования
+      await onClose();
+    } catch (err) {
+      console.error("Ошибка при дублировании нагрузки:", err);
+      setError(`Ошибка дублирования: ${err.message}`);
+    } finally {
+      setDuplicationg(false);
+    }
+  };
+
   const overallLoading =
     loading ||
     loadingTeachers ||
     loadingSubjects ||
     loadingAssignments ||
     loadingCreate ||
-    loadingUpdate;
+    loadingUpdate ||
+    duplicating;
 
   if (overallLoading) {
     return <div>Загрузка данных...</div>;
@@ -547,6 +720,22 @@ export default function AssignLoad({ onClose }) {
         </div>
       )}
       <div className="assign-load-footer">
+        {selectedPlanId && selectedGroup && (
+          <Button
+            onClick={handleDuplicateToAllGroups}
+            size="small"
+            disabled={
+              overallLoading || Object.keys(assignedTeachers).length === 0
+            }
+          >
+            {duplicating ? "Дублирование..." : "Дублировать на все группы"}
+          </Button>
+        )}
+        {duplicateSuccess && (
+          <span className="duplicate-success-message">
+            Нагрузка успешно дублирована!
+          </span>
+        )}
         <Button onClick={onClose} size="small" disabled={overallLoading}>
           Закрыть
         </Button>
