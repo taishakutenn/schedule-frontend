@@ -179,7 +179,9 @@ export default function TeachLoadReport() {
     <div>
       <InfoBlock items={teachLoadReportHeaderInfo} />
       <div className="report-controls">
-        <label htmlFor="year-select">Выберите год: </label>
+        <label style={{ marginLeft: "5px" }} htmlFor="year-select">
+          Выберите год:{" "}
+        </label>
         <select
           id="year-select"
           value={selectedYear || ""}
@@ -192,12 +194,16 @@ export default function TeachLoadReport() {
             </option>
           ))}
         </select>
-        <Button onClick={handleExport} style={{ marginLeft: "10px" }}>
+        <Button onClick={handleExport} style={{ marginLeft: "auto" }}>
           Экспорт в Excel
         </Button>
       </div>
-      <p>Год отчёта: {selectedYear || "Не выбран"}</p>
-      <p>Количество записей: {reportData?.length || 0}</p>
+      <p style={{ marginLeft: "10px" }}>
+        Год отчёта: {selectedYear || "Не выбран"}
+      </p>
+      <p style={{ marginLeft: "10px" }}>
+        Количество записей: {reportData?.length || 0}
+      </p>
       <LoadTable loadData={reportData} />
     </div>
   );

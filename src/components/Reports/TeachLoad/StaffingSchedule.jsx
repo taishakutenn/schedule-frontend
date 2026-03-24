@@ -143,7 +143,7 @@ export default function StaffingSchedule({ selectedReport }) {
             </option>
           ))}
         </select>
-        <Button onClick={handleExport} style={{ marginLeft: "10px" }}>
+        <Button onClick={handleExport} style={{ marginLeft: "auto" }}>
           Экспорт в Excel
         </Button>
       </div>
