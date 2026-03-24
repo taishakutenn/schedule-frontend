@@ -3,6 +3,8 @@ import LoadTable from "../../Plan/LoadTable";
 import { fetchTeachLoadDataByYear } from "../../../api/teachLoadAPI";
 import { getPlans } from "../../../api/plansAPI";
 import { useState, useEffect } from "react";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import Button from "../../Button/Button";
 
 const teachLoadReportHeaderInfo = [
   {
@@ -33,13 +35,13 @@ export default function TeachLoadReport() {
         }
 
         const validPlans = plans.filter(
-          (plan) => typeof plan.year === "number" && plan.year > 0
+          (plan) => typeof plan.year === "number" && plan.year > 0,
         );
         if (validPlans.length === 0) {
           setAvailableYears([]);
           setSelectedYear(null);
           console.warn(
-            "Нет учебных планов с корректным годом (year > 0) для отчёта."
+            "Нет учебных планов с корректным годом (year > 0) для отчёта.",
           );
           setReportData([]);
           return;
@@ -57,7 +59,7 @@ export default function TeachLoadReport() {
         const effectiveMaxYear = Math.min(maxEndYear, currentYear);
         console.log(
           "Максимальный эффективный год (ограничен текущим):",
-          effectiveMaxYear
+          effectiveMaxYear,
         );
 
         const yearsSet = new Set();
@@ -77,7 +79,7 @@ export default function TeachLoadReport() {
       } catch (err) {
         console.error(
           "Ошибка загрузки планов для получения лет в отчёте:",
-          err
+          err,
         );
         setError(`Ошибка загрузки доступных лет: ${err.message}`);
         setAvailableYears([]);
@@ -112,7 +114,7 @@ export default function TeachLoadReport() {
         setReportData(data);
         console.log(
           `Данные для отчёта за ${selectedYear} год загружены и отсортированы.`,
-          data
+          data,
         );
       } catch (err) {
         console.error("Ошибка загрузки данных отчёта:", err);
@@ -131,6 +133,37 @@ export default function TeachLoadReport() {
     setSelectedYear(year);
   };
 
+  const handleExport = () => {
+    if (!reportData || reportData.length === 0) {
+      alert("Нет данных для экспорта");
+      return;
+    }
+
+    const exportData = reportData.map((item) => ({
+      Преподаватель: item.teacher_name || "",
+      Дисциплина: item.subject || "",
+      "Лекции 1": item.lecture_1 || "",
+      "Лекции 2": item.lecture_2 || "",
+      "Практика 1": item.practical_1 || "",
+      "Практика 2": item.practical_2 || "",
+      "Курс. проектирование": item.course_project || "",
+      Консультации: item.consultation || "",
+      "Диф. зачёт": item.diff_exam || "",
+      Экзамен: item.exam || "",
+      "Бюджет (часы)": item.budget_hours || "",
+      "Бюджет (ставка)": item.budget_rate || "",
+      "Внебюджет (часы)": item.extrabudget_hours || "",
+      "Внебюджет (ставка)": item.extrabudget_rate || "",
+      Группа: item.group || "",
+    }));
+
+    exportToExcel(
+      exportData,
+      `Нагрузка_преподавателей_${selectedYear || "без_года"}`,
+      "Нагрузка",
+    );
+  };
+
   if (loading) {
     return (
       <div>
@@ -146,7 +179,9 @@ export default function TeachLoadReport() {
     <div>
       <InfoBlock items={teachLoadReportHeaderInfo} />
       <div className="report-controls">
-        <label htmlFor="year-select">Выберите год: </label>
+        <label style={{ marginLeft: "5px" }} htmlFor="year-select">
+          Выберите год:{" "}
+        </label>
         <select
           id="year-select"
           value={selectedYear || ""}
@@ -159,9 +194,16 @@ export default function TeachLoadReport() {
             </option>
           ))}
         </select>
+        <Button onClick={handleExport} style={{ marginLeft: "auto" }}>
+          Экспорт в Excel
+        </Button>
       </div>
-      <p>Год отчёта: {selectedYear || "Не выбран"}</p>
-      <p>Количество записей: {reportData?.length || 0}</p>
+      <p style={{ marginLeft: "10px" }}>
+        Год отчёта: {selectedYear || "Не выбран"}
+      </p>
+      <p style={{ marginLeft: "10px" }}>
+        Количество записей: {reportData?.length || 0}
+      </p>
       <LoadTable loadData={reportData} />
     </div>
   );

@@ -3,6 +3,8 @@ import "./StaffingSchedule.css";
 import { useState, useEffect } from "react";
 import { fetchStaffingScheduleData } from "../../../api/staffingScheduleAPI";
 import { getPlans } from "../../../api/plansAPI";
+import { exportToExcel } from "../../../utils/exportToExcel";
+import Button from "../../Button/Button";
 
 export default function StaffingSchedule({ selectedReport }) {
   const [staffingData, setStaffingData] = useState([]);
@@ -96,6 +98,25 @@ export default function StaffingSchedule({ selectedReport }) {
     loadReportData();
   }, [selectedYear]);
 
+  const handleExport = () => {
+    if (!staffingData || staffingData.length === 0) {
+      alert("Нет данных для экспорта");
+      return;
+    }
+
+    const exportData = staffingData.map((item) => ({
+      Преподаватель: item.teacherName || "",
+      "Общее количество часов": item.totalHours || "",
+      "Количество ставок": item.fte || "",
+    }));
+
+    exportToExcel(
+      exportData,
+      `Штатное_расписание_${selectedYear || "без_года"}`,
+      "Штатное расписание",
+    );
+  };
+
   if (selectedReport !== "StaffingSchedule") return null;
 
   if (loading)
@@ -122,6 +143,9 @@ export default function StaffingSchedule({ selectedReport }) {
             </option>
           ))}
         </select>
+        <Button onClick={handleExport} style={{ marginLeft: "auto" }}>
+          Экспорт в Excel
+        </Button>
       </div>
       <div className="table-container">
         {staffingData.length > 0 ? (

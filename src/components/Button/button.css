@@ -21,17 +21,17 @@
 
 .btn--primary {
   background-color: var(--main-accent-color);
-  color: var(--main-font-color);
+  color: var(--button-font-color);
 }
 
 .btn--secondary {
   background-color: var(--main-accent-secondary-color);
-  color: var(--main-font-color);
+  color: var(--button-font-color);
 }
 
 .btn--danger {
   background-color: var(--main-accent-danger-color);
-  color: var(--main-font-color);
+  color: var(--button-font-color);
 }
 
 .btn--small {
