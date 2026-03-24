@@ -113,3 +113,19 @@ export const getSubjectsByGroupName = async (groupName) => {
     title: subject.title,
   }));
 };
+
+export const getSubjectsByGroupNameAndTeacherId = async (groupName, teacherId) => {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupName}/${teacherId}/subjects`);
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const subjects = data.subjects || data;
+
+  return subjects.map((subject) => ({
+    id: subject.id,
+    code: subject.code,
+    title: subject.title,
+  }));
+};

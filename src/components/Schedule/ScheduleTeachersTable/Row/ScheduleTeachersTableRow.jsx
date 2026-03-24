@@ -18,13 +18,13 @@ export default function ScheduleTeachersTableRow({
   selectedDate,
   teacherInfo,
 }) {
-  // Before reading this code blog, it is highly recommended to study the database tables:
+  // Перед чтением этого кода настоятельно рекомендуется изучить таблицы базы данных:
   // teacher_in_plan, subject_in_cycle, subject_in_cycle_hours
 
   // 1.
-  // By teacher ID we get all teacher records in the plan
+  // По ID преподавателя получаем все записи teacher_in_plan
   const teachersInPlanCall = useCallback(
-    // We use callback to avoid an infinite number of API requests
+    // Используем callback, чтобы избежать бесконечного количества API-запросов
     () => getTeacherInPlanByTeacher(teacherInfo.id),
     [teacherInfo.id],
   );
@@ -35,18 +35,19 @@ export default function ScheduleTeachersTableRow({
   } = useApiData(teachersInPlanCall, [selectedDate]);
 
   // 2.
-  // Get subject in cycle hours IDs from teacher in plan data
+  // Получаем ID subject_in_cycle_hours из данных teacher_in_plan
   const teacherSubjectsInCyclesHoursIds = useMemo(() => {
-    // We use memo, because Map create recreate this array and so that there is no endless API call
+    // Используем memo, потому что без него массив создавался бы заново при каждом рендере,
+    // что привело бы к бесконечным API-запросам
     return (
       teacherInPlanData?.map((item) => item.subject_in_cycle_hours_id) || []
     );
   }, [teacherInPlanData]);
 
-  // Using the received subject in cycle hours IDs, we obtain the item records subject in cycle hours
+  // По полученным ID subject_in_cycle_hours получаем записи subject_in_cycle_hours
   const subjectsInCycleHoursCall = useCallback(() => {
     if (teacherSubjectsInCyclesHoursIds.length == 0) {
-      return Promise.resolve([]); // <--To avoid sending an empty array to the API
+      return Promise.resolve([]); // Избегаем отправки пустого массива в API
     }
     return getSubjectHoursByIds(teacherSubjectsInCyclesHoursIds);
   }, [teacherSubjectsInCyclesHoursIds]);
@@ -58,15 +59,15 @@ export default function ScheduleTeachersTableRow({
   } = useApiData(subjectsInCycleHoursCall, [teacherSubjectsInCyclesHoursIds]);
 
   // 3.
-  // In the received data of the clock of objects in the cycle,
-  // we obtain the ID of all objects in the cycle
+  // В полученных данных subject_in_cycle_hours
+  // получаем ID всех subject_in_cycle
   const subjectsInCycleIds = useMemo(() => {
     return (
       subjectInCycleHoursData?.map((item) => item.subject_in_cycle_id) || []
     );
   }, [subjectInCycleHoursData]);
 
-  // Using the received subject in cycle IDs, we obtain the item records subject in cycle
+  // По полученным ID subject_in_cycle получаем записи subject_in_cycle
   const subjectsInCycleCall = useCallback(() => {
     if (subjectsInCycleIds.length == 0) {
       return Promise.resolve([]);
@@ -81,20 +82,28 @@ export default function ScheduleTeachersTableRow({
   } = useApiData(subjectsInCycleCall, [subjectsInCycleIds]);
 
   // 4.
-  // Separately, for convenience, we generate data for context
+  // Отдельно для удобства формируем данные для контекста
   const groups = [...new Set(teacherInPlanData.map((item) => item.group_name))];
 
+  // Функция для форматирования даты (без конвертации в UTC)
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   // 5.
-  // Get sessions for this teacher and for current week
-  const startPeriodDate = selectedDate;
-  const endPeriodDate = new Date(selectedDate);
-  endPeriodDate.setDate(endPeriodDate.getDate() + 5);
-
-  // Function for formating date
-  const formatDate = (date) => date.toISOString().split("T")[0];
-
-  const startPeriodDateStr = formatDate(startPeriodDate);
-  const endPeriodDateStr = formatDate(endPeriodDate);
+  // Получаем сессии для этого преподавателя и для текущей недели
+  const startPeriodDateStr = useMemo(
+    () => formatDate(selectedDate),
+    [selectedDate],
+  );
+  const endPeriodDateStr = useMemo(() => {
+    const endDate = new Date(selectedDate);
+    endDate.setDate(endDate.getDate() + 5);
+    return formatDate(endDate);
+  }, [selectedDate]);
 
   const teacherSessionsCall = useCallback(() => {
     return getSessionsForTeacherAndDate(
@@ -102,15 +111,19 @@ export default function ScheduleTeachersTableRow({
       startPeriodDateStr,
       endPeriodDateStr,
     );
-  }, [teacherInfo]);
+  }, [teacherInfo?.id, startPeriodDateStr, endPeriodDateStr]);
 
   const {
     data: teacherSessions,
     loading: teacherSessionsLoading,
     error: teacherSessionsError,
-  } = useApiData(teacherSessionsCall, [selectedDate]);
+  } = useApiData(teacherSessionsCall, [
+    teacherInfo?.id,
+    startPeriodDateStr,
+    endPeriodDateStr,
+  ]);
 
-  // Get context with cabinets and add data in this context
+  // Получаем контекст и добавляем в него данные
   const scheduleTeachersTableContext = useContext(ScheduleTeachersTableContext);
   const updatedScheduleTeachersTableContext = useMemo(() => {
     return {
