@@ -67,3 +67,13 @@
 .react-select__option--is-selected {
   background-color: var(--main-accent-color) !important;
 }
+
+/* Disabled */
+.react-select__control--is-disabled {
+  border-color: var(--main-border-color) !important;
+  cursor: not-allowed !important;
+}
+
+.react-select__control--is-disabled .react-select__indicator {
+  color: var(--main-border-color) !important;
+}

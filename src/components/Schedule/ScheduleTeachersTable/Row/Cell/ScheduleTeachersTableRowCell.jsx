@@ -9,6 +9,8 @@ import {
   updateSession,
   deleteSession,
 } from "../../../../../api/scheduleAPI";
+import { getStreamsById } from "../../../../../api/streamAPI";
+import { getSubjectsByGroupNameAndTeacherId } from "../../../../../api/groupAPI";
 
 import SyncSelect from "../../../../CustomSelect/syncSelect";
 
@@ -55,11 +57,8 @@ export default function ScheduleTeachersTableCell({
     label: group,
   }));
 
-  const subjectsOptions =
-    subjectInCycleData.map((subject) => ({
-      value: `${subject.id}`,
-      label: `${subject.title}`,
-    })) || [];
+  // По умолчанию предметов нет
+  const [subjectsOptions, setSubjectsOptions] = useState([]);
 
   const sessionTypesOptions = sessionsTypes.map((type) => ({
     value: `${type.name}`,
@@ -83,6 +82,9 @@ export default function ScheduleTeachersTableCell({
     "--schedule-cell-border--default",
   );
 
+  // Состояние для доступности предметов
+  const [subjectsOptionDisabled, setSubjectsOptionDisabled] = useState(true);
+
   // Состояние формы
   const [form, setForm] = useState({
     id: null,
@@ -93,6 +95,7 @@ export default function ScheduleTeachersTableCell({
     isNew: true,
     isDelete: false,
     isUpdate: false,
+    streams: [{}],
   });
 
   // Функция для сброса формы к начальному состоянию
@@ -106,6 +109,7 @@ export default function ScheduleTeachersTableCell({
       isNew: true,
       isDelete: false,
       isUpdate: false,
+      streams: [{}],
     });
   };
 
@@ -192,6 +196,59 @@ export default function ScheduleTeachersTableCell({
   // Функции с парой
   // ============================================
 
+  // Отслеживаем выбор группы, предмета и типа пары для подгрузки предметов и потоков
+  useEffect(() => {
+    const loadSubjects = async () => {
+      if (!form.group) {
+        setSubjectsOptionDisabled(true);
+        return;
+      }
+
+      try {
+        const subjects = await getSubjectsByGroupNameAndTeacherId(
+          form.group.value,
+          teacherInfo.id,
+        );
+
+        const formattedSubjects = subjects.map((subject) => ({
+          value: `${subject.id}`,
+          label: `${subject.title}`,
+        }));
+
+        // Обновляем subjectsOptions
+        setSubjectsOptions(formattedSubjects);
+        setSubjectsOptionDisabled(false);
+      } catch (error) {
+        setSubjectsOptionDisabled(true);
+      }
+    };
+
+    const loadStreams = async () => {
+      // Подгрузка потоков
+      if (!form.group || !form.subject || form.sessionType.value !== "Лк") {
+        return;
+      }
+
+      try {
+        // Подгружаем потоки для этого предмета
+        const streams = await getStreamsById(form.subject.value);
+
+        // Убираем из потоков текущую группу
+        const filteredStreams = streams.filter(
+          (streamItem) => streamItem.group_name !== form.group.value,
+        );
+
+        setFormField("streams", filteredStreams);
+        console.log(form);
+      } catch (error) {
+        console.error("Ошибка при подгрузке потоков:", error);
+      }
+    };
+
+    loadSubjects();
+    loadStreams();
+  }, [form.group, form.subject, form.sessionType]);
+
   // Отслеживаем заполненность формы для создания, редактирования или удаления пары
   useEffect(() => {
     const submitForm = async () => {
@@ -206,7 +263,6 @@ export default function ScheduleTeachersTableCell({
       ) {
         try {
           const payload = getSessionPayload();
-
           if (!payload) {
             handleSelectChange("error");
             return;
@@ -228,9 +284,12 @@ export default function ScheduleTeachersTableCell({
 
           handleSelectChange("create");
         } catch (error) {
-          setTextInModal(
-            error.data?.detail?.msg || "Произошла ошибка при создании",
-          );
+          const errorMessage =
+            error.data?.detail?.msg ||
+            error.data?.detail ||
+            error.message ||
+            "Произошла ошибка при создании";
+          setTextInModal(errorMessage);
           handleSelectChange("error");
         }
       } else if (
@@ -268,9 +327,7 @@ export default function ScheduleTeachersTableCell({
           handleSelectChange("update");
           setTextInModal("Пара успешно обновлена");
         } catch (error) {
-          setTextInModal(
-            error.data?.detail?.msg || "Произошла ошибка при обновлении",
-          );
+          setTextInModal(error.data || "Произошла ошибка при обновлении");
           handleSelectChange("error");
         }
       } else if (
@@ -323,7 +380,6 @@ export default function ScheduleTeachersTableCell({
     });
 
     if (!teacherInPlan) {
-      console.error("Не найдено teacher_in_plan для выбранных данных");
       return null;
     }
 
@@ -430,6 +486,7 @@ export default function ScheduleTeachersTableCell({
                 placeholder="Предмет"
                 value={form.subject}
                 onChange={changeField("subject")}
+                isDisabled={subjectsOptionDisabled}
               />
             </div>
           </div>
