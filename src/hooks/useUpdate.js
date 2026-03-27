@@ -22,6 +22,9 @@ export const useUpdate = () => {
             id[field] = itemId[index];
           });
         }
+      } else if (typeof itemId === "object" && itemId !== null) {
+        // Если itemId уже объект, используем его напрямую
+        id = itemId;
       }
 
       const response = await fetch(`${API_BASE_URL}/${tableName}/update`, {

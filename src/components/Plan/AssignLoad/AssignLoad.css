@@ -9,6 +9,7 @@
   overflow-x: auto;
   overflow-y: auto;
   width: 100%;
+  max-height: 400px;
 }
 
 .assign-load-table {

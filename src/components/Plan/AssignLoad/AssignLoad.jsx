@@ -1,5 +1,5 @@
 import "./AssignLoad.css";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { getPlans } from "../../../api/plansAPI";
 import { getGroupsBySpeciality, getGroupByName } from "../../../api/groupAPI";
 import { getAllSubjectsInPlan } from "../../../api/subjectAPI";
@@ -11,6 +11,7 @@ import { usePost } from "../../../hooks/usePost";
 import { useUpdate } from "../../../hooks/useUpdate";
 import { useDelete } from "../../../hooks/useDelete";
 import Button from "../../Button/Button";
+import AssignLoadTable from "./AssignLoadTable";
 
 export default function AssignLoad({ onClose }) {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
@@ -33,6 +34,35 @@ export default function AssignLoad({ onClose }) {
   const [assignedTeachers, setAssignedTeachers] = useState({});
   const [duplicating, setDuplicationg] = useState(false);
   const [duplicateSuccess, setDuplicateSuccess] = useState(false);
+  const [pendingUpdates, setPendingUpdates] = useState(new Set());
+
+  // Ref для хранения актуального значения assignedTeachers без ре-рендера
+  const assignedTeachersRef = useRef({});
+
+  // Ref для сохранения позиции скролла таблицы
+  const tableContainerRef = useRef(null);
+  const scrollPositionRef = useRef(0);
+  const needRestoreScrollRef = useRef(false);
+
+  // Синхронизируем ref с состоянием
+  useEffect(() => {
+    assignedTeachersRef.current = assignedTeachers;
+  }, [assignedTeachers]);
+
+  // Восстанавливаем скролл после ре-рендера
+  useEffect(() => {
+    if (needRestoreScrollRef.current && tableContainerRef.current) {
+      // Используем setTimeout для восстановления после отрисовки
+      const timerId = setTimeout(() => {
+        if (tableContainerRef.current) {
+          tableContainerRef.current.scrollTop = scrollPositionRef.current;
+        }
+        needRestoreScrollRef.current = false;
+      }, 0);
+
+      return () => clearTimeout(timerId);
+    }
+  });
 
   const { post: createAssignment, loading: loadingCreate } = usePost();
   const { update: updateAssignment, loading: loadingUpdate } = useUpdate();
@@ -71,7 +101,6 @@ export default function AssignLoad({ onClose }) {
       try {
         const data = await getTeachers();
         setTeachers(data);
-        console.log("Fetched teachers:", data);
       } catch (err) {
         console.error("Error fetching teachers:", err);
         setError(`Ошибка загрузки преподавателей: ${err.message}`);
@@ -122,8 +151,6 @@ export default function AssignLoad({ onClose }) {
         });
 
         await Promise.all(hoursPromises);
-
-        console.log("All hours fetched, map:", hoursMap);
 
         setSubjects(subjectsArray);
         setAllSubjectHours(hoursMap);
@@ -206,7 +233,6 @@ export default function AssignLoad({ onClose }) {
       setError(null);
 
       try {
-        console.log(`Fetching assignments for group: ${selectedGroup}`);
         const assignments = await getTeacherInPlanByGroup(selectedGroup);
 
         const hoursToSubjectMap = new Map();
@@ -334,17 +360,29 @@ export default function AssignLoad({ onClose }) {
     e,
   ) => {
     const selectedTeacherId = e.target.value;
-    console.log(
-      `Преподаватель для группы ${group}, семестр ${semester}, предмет "${subjectTitle}" (${subjectId}) изменён на ID: ${selectedTeacherId}`,
-    );
-
     const assignmentKey = `${group}-${semester}-${subjectId}`;
+
+    // Блокируем повторные вызовы для того же ключа
+    if (pendingUpdates.has(assignmentKey)) {
+      return;
+    }
+
+    // Сохраняем позицию скролла перед обновлением
+    if (tableContainerRef.current) {
+      scrollPositionRef.current = tableContainerRef.current.scrollTop;
+      needRestoreScrollRef.current = true;
+    }
+
+    // Помечаем ключ как обрабатываемый
+    setPendingUpdates((prev) => new Set(prev).add(assignmentKey));
 
     const subjectHoursForSubject = allSubjectHours[subjectId];
     if (!Array.isArray(subjectHoursForSubject)) {
-      console.error(
-        `Hours for subject ${subjectId} not found or not an array.`,
-      );
+      setPendingUpdates((prev) => {
+        const next = new Set(prev);
+        next.delete(assignmentKey);
+        return next;
+      });
       return;
     }
 
@@ -352,78 +390,84 @@ export default function AssignLoad({ onClose }) {
       (hour) => hour.semester === semester,
     );
     if (!hourForSemester) {
-      console.error(
-        `Hours for subject ${subjectId} in semester ${semester} not found.`,
-      );
+      setPendingUpdates((prev) => {
+        const next = new Set(prev);
+        next.delete(assignmentKey);
+        return next;
+      });
       return;
     }
 
     const subjectInCycleHoursId = hourForSemester.id;
     const sessionType = null;
 
-    const currentAssignment = assignedTeachers[assignmentKey];
+    // Используем ref для получения актуального значения
+    const currentAssignment = assignedTeachersRef.current[assignmentKey];
+    const existingAssignmentId = currentAssignment?.id;
 
-    let assignmentData = {
+    const assignmentData = {
       subject_in_cycle_hours_id: subjectInCycleHoursId,
       teacher_id: parseInt(selectedTeacherId),
       group_name: group,
       session_type: sessionType,
     };
 
-    if (currentAssignment && currentAssignment.id) {
-      assignmentData.teacher_in_plan_id = currentAssignment.id;
-    }
-
-    const updatedAssignmentInfo = {
-      id: currentAssignment?.id || null,
-      teacher_id: selectedTeacherId,
-    };
+    // Обновляем UI сразу (один раз)
     setAssignedTeachers((prevAssigned) => ({
       ...prevAssigned,
-      [assignmentKey]: updatedAssignmentInfo,
+      [assignmentKey]: {
+        id: existingAssignmentId || null,
+        teacher_id: selectedTeacherId,
+      },
     }));
 
     if (!selectedTeacherId) {
-      console.log("No teacher selected, skipping API call.");
+      setPendingUpdates((prev) => {
+        const next = new Set(prev);
+        next.delete(assignmentKey);
+        return next;
+      });
       return;
     }
 
     try {
-      if (currentAssignment && currentAssignment.id) {
-        console.log(
-          "Attempting to update assignment with ID in body:",
-          assignmentData,
-        );
-        const updateResult = await updateAssignment(
+      if (existingAssignmentId) {
+        await updateAssignment(
           "teachers_in_plans",
-          {},
+          { teacher_in_plan_id: existingAssignmentId },
           assignmentData,
         );
-        console.log("Assignment updated:", updateResult);
       } else {
-        console.log("Creating new assignment:", assignmentData);
         const createResult = await createAssignment(
           "/teachers_in_plans",
           assignmentData,
         );
-        console.log("Assignment created:", createResult);
 
-        if (createResult && createResult.id !== undefined) {
-          setAssignedTeachers((prevAssigned) => ({
-            ...prevAssigned,
-            [assignmentKey]: {
-              id: createResult.id,
-              teacher_id: selectedTeacherId,
-            },
-          }));
+        const newId = createResult?.teacher_in_plan?.id || createResult?.id;
+
+        if (newId !== undefined && newId !== null) {
+          // Сохраняем ID в ref для будущих вызовов
+          // Не вызываем setState повторно, чтобы избежать лишнего ре-рендера
+          // ID будет использован из ref при следующем вызове
+          assignedTeachersRef.current[assignmentKey] = {
+            id: newId,
+            teacher_id: selectedTeacherId,
+          };
         }
       }
     } catch (err) {
-      console.error("Failed to update or create assignment:", err);
+      // Откатываем состояние при ошибке
       setAssignedTeachers((prevAssigned) => ({
         ...prevAssigned,
         [assignmentKey]: currentAssignment,
       }));
+    } finally {
+      // Снимаем блокировку
+      setPendingUpdates((prev) => {
+        const next = new Set(prev);
+        next.delete(assignmentKey);
+        return next;
+      });
     }
   };
 
@@ -455,27 +499,18 @@ export default function AssignLoad({ onClose }) {
     setDuplicateSuccess(false);
 
     try {
-      // Получаем speciality_code для выбранного плана
       const plan = plans.find((p) => p.id === Number(selectedPlanId));
-      console.log("Selected Plan ID:", selectedPlanId);
-      console.log("Plans:", plans);
-      console.log("Found plan:", plan);
       if (!plan) {
         throw new Error("План не найден. Проверьте выбранный план.");
       }
 
       const specialityCode = plan.speciality_code;
-      console.log("Speciality code:", specialityCode);
 
-      // Получаем все группы этой специальности
       const allGroups = await getGroupsBySpeciality(specialityCode);
-      console.log("All groups from API:", allGroups);
 
-      // Фильтруем текущую группу
-      const targetGroups = allGroups.filter((g) => {
-        console.log("Checking group:", g, "group_name:", g?.group_name);
-        return g?.group_name !== selectedGroup;
-      });
+      const targetGroups = allGroups.filter(
+        (g) => g?.group_name !== selectedGroup,
+      );
 
       if (targetGroups.length === 0) {
         setError("Нет других групп для дублирования");
@@ -483,20 +518,12 @@ export default function AssignLoad({ onClose }) {
         return;
       }
 
-      console.log(
-        `Дублирование нагрузки из группы ${selectedGroup} в группы:`,
-        targetGroups.map((g) => g.group_name),
-      );
-
-      // Для каждой целевой группы
       for (const targetGroup of targetGroups) {
         const targetGroupName = targetGroup.group_name;
 
-        // Получаем текущие назначения для целевой группы
         const existingAssignments =
           await getTeacherInPlanByGroup(targetGroupName);
 
-        // Создаём map существующих назначений по ключу group-semester-subjectId
         const existingAssignmentsMap = new Map();
         const hoursToSubjectMap = new Map();
 
@@ -536,15 +563,15 @@ export default function AssignLoad({ onClose }) {
           }
         });
 
-        // Копируем назначения из исходной группы в целевую
         for (const [key, assignmentInfo] of Object.entries(assignedTeachers)) {
           if (!assignmentInfo.teacher_id) continue;
 
-          // Разбираем ключ: group-semester-subjectId
-          const [, semester, subjectId] = key.split("-");
-          const sourceKey = `${selectedGroup}-${semester}-${subjectId}`;
+          const parts = key.split("-");
+          if (parts.length < 3) continue;
 
-          // Получаем subject_in_cycle_hours_id для целевой группы
+          const semester = parts[parts.length - 2];
+          const subjectId = parts[parts.length - 1];
+
           const subjectHoursForSubject = allSubjectHours[subjectId];
           if (!Array.isArray(subjectHoursForSubject)) continue;
 
@@ -566,24 +593,13 @@ export default function AssignLoad({ onClose }) {
 
           try {
             if (existingAssignment && existingAssignment.id) {
-              // Обновляем существующее назначение
               await updateAssignment(
                 "teachers_in_plans",
-                {},
-                {
-                  ...assignmentData,
-                  teacher_in_plan_id: existingAssignment.id,
-                },
-              );
-              console.log(
-                `Обновлено назначение для ${targetGroupName}, предмет ${subjectId}, семестр ${semester}`,
+                { teacher_in_plan_id: existingAssignment.id },
+                assignmentData,
               );
             } else {
-              // Создаём новое назначение
               await createAssignment("/teachers_in_plans", assignmentData);
-              console.log(
-                `Создано назначение для ${targetGroupName}, предмет ${subjectId}, семестр ${semester}`,
-              );
             }
           } catch (err) {
             console.error(
@@ -595,10 +611,10 @@ export default function AssignLoad({ onClose }) {
       }
 
       setDuplicateSuccess(true);
-      setTimeout(() => setDuplicateSuccess(false), 3000);
-
-      // Обновляем данные после дублирования
-      await onClose();
+      setTimeout(() => {
+        setDuplicateSuccess(false);
+        onClose();
+      }, 3000);
     } catch (err) {
       console.error("Ошибка при дублировании нагрузки:", err);
       setError(`Ошибка дублирования: ${err.message}`);
@@ -653,71 +669,14 @@ export default function AssignLoad({ onClose }) {
       </div>
 
       {selectedPlanId && selectedGroup && (
-        <div className="assign-load-table-container">
-          <table className="assign-load-table">
-            <thead>
-              <tr>
-                <th>Семестр</th>
-                <th>Предмет</th>
-                <th>Преподаватель</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableRows.length > 0 ? (
-                tableRows.map((row, index) => {
-                  const assignmentKey = `${selectedGroup}-${row.semester}-${row.subjectId}`;
-                  const assignmentInfo = assignedTeachers[assignmentKey] || {
-                    id: null,
-                    teacher_id: "",
-                  };
-                  const assignedTeacherId = assignmentInfo.teacher_id;
-
-                  return (
-                    <tr
-                      key={`row-${selectedGroup}-${row.semester}-${row.subjectId}-${index}`}
-                    >
-                      <td>{`${row.semester}`}</td>
-                      <td>{row.subjectTitle}</td>
-                      <td>
-                        <select
-                          value={assignedTeacherId}
-                          onChange={(e) =>
-                            handleTeacherChange(
-                              row.semester,
-                              row.subjectId,
-                              row.subjectTitle,
-                              selectedGroup,
-                              e,
-                            )
-                          }
-                          className={`teach-select-${assignedTeacherId !== "" ? "active" : "passive"}`}
-                        >
-                          <option value="">-- Выберите преподавателя --</option>
-                          {teachers.map((teacher) => (
-                            <option key={teacher.id} value={teacher.id}>
-                              {teacher.fathername
-                                ? `${teacher.surname} ${teacher.name.charAt(
-                                    0,
-                                  )}. ${teacher.fathername.charAt(0)}.`
-                                : `${teacher.surname} ${teacher.name.charAt(
-                                    0,
-                                  )}.`}
-                            </option>
-                          ))}
-                        </select>
-                        {assignedTeacherId !== "" && <button>⋮</button>}
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan="3">Нет данных для отображения</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <AssignLoadTable
+          tableRows={tableRows}
+          selectedGroup={selectedGroup}
+          assignedTeachers={assignedTeachers}
+          teachers={teachers}
+          onTeacherChange={handleTeacherChange}
+          tableContainerRef={tableContainerRef}
+        />
       )}
       <div className="assign-load-footer">
         {selectedPlanId && selectedGroup && (
