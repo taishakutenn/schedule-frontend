@@ -30,8 +30,8 @@ export const getStreams = async () => {
   }));
 };
 
-export const getStreamsById = async (subject_id) => {
-  const response = await fetch(`${API_BASE_URL}/streams/search/by_subject/${subject_id}`);
+export const getStreamsById = async (subjectId) => {
+  const response = await fetch(`${API_BASE_URL}/streams/search/by_subject/${subjectId}`);
   if (!response.ok) {
     throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
   }
@@ -39,3 +39,23 @@ export const getStreamsById = async (subject_id) => {
   const data = await response.json();
   return data.streams.map((item) => item.stream);
 };
+
+export const getStreamsByGroup = async (groupName) => {
+  const response = await fetch(`${API_BASE_URL}/streams/search/by_subject/${subjectId}`);
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.streams.map((item) => item.stream);
+}
+
+export const getStreamsRelatedToGroup = async (groupName, subjectId) => {
+  const response = await fetch(`${API_BASE_URL}/streams/search/streams/related/to_stream/by_group/subject/${groupName}/${subjectId}`);
+  if (!response.ok) {
+    throw new Error(`Ошибка: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+}

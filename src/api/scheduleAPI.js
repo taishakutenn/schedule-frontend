@@ -129,3 +129,67 @@ export const deleteSession = async (sessionId) => {
   const data = await response.json();
   return data;
 }
+
+/**
+ * Сохраняет все потоки, возвращает успешно созданные пары и ошибки при создании
+ * @param form Форма с данными основной пары
+ * @param maintSessionId Id главной пары, к которой подтягиваются потоки
+ * @param streamsSessionData Список всех потоков
+ * @param sessionNumber Номер пары
+ * @param date Дата пары
+ * @returns {result}
+ */
+export const createStreamsSessions = async (form, mainSessionId, streamsSessionData, sessionNumber, date) => {
+  // Результирующий словарь
+  const result = {}
+
+  // Массив для отслеживания успешно созданных пар
+  const createdSessions = [];
+  const errors = [];
+
+  // Добавляем id основной пары в массив созданных пар
+  createdSessions.push({sessionId: mainSessionId});
+
+  // Создаём пары для потоков последовательно, чтобы отлавливать ошибки для каждой
+  for (let i = 0; i < streamsSessionData.length; i++) {
+    const sessionData = streamsSessionData[i];
+    const streamInfo = form.streams[i];
+
+    try {
+      const newStreamSession = await createNewSession(
+        sessionNumber,
+        date,
+        sessionData.teacherInPlanId,
+        sessionData.sessionType,
+        sessionData.cabinet,
+        sessionData.building,
+      );
+
+      // Сохраняем успешно созданную пару
+      createdSessions.push({
+        sessionId: newStreamSession.session.id,
+      });
+    } catch (error) {
+      // Обрабатываем ошибку для конкретного потока
+      const errorMessage =
+        error.data?.detail?.msg ||
+        error.data?.detail ||
+        "Неизвестная ошибка";
+
+      errors.push({
+        group: streamInfo.group_name,
+        subject: form.subject.label,
+        sessionType: form.sessionType.value,
+        cabinet: form.cabinet.value,
+        error: errorMessage,
+        status: error.status,
+      });
+    }
+  }
+
+  // Возвращаем словарь с созданными парами и ошибками
+  result["createdSessions"] = createdSessions;
+  result["errors"] = errors;
+
+  return result;
+};

@@ -8,11 +8,13 @@ import {
   createNewSession,
   updateSession,
   deleteSession,
+  createStreamsSessions,
 } from "../../../../../api/scheduleAPI";
-import { getStreamsById } from "../../../../../api/streamAPI";
+import { getStreamsRelatedToGroup } from "../../../../../api/streamAPI";
 import { getSubjectsByGroupNameAndTeacherId } from "../../../../../api/groupAPI";
 
 import SyncSelect from "../../../../CustomSelect/syncSelect";
+import StreamErrorsModal from "./streamErrorsModal";
 
 function ModalMessage({ text }) {
   return <div className="modal-in-container">{text}</div>;
@@ -85,6 +87,12 @@ export default function ScheduleTeachersTableCell({
   // Состояние для доступности предметов
   const [subjectsOptionDisabled, setSubjectsOptionDisabled] = useState(true);
 
+  // Состояния для модального окна с ошибками при создании пар
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [streamErrors, setStreamErrors] = useState([]);
+  const [successfullyCreatedSessions, setSuccessfullyCreatedSessions] =
+    useState([]);
+
   // Состояние формы
   const [form, setForm] = useState({
     id: null,
@@ -95,7 +103,7 @@ export default function ScheduleTeachersTableCell({
     isNew: true,
     isDelete: false,
     isUpdate: false,
-    streams: [{}],
+    streams: [],
   });
 
   // Функция для сброса формы к начальному состоянию
@@ -109,8 +117,32 @@ export default function ScheduleTeachersTableCell({
       isNew: true,
       isDelete: false,
       isUpdate: false,
-      streams: [{}],
+      streams: [],
     });
+  };
+
+  // Функция для отката успешно созданных пар при потоках, если у одной хотя бы ошибка
+  const rollbackSuccessfullyCreatedSessions = async () => {
+    try {
+      // Удаляем все успешно созданные сессии
+      await Promise.all(
+        successfullyCreatedSessions.map((session) =>
+          deleteSession(session.sessionId),
+        ),
+      );
+
+      // Очищаем массив успешно созданных сессий
+      setSuccessfullyCreatedSessions([]);
+      setIsErrorModalOpen(false);
+
+      // Очищаем форму и сбрасываем бордер
+      resetForm();
+      setTimeout(() => {
+        setCurrentBorder("--schedule-cell-border--default");
+      }, 1000);
+    } catch (error) {
+      console.error("Ошибка при откате сессий:", error);
+    }
   };
 
   // ============================================
@@ -151,6 +183,7 @@ export default function ScheduleTeachersTableCell({
   // Обработчик нажатия на правую кнопку мыши
   const handleRightClick = (e) => {
     if (!form.isNew) {
+      console.log(form);
       e.preventDefault();
       show({
         event: e,
@@ -225,21 +258,33 @@ export default function ScheduleTeachersTableCell({
 
     const loadStreams = async () => {
       // Подгрузка потоков
-      if (!form.group || !form.subject || form.sessionType.value !== "Лк") {
+      if (
+        !form.isNew ||
+        !form.group ||
+        !form.subject ||
+        !form.sessionType ||
+        form.sessionType.value !== "Лк"
+      ) {
         return;
       }
 
       try {
         // Подгружаем потоки для этого предмета
-        const streams = await getStreamsById(form.subject.value);
+        const streams = await getStreamsRelatedToGroup(
+          form.group.value,
+          form.subject.value,
+        );
 
         // Убираем из потоков текущую группу
-        const filteredStreams = streams.filter(
+        const filteredStreams = streams.streams.filter(
           (streamItem) => streamItem.group_name !== form.group.value,
         );
 
+        if (filteredStreams.length < 1) {
+          return;
+        }
+
         setFormField("streams", filteredStreams);
-        console.log(form);
       } catch (error) {
         console.error("Ошибка при подгрузке потоков:", error);
       }
@@ -283,6 +328,36 @@ export default function ScheduleTeachersTableCell({
           setFormField("isNew", false);
 
           handleSelectChange("create");
+
+          // Проверяем, есть ли у пары потоки
+          if (form.streams.length > 0) {
+            // Если есть, то создаём пары и для них
+            const streamsSessionData = getStreamsSessionData(); // Все данные о потоках
+
+            // Создаём пары из потоков и получаем информацию о успешных и неуспешных операциях
+            const resultCreatingSessions = await createStreamsSessions(
+              form,
+              newSession.session.id,
+              streamsSessionData,
+              sessionNumber,
+              date,
+            );
+
+            // Сохраняем информацию об успешно созданных сессиях
+            setSuccessfullyCreatedSessions(
+              resultCreatingSessions.createdSessions,
+            );
+
+            // Если есть ошибки, открываем модальное окно
+            if (resultCreatingSessions.errors.length > 0) {
+              setStreamErrors(resultCreatingSessions.errors);
+              setIsErrorModalOpen(true);
+            } else {
+              // Показываем, что все потоковые пары сохранились
+              setTextInModal("Потоковые пары успешно сохранены");
+              handleSelectChange("create");
+            }
+          }
         } catch (error) {
           const errorMessage =
             error.data?.detail?.msg ||
@@ -291,6 +366,7 @@ export default function ScheduleTeachersTableCell({
             "Произошла ошибка при создании";
           setTextInModal(errorMessage);
           handleSelectChange("error");
+          resetForm();
         }
       } else if (
         // Если обновляем пару
@@ -337,8 +413,15 @@ export default function ScheduleTeachersTableCell({
         form.isDelete
       ) {
         try {
-          // Отправляем запрос на удаление
+          // Удаляем основную пару
           await deleteSession(form.id);
+
+          // Удаляем потоковые пары, если они есть
+          if (form.streams && form.streams.length > 0) {
+            await Promise.all(
+              form.streams.map((stream) => deleteSession(stream.session.id)),
+            );
+          }
 
           // Сбрасываем флаг удаления
           setFormField("isDelete", false);
@@ -394,18 +477,64 @@ export default function ScheduleTeachersTableCell({
     };
   };
 
+  // Функция для получения данных сессий для потоков
+  const getStreamsSessionData = () => {
+    if (!form.streams || form.streams.length === 0) {
+      return [];
+    }
+
+    return form.streams
+      .map((stream) => {
+        // Получаем id часов предмета по id предмета из стрима
+        const subjectInCycleHours = subjectInCycleHoursData.find(
+          (sch) => sch.subject_in_cycle_id === stream.subject_id,
+        );
+
+        if (!subjectInCycleHours) {
+          return null;
+        }
+
+        // Получаем id учителя в плане для создания пары
+        const teacherInPlan = teacherInPlanData.find(
+          (tip) =>
+            tip.subject_in_cycle_hours_id === subjectInCycleHours.id &&
+            tip.group_name === stream.group_name,
+        );
+
+        if (!teacherInPlan) {
+          return null;
+        }
+
+        // Разбираем cabinet на building и cabinet number
+        const [building, cabinet] = form.cabinet.value.split("-");
+
+        // Возвращаем объект с данными для создания пары
+        return {
+          teacherInPlanId: teacherInPlan.id,
+          sessionType: form.sessionType.value,
+          cabinet,
+          building,
+        };
+      })
+      .filter((item) => item !== null);
+  };
+
   // ============================================
   // Подгрузка пар
   // ============================================
 
-  // Получаем занятие на текущую пару
+  // Получаем занятие на текущую пару и потоки, если есть
   const formattedDate = date.toISOString().split("T")[0];
-  const currentSession = (teacherSessions?.sessions || []).find((item) => {
+  const allSessions = (teacherSessions?.sessions || []).filter((item) => {
     return (
       item.session.session_date === formattedDate &&
       item.session.session_number === sessionNumber
     );
   });
+
+  // Текущая пара - первый элемент из всех пар на текущую дату и номер пары
+  const currentSession = allSessions[0];
+  const streamSessions = allSessions.slice(1); // Все остальные - потоковые
 
   // Отслеживаем изменения с сервера
   useEffect(() => {
@@ -445,6 +574,7 @@ export default function ScheduleTeachersTableCell({
         `${s.building_number}-${s.cabinet_number}`,
       ),
       isNew: false,
+      streams: streamSessions,
     });
 
     // Включаем анимацию бордера и задаём ей цвет
@@ -511,6 +641,14 @@ export default function ScheduleTeachersTableCell({
           </div>
         </div>
       </div>
+      <StreamErrorsModal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        streamErrors={streamErrors}
+        successfullyCreatedSessions={successfullyCreatedSessions}
+        onRollback={rollbackSuccessfullyCreatedSessions}
+        onCloseModal={setStreamErrors}
+      />
     </td>
   );
 }
