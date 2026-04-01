@@ -181,7 +181,7 @@ export const formConfig = {
         null,
         true,
         getTeachers,
-        ["fathername", "name", "surname"],
+        ["surname", "name", "fathername"],
         "id",
       ),
     ],

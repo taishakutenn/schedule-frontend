@@ -55,6 +55,20 @@ export default function DynamicSelect({
    */
   const getDisplayLabel = (item, labelField) => {
     if (Array.isArray(labelField)) {
+      // Для преподавателей (surname, name, fathername) форматируем как "Фамилия И.О."
+      if (
+        labelField.length === 3 &&
+        labelField[0] === "surname" &&
+        labelField[1] === "name" &&
+        labelField[2] === "fathername"
+      ) {
+        const surname = item.surname || "";
+        const nameInitial = item.name ? `${item.name.charAt(0)}.` : "";
+        const fatherNameInitial = item.fathername
+          ? `${item.fathername.charAt(0)}.`
+          : "";
+        return `${surname} ${nameInitial} ${fatherNameInitial}`.trim();
+      }
       return labelField
         .map((field) => item[field] || "")
         .join(" ")
