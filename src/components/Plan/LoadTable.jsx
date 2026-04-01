@@ -99,7 +99,9 @@ export default function LoadTable({ loadData }) {
                         rowSpan={Math.max(1, group.rows.length)}
                         className={isHovered ? "hovered-cell" : ""}
                       >
-                        {item.subject}
+                        {item.subject.length > 30
+                          ? `${item.subject.slice(0, 30)}.`
+                          : item.subject}
                       </td>
                     ) : null}
 
