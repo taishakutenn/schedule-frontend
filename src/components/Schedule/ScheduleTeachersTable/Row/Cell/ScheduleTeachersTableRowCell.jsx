@@ -274,7 +274,7 @@ export default function ScheduleTeachersTableCell({
         !form.group ||
         !form.subject ||
         !form.sessionType ||
-        form.sessionType.value !== "Лк"
+        form.sessionType.value.toUpperCase() !== "ЛК"
       ) {
         return;
       }
