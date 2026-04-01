@@ -23,12 +23,12 @@ export default function Header() {
           <Navigation items={navItems} />
           <div className="header__account-container">
             <ThemeSwitcher></ThemeSwitcher>
-            <Link to="/auth?mode=login">
+            {/* <Link to="/auth?mode=login">
               <Button>Вход</Button>
             </Link>
             <Link to="/auth?mode=register">
               <Button>Регистрация</Button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

@@ -91,6 +91,15 @@
   max-width: 100% !important;
 }
 
+/* Стили для селекта групп - уменьшение текста при переполнении */
+.select-wrapper_group .react-select__single-value {
+  font-size: 11px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: wrap;
+}
+
 /* modal in container animation */
 @keyframes modalContainer {
   from {

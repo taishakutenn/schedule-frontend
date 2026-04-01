@@ -148,7 +148,7 @@ export const createStreamsSessions = async (form, mainSessionId, streamsSessionD
   const errors = [];
 
   // Добавляем id основной пары в массив созданных пар
-  createdSessions.push({sessionId: mainSessionId});
+  createdSessions.push({id: mainSessionId});
 
   // Создаём пары для потоков последовательно, чтобы отлавливать ошибки для каждой
   for (let i = 0; i < streamsSessionData.length; i++) {
@@ -167,7 +167,7 @@ export const createStreamsSessions = async (form, mainSessionId, streamsSessionD
 
       // Сохраняем успешно созданную пару
       createdSessions.push({
-        sessionId: newStreamSession.session.id,
+        id: newStreamSession.session.id,
       });
     } catch (error) {
       // Обрабатываем ошибку для конкретного потока

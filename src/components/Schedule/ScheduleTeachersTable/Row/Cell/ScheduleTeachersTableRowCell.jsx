@@ -1,7 +1,7 @@
 import "./scheduleTeachersTableRowCell.css";
 import "react-contexify/ReactContexify.css";
 
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { useContextMenu } from "react-contexify";
 import ScheduleTeachersTableContext from "../../../../../contexts/ScheduleTeachersTableContext";
 import {
@@ -54,23 +54,35 @@ export default function ScheduleTeachersTableCell({
   // ============================================
   // Подготовка данных для селектов
   // ============================================
-  const groupsOptions = groups.map((group) => ({
-    value: group,
-    label: group,
-  }));
+  const groupsOptions = useMemo(
+    () =>
+      groups.map((group) => ({
+        value: group,
+        label: group,
+      })),
+    [groups],
+  );
 
   // По умолчанию предметов нет
   const [subjectsOptions, setSubjectsOptions] = useState([]);
 
-  const sessionTypesOptions = sessionsTypes.map((type) => ({
-    value: `${type.name}`,
-    label: `${type.name}`,
-  }));
+  const sessionTypesOptions = useMemo(
+    () =>
+      sessionsTypes.map((type) => ({
+        value: `${type.name}`,
+        label: `${type.name}`,
+      })),
+    [sessionsTypes],
+  );
 
-  const cabinetsOptions = cabinets.map((cabinet) => ({
-    value: `${cabinet.building_number}-${cabinet.cabinet_number}`,
-    label: `${cabinet.building_number}-${cabinet.cabinet_number}`,
-  }));
+  const cabinetsOptions = useMemo(
+    () =>
+      cabinets.map((cabinet) => ({
+        value: `${cabinet.building_number}-${cabinet.cabinet_number}`,
+        label: `${cabinet.building_number}-${cabinet.cabinet_number}`,
+      })),
+    [cabinets],
+  );
 
   // ============================================
   // Состояния (states)
@@ -104,6 +116,7 @@ export default function ScheduleTeachersTableCell({
     isDelete: false,
     isUpdate: false,
     streams: [],
+    streamSessions: [],
   });
 
   // Функция для сброса формы к начальному состоянию
@@ -118,6 +131,7 @@ export default function ScheduleTeachersTableCell({
       isDelete: false,
       isUpdate: false,
       streams: [],
+      streamSessions: [],
     });
   };
 
@@ -126,9 +140,7 @@ export default function ScheduleTeachersTableCell({
     try {
       // Удаляем все успешно созданные сессии
       await Promise.all(
-        successfullyCreatedSessions.map((session) =>
-          deleteSession(session.sessionId),
-        ),
+        successfullyCreatedSessions.map((session) => deleteSession(session.id)),
       );
 
       // Очищаем массив успешно созданных сессий
@@ -259,7 +271,6 @@ export default function ScheduleTeachersTableCell({
     const loadStreams = async () => {
       // Подгрузка потоков
       if (
-        !form.isNew ||
         !form.group ||
         !form.subject ||
         !form.sessionType ||
@@ -293,6 +304,48 @@ export default function ScheduleTeachersTableCell({
     loadSubjects();
     loadStreams();
   }, [form.group, form.subject, form.sessionType]);
+
+  // Отслеживаем изменения потоков и потоковых лекций, чтобы правильно рисовать label
+  useEffect(() => {
+    // Обновляем label, если есть потоки и пара не новая
+    if (
+      !form.isNew &&
+      form.group &&
+      form.streams &&
+      form.streams.length > 0 &&
+      form.streamSessions &&
+      form.streamSessions.length > 0
+    ) {
+      // Собираем все группы: основную + потоки
+      const allGroups = [
+        form.group.value,
+        ...form.streams.map((stream) => stream.group_name),
+      ];
+
+      // Группируем по префиксу до "-"
+      const groupedLabels = allGroups.map((group) => {
+        const dashIndex = group.indexOf("-");
+        // Если есть "-", берём часть до него, иначе оставляем как есть
+        return dashIndex !== -1 ? group.substring(0, dashIndex) : group;
+      });
+
+      // Убираем дубликаты
+      const uniqueGroups = [...new Set(groupedLabels)];
+
+      const newLabel = uniqueGroups.join(", ");
+
+      // Обновляем label только если он отличается от текущего
+      if (form.group.label !== newLabel) {
+        setForm((prev) => ({
+          ...prev,
+          group: {
+            ...prev.group,
+            label: newLabel,
+          },
+        }));
+      }
+    }
+  }, [form.streams, form.streamSessions]);
 
   // Отслеживаем заполненность формы для создания, редактирования или удаления пары
   useEffect(() => {
@@ -347,6 +400,19 @@ export default function ScheduleTeachersTableCell({
             setSuccessfullyCreatedSessions(
               resultCreatingSessions.createdSessions,
             );
+
+            // Преобразовываем данные потоковых пар к удобному формату
+            // Фильтруем основную пару (она не должна попасть в streamSessions)
+            const newStreamSessions = resultCreatingSessions.createdSessions
+              .filter((sessionData) => sessionData.id !== newSession.session.id)
+              .map((sessionData) => ({
+                session: {
+                  id: sessionData.id,
+                },
+              }));
+
+            // Обновляем форму с добавленными streamSessions
+            setFormField("streamSessions", newStreamSessions);
 
             // Если есть ошибки, открываем модальное окно
             if (resultCreatingSessions.errors.length > 0) {
@@ -417,9 +483,11 @@ export default function ScheduleTeachersTableCell({
           await deleteSession(form.id);
 
           // Удаляем потоковые пары, если они есть
-          if (form.streams && form.streams.length > 0) {
+          if (form.streamSessions && form.streamSessions.length > 0) {
             await Promise.all(
-              form.streams.map((stream) => deleteSession(stream.session.id)),
+              form.streamSessions.map((stream) =>
+                deleteSession(stream.session.id),
+              ),
             );
           }
 
@@ -442,6 +510,7 @@ export default function ScheduleTeachersTableCell({
             error.data?.detail?.msg || "Произошла ошибка при удалении",
           );
           handleSelectChange("error");
+          console.log(error);
         }
       }
     };
@@ -564,7 +633,8 @@ export default function ScheduleTeachersTableCell({
       (sic) => sic.id === subjectInCycleHours?.subject_in_cycle_id,
     );
 
-    setForm({
+    setForm((prev) => ({
+      ...prev,
       id: s.id,
       group: findOption(groupsOptions, group),
       subject: findOption(subjectsOptions, subjectInCycle?.id),
@@ -574,8 +644,8 @@ export default function ScheduleTeachersTableCell({
         `${s.building_number}-${s.cabinet_number}`,
       ),
       isNew: false,
-      streams: streamSessions,
-    });
+      streamSessions: streamSessions,
+    }));
 
     // Включаем анимацию бордера и задаём ей цвет
     handleSelectChange();
@@ -602,7 +672,14 @@ export default function ScheduleTeachersTableCell({
           {isModalAnimating ? <ModalMessage text={textInModal} /> : null}
 
           <div className="cell-container__column left-column">
-            <div className="select-wrapper" onContextMenu={handleRightClick}>
+            <div
+              className={`select-wrapper ${
+                form.streamSessions && form.streamSessions.length > 0
+                  ? "select-wrapper_group"
+                  : ""
+              }`}
+              onContextMenu={handleRightClick}
+            >
               <SyncSelect
                 options={groupsOptions}
                 placeholder="Группа"

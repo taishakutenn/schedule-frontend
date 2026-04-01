@@ -158,11 +158,11 @@ export default function ScheduleTeachersTableRow({
         value={updatedScheduleTeachersTableContext}
       >
         <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={0} />
-        {/* <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
-          <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={2} />
-          <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={3} />
-          <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={4} />
-          <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={5} /> */}
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={2} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={3} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={4} />
+        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={5} />
       </ScheduleTeachersTableContext.Provider>
     </tr>
   );
