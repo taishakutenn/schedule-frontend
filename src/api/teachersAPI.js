@@ -7,7 +7,11 @@ export const getTeachers = async () => {
   }
 
   const data = await response.json();
-  return data.teachers.map((item) => item.teacher);
+  const teachers = data.teachers.map((item) => item.teacher);
+  // Сортировка преподавателей по фамилии по алфавиту
+  return teachers.sort((a, b) =>
+    (a.surname || "").localeCompare(b.surname || "", "ru"),
+  );
 };
 
 export const getTeacherById = async (id) => {

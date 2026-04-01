@@ -335,8 +335,10 @@ export default function Handbooks() {
     ) {
       const teacherMap = {};
       teachersData.forEach((teacher) => {
+        const initials =
+          `${teacher.name.charAt(0)}. ${teacher.fathername.charAt(0)}.`.trim();
         teacherMap[String(teacher.id)] =
-          `${teacher.surname} ${teacher.name} ${teacher.fathername}`.trim();
+          `${teacher.surname} ${initials}`.trim();
       });
 
       processedData = data.map((group) => ({
