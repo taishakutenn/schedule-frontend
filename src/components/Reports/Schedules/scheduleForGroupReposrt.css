@@ -1,15 +1,18 @@
 .data-for-report-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 450px;
+  margin-left: calc(50% - 450px / 2);
+  gap: 5px;
 }
 
 .date-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .group-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
