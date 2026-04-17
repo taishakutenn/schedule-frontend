@@ -146,24 +146,20 @@ export default function ScheduleTeachersTableRow({
   ]);
 
   return (
+  <ScheduleTeachersTableContext.Provider value={updatedScheduleTeachersTableContext}>
     <tr>
-      <th className="session-cell-header">
+      <th className="session-cell-header teacher-name-cell">
         {teacherInfo.fathername
-          ? `${teacherInfo.surname} ${teacherInfo.name.charAt(
-              0,
-            )}. ${teacherInfo.fathername.charAt(0)}.`
+          ? `${teacherInfo.surname} ${teacherInfo.name.charAt(0)}. ${teacherInfo.fathername.charAt(0)}.`
           : `${teacherInfo.surname} ${teacherInfo.name.charAt(0)}.`}
       </th>
-      <ScheduleTeachersTableContext.Provider
-        value={updatedScheduleTeachersTableContext}
-      >
-        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={0} />
-        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
-        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={2} />
-        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={3} />
-        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={4} />
-        <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={5} />
-      </ScheduleTeachersTableContext.Provider>
+      <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={0} />
+      <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={1} />
+      <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={2} />
+      <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={3} />
+      <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={4} />
+      <ScheduleTeachersTableRowStudyDay date={selectedDate} shift={5} />
     </tr>
-  );
+  </ScheduleTeachersTableContext.Provider>
+);
 }
