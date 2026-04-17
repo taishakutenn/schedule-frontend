@@ -1,90 +1,59 @@
 import MondayDatePicker from "../../../DatePicker/MondayDatePicker";
 
+const DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+const SESSION_NUMBERS = [1, 2, 3, 4, 5];
+
+function addDays(baseDate, n) {
+  return new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + n);
+}
+
 export default function ScheduleTeachersTableHeader({ selectedDate, onDateChange }) {
-
-  function addDays(baseDate, n) {
-    return new Date(
-      baseDate.getFullYear(),
-      baseDate.getMonth(),
-      baseDate.getDate() + n
-    );
-  }
-
   return (
     <>
       <tr>
-        {/* LEFT CELL WITH DATE PICKER */}
-        <td rowSpan="2" className="far-right">
+        {/* Ячейка с выбором даты */}
+        <th rowSpan="2" className="far-right">
           <MondayDatePicker
             selectedDate={selectedDate}
             onDateChange={onDateChange}
           />
-        </td>
+        </th>
 
-        {/* DAYS OF WEEK */}
-        <td colSpan="5" className="far-left far-right">
-          Понедельник{" "}
-          {selectedDate &&
-            addDays(selectedDate, 0).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-            })}
-        </td>
-
-        <td colSpan="5" className="far-left far-right">
-          Вторник{" "}
-          {selectedDate &&
-            addDays(selectedDate, 1).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-            })}
-        </td>
-
-        <td colSpan="5" className="far-left far-right">
-          Среда{" "}
-          {selectedDate &&
-            addDays(selectedDate, 2).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-            })}
-        </td>
-
-        <td colSpan="5" className="far-left far-right">
-          Четверг{" "}
-          {selectedDate &&
-            addDays(selectedDate, 3).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-            })}
-        </td>
-
-        <td colSpan="5" className="far-left far-right">
-          Пятница{" "}
-          {selectedDate &&
-            addDays(selectedDate, 4).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-            })}
-        </td>
-
-        <td colSpan="5" className="far-left">
-          Суббота{" "}
-          {selectedDate &&
-            addDays(selectedDate, 5).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-            })}
-        </td>
+        {/* Дни недели */}
+        {DAYS.map((day, index) => (
+          <th
+            key={day}
+            colSpan="5"
+            className={`far-left ${index < DAYS.length - 1 ? "far-right" : ""}`}
+          >
+            {day}{" "}
+            {selectedDate &&
+              addDays(selectedDate, index).toLocaleDateString("ru-RU", {
+                day: "2-digit",
+                month: "2-digit",
+              })}
+          </th>
+        ))}
       </tr>
 
-      {/* SESSION NUMBERS */}
+      {/* Номера пар */}
       <tr>
-        <td className="far-left">1</td><td>2</td><td>3</td><td>4</td><td className="far-right">5</td>
-        <td className="far-left">1</td><td>2</td><td>3</td><td>4</td><td className="far-right">5</td>
-        <td className="far-left">1</td><td>2</td><td>3</td><td>4</td><td className="far-right">5</td>
-        <td className="far-left">1</td><td>2</td><td>3</td><td>4</td><td className="far-right">5</td>
-        <td className="far-left">1</td><td>2</td><td>3</td><td>4</td><td className="far-right">5</td>
-        <td className="far-left">1</td><td>2</td><td>3</td><td>4</td><td>5</td>
+        {DAYS.map((_, dayIndex) =>
+          SESSION_NUMBERS.map((num) => (
+            <th
+              key={`${dayIndex}-${num}`}
+              className={
+                num === 1
+                  ? "far-left"
+                  : num === 5 && dayIndex < DAYS.length - 1
+                  ? "far-right"
+                  : ""
+              }
+            >
+              {num}
+            </th>
+          ))
+        )}
       </tr>
     </>
   );

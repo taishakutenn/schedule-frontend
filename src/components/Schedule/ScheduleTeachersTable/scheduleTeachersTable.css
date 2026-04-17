@@ -95,3 +95,46 @@ td.far-left {
 .loader {
   margin: 50px 0 0 50%;
 }
+
+/* ============================================
+   CUSTOM SCROLLBAR COLORS
+   Только для контейнера таблицы
+   ============================================ */
+
+/* === Для Chrome, Safari, Edge (WebKit) === */
+
+/* Сам скроллбар */
+.schedule-teacher-table__container::-webkit-scrollbar {
+  width: 10px;    /* Вертикальный скролл */
+  height: 10px;   /* Горизонтальный скролл */
+}
+
+/* Дорожка (фон) скроллбара */
+.schedule-teacher-table__container::-webkit-scrollbar-track {
+  background: var(--main-background-panel, #f1f1f1);
+  border-radius: 5px;
+}
+
+/* Ползунок скроллбара */
+.schedule-teacher-table__container::-webkit-scrollbar-thumb {
+  background: var(--main-border-color, #888);
+  border-radius: 5px;
+  border: 2px solid var(--main-background-panel, #f1f1f1); /* Отступ вокруг ползунка */
+}
+
+/* Ползунок при наведении */
+.schedule-teacher-table__container::-webkit-scrollbar-thumb:hover {
+  background: var(--main-accent-color, #555);
+}
+
+/* Ползунок при нажатии */
+.schedule-teacher-table__container::-webkit-scrollbar-thumb:active {
+  background: var(--main-font-color, #333);
+}
+
+/* === Для Firefox === */
+.schedule-teacher-table__container {
+  scrollbar-width: thin; /* thin | auto */
+  scrollbar-color: var(--main-border-color, #888) var(--main-background-panel, #f1f1f1);
+  /* Порядок: ползунок, затем дорожка */
+}
