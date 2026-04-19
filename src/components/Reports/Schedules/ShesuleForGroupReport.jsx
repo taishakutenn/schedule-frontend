@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DatePicker } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "./scheduleForGroupReposrt.css";
 import Button from "../../Button/Button"; // Путь к компоненту Button
 
 // Locale
@@ -13,7 +14,7 @@ import { getGroups } from "../../../api/groupAPI";
 import { getReportForGroup } from "../../../api/scheduleAPI"; // Предполагаемый путь к новой функции
 
 export default function ScheduleForGroupReport() {
-  const [date, setDate] = useState(new Date("01.12.2025"));
+  const [date, setDate] = useState(new Date());
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ export default function ScheduleForGroupReport() {
     return new Date(
       baseDate.getFullYear(),
       baseDate.getMonth(),
-      baseDate.getDate() + n
+      baseDate.getDate() + n,
     );
   }
 
@@ -63,22 +64,25 @@ export default function ScheduleForGroupReport() {
     try {
       setReportLoading(true);
       setError(null);
-      
+
       // Форматируем дату в нужный формат (например, YYYY-MM-DD)
       // Используем метод toISOString и корректируем временную зону
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы в JS с 0
-      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Месяцы в JS с 0
+      const day = String(date.getDate()).padStart(2, "0");
       const formattedDate = `${year}-${month}-${day}`;
-      
+
       // Получаем отчет
       const reportBlob = await getReportForGroup(selectedGroup, formattedDate);
-      
+
       // Создаем URL для скачивания файла
       const downloadUrl = window.URL.createObjectURL(reportBlob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = downloadUrl;
-      link.setAttribute('download', `schedule_${selectedGroup}_${formattedDate}.docx`);
+      link.setAttribute(
+        "download",
+        `schedule_${selectedGroup}_${formattedDate}.docx`,
+      );
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -99,9 +103,12 @@ export default function ScheduleForGroupReport() {
   }
 
   return (
-    <div className="data-for-report-container">
+    <div
+      className="data-for-report-container"
+      // style={{ margin: "25px 0 0 32%" }}
+    >
       <div className="date-container">
-        <p>Выберите понедельник, с которого хотите получить расписание</p> 
+        <p>Выберите понедельник, с которого хотите получить расписание</p>
         <DatePicker
           selected={date}
           onChange={setDate}
@@ -112,8 +119,8 @@ export default function ScheduleForGroupReport() {
       </div>
       <div className="group-container">
         <p>Выберите группу</p>
-        <select 
-          value={selectedGroup} 
+        <select
+          value={selectedGroup}
           onChange={(e) => setSelectedGroup(e.target.value)}
           className="group-select"
         >
@@ -125,7 +132,7 @@ export default function ScheduleForGroupReport() {
         </select>
       </div>
       <div className="button-container">
-        <Button 
+        <Button
           onClick={handleGetReport}
           variant="primary"
           size="medium"
