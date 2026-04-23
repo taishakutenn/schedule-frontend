@@ -7,6 +7,7 @@ import {
   useState,
   useEffect,
   useMemo,
+  useRef,
   memo,
 } from "react";
 import { useContextMenu } from "react-contexify";
@@ -24,13 +25,16 @@ import { useSessionForm } from "../../../../../hooks/useSessionForm";
 import { formatGroupLabel } from "../../../../../utils/formatters";
 
 import SyncSelect from "../../../../CustomSelect/syncSelect";
-import StreamErrorsModal from "./streamErrorsModal";
+import { lazy, Suspense } from "react";
+const StreamErrorsModal = lazy(() => import("./streamErrorsModal"));
 
-function ModalMessage({ text }) {
+const ModalMessage = memo(({ text }) => {
   return <div className="modal-in-container">{text}</div>;
-}
+});
 
 function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
+  const debounceRef = useRef(null);
+
   // ============================================
   // Контекст
   // ============================================
@@ -120,13 +124,28 @@ function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
   });
 
   // ============================================
+  // Оптимизация: мемоизация инлайн-стилей
+  // ============================================
+  const cellContainerStyle = useMemo(() => {
+    return {
+      "--animation-border-color": `var(${uiState.currentBorder})`,
+    };
+  }, [uiState.currentBorder]);
+
+  // ============================================
   // Эффект: подгрузка предметов при смене группы
   // ============================================
   useEffect(() => {
     let isMounted = true;
     const abortController = new AbortController();
 
-    const loadSubjects = async () => {
+    // Очищаем предыдущий таймер
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Debounce 300ms
+    debounceRef.current = setTimeout(async () => {
       if (!form.group?.value) {
         if (isMounted) {
           setSubjectsOptions([]);
@@ -150,26 +169,20 @@ function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
         }));
 
         setSubjectsOptions(formattedSubjects);
-
         setSubjectsDisabled(false);
       } catch (error) {
-        if (error.name !== "AbortError" && isMounted) {
-          setSubjectsOptions([]);
-          setSubjectsDisabled(true);
-          if (error.name !== "AbortError" && isMounted) {
-            setSubjectsOptions([]);
-          }
-        }
+        if (error.name === "AbortError" || !isMounted) return;
+        setSubjectsOptions([]);
+        setSubjectsDisabled(true);
       }
-    };
-
-    if (form.group?.value) {
-      loadSubjects();
-    }
+    }, 300);
 
     return () => {
       isMounted = false;
       abortController.abort();
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
   }, [form.group?.value, teacherInfo.id]);
 
@@ -245,8 +258,11 @@ function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
   // Эффект: триггеры действий (создание/обновление/удаление)
   // ============================================
 
-  // Создание
+  const lastActionRef = useRef(null);
+
   useEffect(() => {
+    // 1. Определяем ключ текущего логического действия
+    let actionKey = null;
     if (
       form.isNew &&
       !form.id &&
@@ -255,33 +271,49 @@ function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
       form.sessionType &&
       form.cabinet
     ) {
-      handleCreateSession(sessionNumber, date);
+      actionKey = `create_${form.group.value}_${form.subject.value}`;
+    } else if (form.isUpdate && form.id) {
+      actionKey = `update_${form.id}`;
+    } else if (form.isDelete && form.id) {
+      actionKey = `delete_${form.id}`;
+    }
+
+    // 2. Выполняем только если действие действительно изменилось
+    // (защита от повторных вызовов при каскадных ререндерах)
+    if (actionKey && actionKey !== lastActionRef.current) {
+      lastActionRef.current = actionKey;
+
+      if (
+        form.isNew &&
+        !form.id &&
+        form.group &&
+        form.subject &&
+        form.sessionType &&
+        form.cabinet
+      ) {
+        handleCreateSession(sessionNumber, date);
+      } else if (form.isUpdate && form.id) {
+        handleUpdateSession(form.id, sessionNumber, date);
+      } else if (form.isDelete && form.id) {
+        handleDeleteSession(form.id, form.streamSessions);
+      }
     }
   }, [
     form.isNew,
+    form.isUpdate,
+    form.isDelete,
     form.id,
     form.group,
     form.subject,
     form.sessionType,
     form.cabinet,
+    form.streamSessions,
     handleCreateSession,
+    handleUpdateSession,
+    handleDeleteSession,
     sessionNumber,
     date,
   ]);
-
-  // Обновление
-  useEffect(() => {
-    if (form.isUpdate && form.id) {
-      handleUpdateSession(form.id, sessionNumber, date);
-    }
-  }, [form.isUpdate, form.id, handleUpdateSession, sessionNumber, date]);
-
-  // Удаление
-  useEffect(() => {
-    if (form.isDelete && form.id) {
-      handleDeleteSession(form.id, form.streamSessions);
-    }
-  }, [form.isDelete, form.id, form.streamSessions, handleDeleteSession]);
 
   // ============================================
   // Эффект: синхронизация формы с серверными данными
@@ -354,9 +386,7 @@ function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
         className={`cell-container ${
           uiState.isAnimating ? "cell-container--animated" : ""
         }`}
-        style={{
-          "--animation-border-color": `var(${uiState.currentBorder})`,
-        }}
+        style={cellContainerStyle}
       >
         <div className="cell-for-animation-container">
           {uiState.isModalAnimating && (
@@ -409,14 +439,16 @@ function ScheduleTeachersTableCell({ classCell, date, sessionNumber }) {
         </div>
       </div>
 
-      <StreamErrorsModal
-        isOpen={isErrorModalOpen}
-        onClose={() => setIsErrorModalOpen(false)}
-        streamErrors={streamErrors}
-        successfullyCreatedSessions={successfullyCreatedSessions}
-        onRollback={rollbackSuccessfullyCreatedSessions}
-        onCloseModal={setStreamErrors}
-      />
+      <Suspense fallback={null}>
+        <StreamErrorsModal
+          isOpen={isErrorModalOpen}
+          onClose={() => setIsErrorModalOpen(false)}
+          streamErrors={streamErrors}
+          successfullyCreatedSessions={successfullyCreatedSessions}
+          onRollback={rollbackSuccessfullyCreatedSessions}
+          onCloseModal={setStreamErrors}
+        />
+      </Suspense>
     </td>
   );
 }
